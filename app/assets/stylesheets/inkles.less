@@ -1,0 +1,260 @@
+
+
+@light-gray: #DFDFDF;
+@lightest-gray: #F2F2F2;
+
+@border-width: 1px;
+@padding: 5px;
+@content-width: 500px;
+@sibling-wrapper-width: @content-width - 25px;
+
+.shadowed(@shadow: 0 0 3px 1px rgba(0, 0, 0, 0.05)) {
+	-moz-box-shadow: @shadow;
+	-webkit-box-shadow: @shadow;
+	box-shadow: @shadow;
+}
+
+#pagination-loader {
+	background-color: #F4F4F4;
+	border-radius: 3px;
+	float: left;
+	margin: 10px 0;
+	padding: 10px 0;
+	text-align: center;
+	width: 100%;
+}
+
+.stack {
+	float: left;
+	margin: 5px 0 15px;
+	overflow: auto;
+	padding: 5px;
+}
+
+.bubbler {
+	left: 0;
+	margin-left: 30px;
+	position: absolute;
+	top: -10px;
+}
+
+.sibling-wrapper {
+	.shadowed(0 -3px 6px 0 rgba(0, 0, 0, 0.1));
+	background-color: #F8F9F8;
+	border: 1px solid #CCCCCC;
+	border-radius: 5px;
+	float: left;
+	margin: -5px 0 0;
+	position: relative;
+	width: @sibling-wrapper-width;
+}
+
+.collapsed-sibling-wrapper {
+	background: none;
+	border: none;
+	box-shadow: none;
+}
+
+.siblings {
+	float: left;
+	margin: 10px 0 0 10px;
+	width: @sibling-wrapper-width - 10px;
+}
+
+.sibling {
+	.shadowed();
+	background-color: #FDFDFD;
+	border: 1px solid @light-gray;
+	border-radius: 5px;
+	cursor: pointer;
+	float: left;
+	margin: 0 10px 10px 0;
+	overflow: hidden;
+	text-align: center;
+	width: ((@sibling-wrapper-width - 4 * @border-width) / 2) - 15px;
+
+	.sibling-count {
+		color: #CCCCCC;
+		float: left;
+		font-size: 12px;
+		margin: 10px;
+	}
+
+	.sibling-date {
+		color: #BBBBBB;
+		float: right;
+		font-size: 12px;
+		font-style: italic;
+		padding: 5px 10px;
+	}
+
+	.sibling-inkler {
+		color: #AAAAAA;
+		float: right;
+		font-size: 12px;
+		padding: 10px;
+
+		a {
+			color: #888888;
+			font-style: italic;
+			font-weight: bold;
+		}
+	}
+}
+
+.sibling:hover {
+	border-color: #CCCCCC;
+	box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
+}
+
+.selected-sibling, .top-sibling {
+	border: 1px solid @light-gray;
+	float: left;
+	margin: 0;
+	width: @sibling-wrapper-width - 10px - 2px;
+
+	.sibling-count {
+		margin-left: 55px;
+	}
+}
+
+.top-sibling {
+	margin: 0 6px;
+}
+
+.selected-sibling {
+	margin-left: -5px;
+}
+
+.collapsed-selected-sibling {
+	box-shadow: 0 -3px 6px 0 rgba(0, 0, 0, 0.1);
+	margin-left: -4px;
+	margin-top: -10px;
+
+}
+
+.sibling-content, .selected-sibling-content, .top-sibling-content {
+	color: #444444;
+	display: table;
+	font-size: 16px;
+	height: 70px;
+	text-align: center;
+	vertical-align: middle;
+	width: 100%;
+
+	span {
+		display: table-cell;
+		max-width: 200px;
+		padding: 0 5px;
+		vertical-align: middle;
+		word-wrap: break-word;
+	}
+}
+
+.sibling-has-parent {
+	float: left;
+	margin: 5px 0 0 15px;
+}
+
+.selected-sibling-content, .top-sibling-content {
+	height: auto;
+}
+
+.add-sibling-form {
+	.shadowed();
+	background-color: #FCFCFC;
+	border-radius: 3px;
+	float: left;
+	padding: 10px 0;
+	width: @sibling-wrapper-width;
+}
+
+.add-sibling-form-content {
+	display: none;
+}
+
+.add-sibling-form-switch {
+	color: #888888;
+	padding: 10px;
+	cursor: text;
+	text-align: center;
+}
+
+.sidebar-inkle-form {
+	background-color: #F8F8f8;
+	float: left;
+	padding: 0 0 5px;
+	width: 200px;
+
+	.sidebar-inkle-bubbler {
+		margin: -8px 20px;
+		position: absolute;
+	}
+}
+
+.add-sibling-form,
+.sidebar-inkle-form {
+	textarea {
+		border: 1px solid @light-gray;
+		height: 30px;
+		margin: 0;
+		padding: 15px 10px;
+		resize: none;
+		text-align: center;
+		width: @sibling-wrapper-width - 20px;
+	}
+
+	input[type=submit] {
+		background-color: #F8F8F8;
+		border-color: @light-gray;
+		float: right;
+		font-size: 15px;
+		font-weight: bold;
+		margin: 5px;
+		padding: 2px 12px;
+	}
+}
+
+.add-sibling-form textarea {
+	border-width: 0 0 1px;
+}
+
+.sidebar-inkle-form textarea {
+	border-width: 1px 0;
+	width: 180px;
+}
+
+.add-sibling-form-loader {
+	float: right;
+	margin: 5px 10px 0;
+}
+
+.siblings-loader {
+	display: table;
+	height: 120px;
+	width: 452px;
+
+	span {
+		display: table-cell;
+		text-align: center;
+		vertical-align: middle;
+	}
+}
+
+.stack-box {
+	background-color: #FAFAFA;
+	border: 1px solid @light-gray;
+	border-radius: 3px;
+	color: #888888;
+	margin: 0 0 10px;
+	padding: 10px 15px;
+	width: @sibling-wrapper-width - 30px;
+
+	img {
+		float: right;
+	}
+}
+
+.hidden {
+	display: none;
+}

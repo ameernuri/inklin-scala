@@ -1,0 +1,127 @@
+@(inkler: Inkler, currentInkler: Inkler, boxes: Seq[Box], unaddedSecretBoxes: Seq[Box], addedSecretBoxes: Seq[Box], visibleSecretBoxes: Seq[Box])
+
+@main(inkler.firstName + " " + inkler.lastName , currentInkler) {
+
+	<div id="sidebar">
+		@if(inkler.id == currentInkler.id) {
+			@helper.form(routes.Boxes.create()) {
+				<h3>Create a box</h3>
+
+				<p>
+					<input type="text" name="name" placeholder="Box name" class="box-field">
+				</p>
+
+				<p>
+					<input type="checkbox" name="secret" id="secret" value="true">
+					<label for="secret">Make secret (only invited people can see and add posts)</label>
+				</p>
+
+				<p>
+					<input type="submit" value="Create">
+				</p>
+			}
+		} else {
+
+			@if(unaddedSecretBoxes.size > 0) {
+				<h3>Add @inkler.username to a secret box</h3>
+
+				<ul class="sidebar-add-remove">
+				@unaddedSecretBoxes.map { box =>
+					<li>
+						<a href="@routes.Boxes.view(box.id)">@box.name</a>
+						@helper.form(routes.Boxes.addInkler(box.id, inkler.id)) {
+							<input type="submit" value="+">
+							}
+					</li>
+				}
+				</ul>
+			}
+
+			<h3>Boxes you added @inkler.username to (@addedSecretBoxes.size):</h3>
+
+			<ul class="sidebar-add-remove">
+			@addedSecretBoxes.map { box =>
+				<li>
+					<a href="@routes.Boxes.view(box.id)">@box.name</a>
+					@helper.form(routes.Boxes.removeInkler(box.id, inkler.id)) {
+						<input type="submit" value="-">
+					}
+				</li>
+			}
+			</ul>
+		}
+	</div>
+
+	<div id="content">
+
+		<h2>@inkler.firstName @inkler.lastName</h2>
+		<h3>@inkler.username</h4>
+
+		<div class="box-view-wrapper">
+			@if(inkler.id != currentInkler.id) {
+				@if(visibleSecretBoxes.size > 0) {
+					<h3>@inkler.username's secret boxes you are in:</h3>
+
+					@visibleSecretBoxes.map { box =>
+						<div class="box-view-brick">
+							<span>
+								<a href="@routes.Boxes.view(box.id)">@box.name</a>
+								@if(!Box.hasFollowed(box.id, currentInkler.id)) {
+									@helper.form(routes.Boxes.follow(box.id)) {
+										<input type="submit" value="Follow">
+									}
+								} else {
+									@helper.form(routes.Boxes.unfollow(box.id)) {
+										<input type="submit" value="Unfollow">
+										}
+								}
+							</span>
+						</div>
+					}
+				}
+			} else {
+				<h3>Secret boxes (@addedSecretBoxes.size)</h3>
+
+				@addedSecretBoxes.map { box =>
+					<div class="box-view-brick">
+						<span>
+							<a href="@routes.Boxes.view(box.id)">@box.name</a>
+						</span>
+					</div>
+				}
+			}
+
+			<h3>Open boxes (@boxes.size)</h3>
+
+			@boxes.map { box =>
+				<div class="box-view-brick">
+					<span>
+						<a href="@routes.Boxes.view(box.id)">@box.name</a>
+						<span class="follow-unfollow-wrapper box-view-brick-follow" id="@box.id-follow-unfollow">
+							@if(inkler.id != currentInkler.id) {
+								@if(!Box.hasFollowed(box.id, currentInkler.id)) {
+									<a href="javascript:void(0)" id="@box.id-follow-button">Follow</a>
+								} else {
+									Followed
+								}
+							}
+						</span>
+					</span>
+					<script>
+						$("#@box.id-follow-button").click(function () {
+							$.ajax({
+								type: "POST",
+								url: "@routes.Boxes.follow(box.id)",
+								success: function() {
+									$("#@box.id-follow-unfollow").html(
+										"Followed"
+									)
+								}
+							})
+						})
+					</script>
+				</div>
+			}
+		</div>
+	</div>
+}

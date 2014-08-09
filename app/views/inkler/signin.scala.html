@@ -1,0 +1,46 @@
+@(signinForm: Form[(String, String)])
+
+
+@secondary("Inklin : Sign in") {
+
+	@helper.form(routes.Inklers.authenticate) {
+		<div id="signin-page-form">
+			<h2>Sign in</h2>
+			@signinForm.globalError.map { error =>
+				<p class="error">
+					@error.message
+				</p>
+			}
+			<table>
+				<tr>
+					<td>
+					@helper.inputText(
+						signinForm("usernameOrEmail"),
+						'_label           -> Nil,
+						'_showConstraints -> false,
+						'placeholder      -> "Username or Email"
+					)
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+					@helper.inputPassword(
+						signinForm("password"),
+						'_label           -> Nil,
+						'_showConstraints -> false,
+						'placeholder      -> "Password"
+					)
+					</td>
+				</tr>
+
+				<tr>
+					<td><input type="submit" value="Sign in"></td>
+				</tr>
+			</table>
+		</div>
+		<div id="no-account">
+			<span>Don't have an account? <a href="@routes.Inklers.signup()">Sign up</a></span>
+		</div>
+	}
+}

@@ -1,0 +1,232 @@
+@(inkles: Page[(Inkle, Inkler, Box)], members: Seq[Inkler], box: (Box, Inkler), currentInkler: Inkler)
+
+@import scala.util.Random
+
+@main(box._1.name, currentInkler) {
+	<script src="@routes.Assets.at("javascripts/scripts.js")" type="text/javascript"></script>
+	<script>
+		scroller("/inkles/fetch_box/@box._1.id/");
+	</script>
+	<div id="sidebar">
+
+		<div class="sidebar-inkle-form">
+		@helper.form(routes.Inkles.create(box._1.id), 'id -> "box-create-inkle-form") {
+			<p>
+				<textarea id="box-create-inkle-form-textarea" name="inkle" placeholder="how about..."></textarea>
+			</p>
+
+			<p>
+				<input class="right" type="submit" value="•••">
+				<img class="hidden right" id="box-create-inkle-form-loader" src="@routes.Assets.at("images/loader.gif")">
+			</p>
+		}
+		</div>
+
+		<script>
+
+			newInklePrepender("box-create-inkle-form", @box._1.id);
+
+			submitOnReturn("box-create-inkle-form");
+		</script>
+
+		@if(members.size > 0) {
+			@if(members.size == 1) {
+				<h3>@members.size member</h3>
+			} else {
+				<h3>@members.size members</h3>
+			}
+
+			<ul>
+				@members.map { member =>
+					<li>
+						<a href="@routes.Inklers.view(member.id)">@member.username</a>
+						@helper.form(routes.Boxes.removeInkler(box._1.id, member.id)) {
+							<input type="submit" value="-">
+						}
+					</li>
+				}
+			</ul>
+		}
+	</div>
+
+	<div id="content">
+
+		<div id="box-view-head">
+			<div>
+				<h2>@box._1.name</h2>
+				<div>by <a href="@routes.Inklers.view(box._2.id)"><b>@box._2.username</b></a></div>
+			</div>
+
+			<div>
+
+				@if(!Box.isOwner(box._1.id, currentInkler.id)) {
+					@if(Box.hasFollowed(box._1.id, currentInkler.id)) {
+						<div class="right"><img src="@routes.Assets.at("images/followed.png")"> Followed</div>
+					} else {
+
+							<div class="right">
+								<img class="hidden" id="current-box-follow-loader" src="@routes.Assets.at("images/loader.gif")">
+								<a class="link-button" id="current-box-follow-link" href="#">Follow</a>
+								<div class="hidden" id="current-box-followed-flag">
+									<img src="@routes.Assets.at("images/followed.png")"> Followed
+								</div>
+							</div>
+
+						<script>
+							$("#current-box-follow-link").click(function() {
+								$("#current-box-follow-loader").show();
+								$.ajax({
+									url: "/boxes/follows/@box._1.id",
+									type: "POST",
+									success: function() {
+										$("#current-box-follow-link").hide();
+										$("#current-box-followed-flag").show();
+										$("#current-box-follow-loader").hide();
+									}
+								});
+							});
+						</script>
+					}
+				}
+			</div>
+		</div>
+
+		<div id="inkles-wrapper">
+			@defining(new Random) { randomHandle =>
+				@inkles.items.map { inkle =>
+					@defining(randomHandle.nextInt(10000)) { stackId =>
+						<div class="stack" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-stack">
+							<div class="stack-box">
+								into @Inkler.findUsernameById(inkle._3.createdBy)'s <a href="/boxes/@inkle._3.id">@inkle._3.name</a>
+
+								@if(inkle._3.secret == true) {
+									<img src="@routes.Assets.at("images/key.png")">
+								} else {
+									<img src="@routes.Assets.at("images/open_box.png")">
+								}
+							</div>
+							<div
+								class="sibling top-sibling"
+								id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-top-sibling"
+								parent="@inkle._1.parentId"
+								self="@inkle._1.id"
+							>
+								@if(inkle._1.parentId != null) {
+									<div class="sibling-has-parent">
+										<img src="@routes.Assets.at("images/has_parent.png")">
+									</div>
+								}
+
+								<div class="sibling-date">
+								@inkle._1.created.format("MMM dd, yyyy - hh:mm aa")
+								</div>
+
+								<div class="top-sibling-content">
+									<span>@inkle._1.inkle</span>
+								</div>
+
+								<div class="sibling-count">
+									@defining(Inkle.childrenCount(inkle._1.id)) { count =>
+										<b>@count</b>
+										@if(count == 1) {
+											reply
+										} else {
+											replies
+										}
+									}
+								</div>
+								<div class="sibling-inkler">
+									<a href="@routes.Inklers.view(inkle._2.id)">@inkle._2.username</a>
+								</div>
+							</div>
+
+							<div class="sibling-wrapper" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-sibling-wrapper" stack="@stackId" level=0>
+								<img class="bubbler" src="@routes.Assets.at("images/bubbler.png")">
+
+								<div class="add-sibling-form" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-extend-form">
+									<div class="add-sibling-form-switch" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-form-switch">write a reply</div>
+									<div class="add-sibling-form-content" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-form-wrapper">
+										@defining("page-" + inkles.page + "-stack-" + stackId + "-inkle-" + inkle._1.id + "-form") { formId =>
+											@helper.form(routes.Inkles.extend(inkle._1.id), 'id -> formId) {
+												<textarea name="inkle" placeholder="how about..." maxlength="70" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-form-textarea"></textarea>
+
+												<span>
+													<input type="submit" value="•••" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-form-submit">
+												</span>
+
+												<span class="add-sibling-form-loader hidden" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-form-loader">
+													<img src="@routes.Assets.at("images/loader.gif")">
+												</span>
+											}
+										}
+
+										<script>
+											submitOnReturn("page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-form");
+											siblingFormSwitch("page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-form");
+											siblingFormHandler(@inkles.page, @stackId, @inkle._1.id);
+											stackPrepender(@inkles.page, @stackId, @inkle._1.id);
+										</script>
+									</div>
+								</div>
+
+								<div class="siblings-loader hidden" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-siblings-loader">
+									<span>
+										<img src="@routes.Assets.at("images/loader.gif")">
+									</span>
+								</div>
+
+								<div class="siblings" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-siblings">
+									@Inkle.findChildren(inkle._1.id).map { child =>
+										<div
+											class="sibling page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-sibling"
+											id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-sibling-@child._1.id"
+										>
+											<div class="sibling-date">
+											@child._1.created.format("MMM dd, yyyy - hh:mm aa")
+											</div>
+											<div
+												class="sibling-content page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-sibling-content"
+												id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-sibling-@child._1.id-content"
+											>
+												<span>@child._1.inkle</span>
+											</div>
+
+
+											<div class="sibling-count">
+												@defining(Inkle.childrenCount(child._1.id)) { count =>
+													<b>@count</b>
+													@if(count == 1) {
+														reply
+													} else {
+														replies
+													}
+												}
+											</div>
+
+											<div class="sibling-inkler">
+												<a href="@routes.Inklers.view(child._2.id)">@child._2.username</a>
+											</div>
+										</div>
+
+										<script>
+											$("#page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-sibling-@child._1.id").click(function() {
+												appendStack(@inkles.page, @stackId, @inkle._1.id, @child._1.id)
+											})
+										</script>
+									}
+
+									<div id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-last-pointer" class="hidden"></div>
+								</div>
+							</div>
+						</div>
+					}
+				}
+			}
+
+		</div>
+
+		<div class="hidden" id="pagination-loader">
+			<img src="@routes.Assets.at("images/loader.gif")">
+		</div>
+	</div>
+}

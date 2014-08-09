@@ -1,0 +1,43 @@
+# Routes
+
+# Home page
+GET         /                                     controllers.Apps.home()
+
+# Box follows
+GET         /boxes/follows                        controllers.Boxes.follows
+POST        /boxes/follows/:id                    controllers.Boxes.follow(id: Long)
+POST        /boxes/unfollow/:id                   controllers.Boxes.unfollow(id: Long)
+
+# Boxes
+GET         /boxes                                controllers.Boxes.index
+POST        /boxes                                controllers.Boxes.create
+
+GET         /boxes/:id                            controllers.Boxes.view(id: Long, page: Int ?= 0)
+POST        /boxes/add/:boxId/:inklerId           controllers.Boxes.addInkler(boxId: Long, inklerId: Long)
+POST        /boxes/remove/:boxId/:inklerId        controllers.Boxes.removeInkler(boxId: Long, inklerId: Long)
+
+
+# Inkles
+POST        /inkles/create/:boxId                 controllers.Inkles.create(boxId: Long)
+POST        /inkles/extend/:parentId              controllers.Inkles.extend(parentId: Long)
+GET         /inkles/:id                           controllers.Inkles.view(id: Long)
+GET         /inkles/get_inkle/:id                 controllers.Inkles.getInkle(id: Long)
+
+# Ajax fetchers
+POST        /inkles/fetch/:page                   controllers.Inkles.fetchPage(page: Int)
+POST        /inkles/fetch_oops/:page              controllers.Inkles.fetchOopsPage(page: Int)
+POST        /inkles/fetch_box/:box/:page          controllers.Inkles.fetchBoxPage(box: Long, page: Int)
+POST        /inkles/get_parent/:inkle             controllers.Inkles.getParent(inkle: Long)
+POST        /inkles/get_children/:id              controllers.Inkles.getChildren(id: Long)
+
+# Inklers
+GET         /signup                               controllers.Inklers.signup
+POST        /signup                               controllers.Inklers.create
+GET         /signin                               controllers.Inklers.signin
+POST        /signin                               controllers.Inklers.authenticate
+GET         /signout                              controllers.Inklers.signout
+GET         /$id<[0-9]+>                          controllers.Inklers.view(id: Long)
+GET         /$username<[a-zA-Z0-9_]+>             controllers.Inklers.viewByUsername(username: String)
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                         controllers.Assets.at(path="/public", file)

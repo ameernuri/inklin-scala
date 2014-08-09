@@ -1,0 +1,17 @@
+@(boxes: Seq[Box], currentInkler: Inkler)
+
+@main("Followed Boxes", currentInkler) {
+
+	<h2>Followed Boxes (@boxes.size)</h2>
+
+	<ul>
+	@boxes.map { box =>
+		<li>
+			<a href="@routes.Boxes.view(box.id)">@box.name</a>
+			@helper.form(routes.Boxes.unfollow(box.id)) {
+				<button type="submit">Unfollow</button>
+			}
+		</li>
+	}
+	</ul>
+}

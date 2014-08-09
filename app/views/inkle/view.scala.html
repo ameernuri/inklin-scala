@@ -1,0 +1,59 @@
+@(parent: (Inkle, Inkler, Box), children: Seq[(Inkle, Inkler, Box)], currentInkler: Inkler)
+
+@main(parent._1.inkle, currentInkler) {
+	
+	<div class="inkle">
+		@if(!parent._1.parentId.isEmpty) {
+			<span class="inkle-parent-link">
+				<a href="@routes.Inkles.view(parent._1.parentId.get)">
+					<•••
+				</a>
+			</span>
+		}
+		<div class="inkle-date">
+		@parent._1.created.format("MMM dd, yyyy - hh:mm aa")
+		</div>
+
+		<a class="inkle-content-link" href="@routes.Inkles.view(parent._1.id)">
+			<div class="inkle-content">
+				<span>@parent._1.inkle</span>
+			</div>
+
+			<div class="inkle-links">
+				<span><a href="@routes.Inklers.view(parent._2.id)">@parent._2.username</a></span> into
+				<span><a href="@routes.Boxes.view(parent._3.id)">@parent._3.name</a></span>
+			</div>
+		</a>
+	</div>
+
+	<div class="children">
+		<img class="children-bubbler" src="@routes.Assets.at("images/bubbler.png")">
+		<div class="child">
+			<div class="child-form">
+			@helper.form(routes.Inkles.extend(parent._1.id)) {
+				<textarea name="inkle" placeholder="how about..." maxlength="60"></textarea>
+
+				<span>
+					<input type="submit" value="•">
+				</span>
+			}
+			</div>
+		</div>
+		@children.map { child =>
+			<div class="child">
+				<div class="child-date">
+					@child._1.created.format("MMM dd, yyyy - hh:mm aa")
+				</div>
+				<a class="child-content-link" id="@parent._1.id-child-@child._1.id" href="@routes.Inkles.view(child._1.id)">
+					<div class="child-content">
+						<span>@child._1.inkle</span>
+					</div>
+				</a>
+				<div class="child-links">
+					<span><a href="@routes.Inklers.view(child._2.id)">@child._2.username</a></span> into
+					<span><a href="@routes.Boxes.view(child._3.id)">@child._3.name</a></span>
+				</div>
+			</div>
+		}
+	</div>
+}

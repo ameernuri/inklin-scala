@@ -1,0 +1,40 @@
+@(title: String)(content: Html)
+
+@import java.util.Date
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>@title</title>
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/secondary.css")">
+		<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+		<script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+	</head>
+	<body>
+		<div id="header">
+			<div id="header-content">
+				<div id="header-logo">
+					<a href="@routes.Apps.home()">
+						<img src="@routes.Assets.at("images/big_logo.png")" alt="inklin">
+					</a>
+				</div>
+			</div>
+		</div>
+		<div id="content">
+			@content
+		</div>
+		<div id="footer">
+			<div id="footer-copy">
+				@defining(new Date) { date =>
+
+					inklin &copy; @date.format("yyyy")
+				}
+			</div>
+			<div id="footer-links">
+				<a href="">about inklin</a> &bull; <a href="">terms of service</a>
+			</div>
+			<br>
+		</div>
+	</body>
+</html>
