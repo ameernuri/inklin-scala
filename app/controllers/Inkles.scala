@@ -3,20 +3,26 @@ package controllers
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
-import play.api.libs.json._
 import play.api.libs.json.Json._
 
 import models._
 import views._
 import security._
+import tools.Loggers._
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsObject
+import scala.Some
 
 object Inkles extends Controller with Guard {
+
+	private def log(log: String, params: Map[String, Any] = Map()) = controllerLogger("Inkles", log, params)
 
 	val inkleForm = Form(
 		"inkle" -> nonEmptyText(maxLength = 70)
 	)
 
 	def create(boxId: Long) = CanCreate(boxId) { username => implicit request =>
+		log("create", Map("boxId" -> boxId))
 
 		val inklerId = Inkler.findIdByUsername(username).get
 
@@ -24,7 +30,7 @@ object Inkles extends Controller with Guard {
 			formWithErrors => BadRequest,
 			{
 				case (inkle) =>
-				val id = Inkle.create(inklerId, Some(boxId), None, inkle)
+				val id = Inkle.create(inklerId, boxId, None, inkle)
 				val new_inkle = Inkle.find(id)
 
 				val json_inkle = obj(
@@ -34,7 +40,7 @@ object Inkles extends Controller with Guard {
 					"inklerId"        -> new_inkle._2.id,
 					"inklerUsername"  -> new_inkle._2.username,
           "childrenCount"   -> Inkle.childrenCount(new_inkle._1.id),
-          "boxOwner"        -> Inkler.findUsernameById(new_inkle._3.createdBy),
+          "boxOwner"        -> Inkler.findUsernameById(new_inkle._3.owner),
           "boxName"         -> new_inkle._3.name,
           "boxId"           -> new_inkle._3.id,
           "boxSecret"       -> new_inkle._3.secret
@@ -46,6 +52,7 @@ object Inkles extends Controller with Guard {
 	}
 
 	def extend(parentId: Long) = CanExtend(parentId) { username => implicit request =>
+		log("extend", Map("parentId" -> parentId))
 
 		val inklerId = Inkler.findIdByUsername(username).get
 
@@ -53,7 +60,7 @@ object Inkles extends Controller with Guard {
 			formWithErrors => Forbidden,
 			{
 				case (inkle) =>
-				val id = Inkle.create(inklerId, None, Some(parentId), inkle)
+				val id = Inkle.create(inklerId, Inkle.findBoxId(parentId), Some(parentId), inkle)
 				val new_inkle = Inkle.find(id)
 
 				val json_inkle = obj(
@@ -71,6 +78,8 @@ object Inkles extends Controller with Guard {
 	}
 
 	def getChildren(id: Long) = Action {
+		log("getChildren", Map("id" -> id))
+
 		val inkles = Inkle.findChildren(id)
 
 		val jsonInkles: JsArray = arr(
@@ -90,19 +99,29 @@ object Inkles extends Controller with Guard {
 	}
 
 	def getInkle(id: Long) = Action {
+		log("getInkle", Map("id" -> id))
+
 		val inkle = Inkle.find(id)
 		Ok(inkle._1.inkle)
 	}
 
 	def view(id: Long) = IsAuthenticated { username => _ =>
+		log("view", Map("id" -> id))
 
-		Ok(html.inkle.view(Inkle.find(id), Inkle.view(id), Inkler.findByUsername(username).get))
+		Ok(
+			html.inkle.view(
+				Inkle.find(id),
+				Inkle.findChildren(id),
+				Inkler.findByUsername(username).get
+			)
+		)
 	}
 
 
   /** ajax actions **/
 
   def fetchPage(page: Int) = IsAuthenticated { username => _ =>
+	  log("fetchPage", Map("page" -> page))
 
     val inklerId = Inkler.findIdByUsername(username).get
 
@@ -118,7 +137,7 @@ object Inkles extends Controller with Guard {
           "inklerId"        -> inkle._2.id,
           "childrenCount"   -> Inkle.childrenCount(inkle._1.id),
           "inklerUsername"  -> inkle._2.username,
-          "boxOwner"        -> Inkler.findUsernameById(inkle._3.createdBy),
+          "boxOwner"        -> Inkler.findUsernameById(inkle._3.owner),
           "boxName"         -> inkle._3.name,
           "boxId"           -> inkle._3.id,
           "boxSecret"       -> inkle._3.secret,
@@ -142,6 +161,7 @@ object Inkles extends Controller with Guard {
   }
 
   def fetchBoxPage(box: Long, page: Int) = IsAuthenticated { username => _ =>
+	  log("fetchBoxPage", Map("box" -> box, "page" -> page))
 
     val inkles = Inkle.findByBox(box, page)
 
@@ -153,7 +173,7 @@ object Inkles extends Controller with Guard {
           "createdTime"     -> inkle._1.created,
           "inklerId"        -> inkle._2.id,
           "inklerUsername"  -> inkle._2.username,
-          "boxOwner"        -> Inkler.findUsernameById(inkle._3.createdBy),
+          "boxOwner"        -> Inkler.findUsernameById(inkle._3.owner),
           "boxName"         -> inkle._3.name,
           "boxId"           -> inkle._3.id,
           "boxSecret"       -> inkle._3.secret,
@@ -176,8 +196,9 @@ object Inkles extends Controller with Guard {
   }
 
   def fetchOopsPage(page: Int) = Action {
+	  log("fetchOopsPage", Map("page" -> page))
 
-    val inkles = Inkle.findOops(page)
+    val inkles = Inkle.fetchPage(page)
 
     val fetchedInkles: JsArray = arr(
       inkles.items.map { inkle =>
@@ -188,7 +209,7 @@ object Inkles extends Controller with Guard {
           "inklerId"        -> inkle._2.id,
           "childrenCount"   -> Inkle.childrenCount(inkle._1.id),
           "inklerUsername"  -> inkle._2.username,
-          "boxOwner"        -> Inkler.findUsernameById(inkle._3.createdBy),
+          "boxOwner"        -> Inkler.findUsernameById(inkle._3.owner),
           "boxName"         -> inkle._3.name,
           "boxId"           -> inkle._3.id,
           "children"        -> arr(
@@ -211,6 +232,7 @@ object Inkles extends Controller with Guard {
   }
 
   def getParent(id: Long) = Action {
+	  log("getParent", Map("id" -> id))
 
     val inkle = Inkle.find(id)
 

@@ -7,8 +7,11 @@ import play.api.data.Forms._
 import models._
 import views._
 import security._
+import tools.Loggers._
 
 object Inklers extends Controller with Guard {
+
+	private def log(log: String, params: Map[String, Any] = Map()) = controllerLogger("Inklers", log, params)
 
 	val signupForm = Form(
 		tuple(
@@ -16,8 +19,7 @@ object Inklers extends Controller with Guard {
 			"firstName"       -> nonEmptyText,
 			"lastName"        -> nonEmptyText,
 			"email"           -> email.verifying("The email address is already in use", email => !Inkler.emailExists(email)),
-			"password"        -> text(minLength = 8),
-			"invitationCode"  -> nonEmptyText
+			"password"        -> text(minLength = 8)
 		)
 	)
 
@@ -31,22 +33,25 @@ object Inklers extends Controller with Guard {
 	)
 
 	def signup = Action {
+		log("signup")
 
 		Ok(html.inkler.signup(signupForm))
 	}
 
 	def create = Action { implicit request =>
+		log("create")
 
 		signupForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(html.inkler.signup(formWithErrors)),
 			inkler => {
-				Inkler.create(inkler._1, inkler._2, inkler._3, inkler._4, inkler._5, inkler._6)
+				Inkler.create(inkler._1, inkler._2, inkler._3, inkler._4, inkler._5)
 				Redirect(routes.Apps.home()).withSession("username" -> inkler._1)
 			}
 		)
 	}
 
 	def view(id: Long) = IsAuthenticated { username => _ =>
+		log("view")
 
 		Inkler.findUsernameById(id).map { viewedUsername =>
 			Redirect(routes.Inklers.viewByUsername(viewedUsername))
@@ -54,6 +59,7 @@ object Inklers extends Controller with Guard {
 	}
 
 	def viewByUsername(viewedInkler: String) = IsAuthenticated { username => _ =>
+		log("viewByUsername", Map("viewedInkler" -> viewedInkler))
 
 		Inkler.findIdByUsername(viewedInkler).map { viewedInklerId =>
 			val currentInklerId = Inkler.findIdByUsername(username).get
@@ -78,9 +84,9 @@ object Inklers extends Controller with Guard {
 						inkler,
 						currentInkler,
 						Box.findOwned(viewedInklerId),
-						Box.findNotMemberedByCreator(currentInklerId, viewedInklerId),
-						Box.findMemberedByCreator(currentInklerId, viewedInklerId),
-						Box.findMemberedByCreator(viewedInklerId, currentInklerId)
+						Box.findNonInvitedByOwner(currentInklerId, viewedInklerId),
+						Box.findInvitedByOwner(currentInklerId, viewedInklerId),
+						Box.findInvitedByOwner(viewedInklerId, currentInklerId)
 					)
 				)
 			}
@@ -88,16 +94,19 @@ object Inklers extends Controller with Guard {
 	}
 
 	def signin = Action {
+		log("signin")
 
 		Ok(html.inkler.signin(signinForm))
 	}
 
 	def signout = Action {
+		log("signout")
 
 		Redirect(routes.Apps.home()).withNewSession
 	}
 
 	def authenticate = Action { implicit request =>
+		log("authenticate")
 
     signinForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.inkler.signin(formWithErrors)),

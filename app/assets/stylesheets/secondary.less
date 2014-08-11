@@ -27,25 +27,28 @@ a:hover {
 input, textarea {
 	border: 1px solid #DDDDDD;
 	font-family: "arial", sans-serif, helvetica;
-	font-size: 12px;
 	padding: 5px;
 }
 
 input[type=submit] {
-	background-color: #F0F0F0;
-	border: 1px solid #CCCCCC;
+	background-color: #97C111;
+	border: none;
 	border-radius: 3px;
 	box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.1);
-	color: #666666;
+	color: #FEFFFE;
 	font-weight: bold;
-	padding: 5px 10px;
+	padding: 10px 15px;
+
+	&:hover {
+		background-color: #97C111 * 0.9;
+	}
 }
 
 input {
 	border: 1px solid #DEDDDD;
 	border-radius: 4px;
 	margin: 2px;
-	padding: 7px 12px;
+	padding: 10px 15px;
 }
 
 a img {
@@ -173,6 +176,11 @@ a img {
 	table {
 		margin: 10px auto;
 	}
+
+	input[type=submit] {
+		margin-left: 150px;
+		margin-top: 10px;
+	}
 }
 
 #signin-form-bubbler {
@@ -194,7 +202,7 @@ input[type=text], input[type=password] {
 }
 
 #first-name, #last-name {
-	width: 70px;
+	width: 67px;
 }
 
 #landing-invitation-message {

@@ -97,7 +97,7 @@
 					@defining(randomHandle.nextInt(10000)) { stackId =>
 						<div class="stack" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-stack">
 							<div class="stack-box">
-								into @Inkler.findUsernameById(inkle._3.createdBy)'s <a href="/boxes/@inkle._3.id">@inkle._3.name</a>
+								into @Inkler.findUsernameById(inkle._3.owner)'s <a href="/boxes/@inkle._3.id">@inkle._3.name</a>
 
 								@if(inkle._3.secret == true) {
 									<img src="@routes.Assets.at("images/key.png")">

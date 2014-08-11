@@ -19,8 +19,8 @@ object Apps extends Controller with Guard {
 
 	  if (userOpt.isDefined) {
 
-		  val inklerId = Inkler.findIdByUsername("username").get
-		  val inkler = Inkler.find(inklerId).get
+		  val inklerId = user.id
+		  val inkler = user
 
 		  val inkles = Inkle.findFollowed(inklerId)
 
@@ -29,7 +29,7 @@ object Apps extends Controller with Guard {
 				  inkles,
 				  Box.findOwned(inklerId),
 				  Box.findSecret(inklerId),
-				  Box.findMembered(inklerId),
+				  Box.findInvited(inklerId),
 				  Box.findFollowed(inklerId),
 				  inkler
 			  )

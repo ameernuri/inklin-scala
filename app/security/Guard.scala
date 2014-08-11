@@ -13,8 +13,7 @@ trait Guard {
 
 		val username = request.session.get("username").getOrElse("")
 
-		//Inkler.findByUsername(username)
-		None
+		Inkler.findByUsername(username)
 	}
 
 	implicit def user(implicit r: RequestHeader): Inkler = inkler(r).get

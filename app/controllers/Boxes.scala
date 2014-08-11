@@ -7,8 +7,11 @@ import play.api.data.Forms._
 import models._
 import views._
 import security._
+import tools.Loggers._
 
 object Boxes extends Controller with Guard {
+
+	private def log(log: String, params: Map[String, Any] = Map()) = controllerLogger("Boxes", log, params)
 
 	val boxForm = Form(
 		tuple(
@@ -22,6 +25,7 @@ object Boxes extends Controller with Guard {
 	)
 
 	def index = IsAuthenticated { username => _ =>
+		log("index")
 
 		val inklerId = Inkler.findIdByUsername(username).get
 
@@ -29,15 +33,15 @@ object Boxes extends Controller with Guard {
 	}
 
 	def create = IsAuthenticated { username => implicit request =>
+		log("create")
 
 		val inklerId = Inkler.findIdByUsername(username).get
-		val maxR: Long = 0
 
 		boxForm.bindFromRequest.fold(
 			formWithErrors => BadRequest,
 			{
 				case(name, secret) =>
-				Box.create(inklerId, name, secret, maxR)
+				Box.create(inklerId, name, secret)
 
 				Redirect(request.headers.get(REFERER).get)
 			}
@@ -45,6 +49,7 @@ object Boxes extends Controller with Guard {
 	}
 
 	def view(id: Long, page: Int) = IsBoxMember(id) { username => _ =>
+		log("view", Map("id" -> id, "page" -> page))
 
 		val inkler = Inkler.findByUsername(username).get
 
@@ -54,18 +59,21 @@ object Boxes extends Controller with Guard {
 	}
 
 	def addInkler(boxId: Long, inklerId: Long) = CanAddToBox(boxId, inklerId) { username => implicit request =>
+		log("addInkler", Map("boxId" -> boxId, "inklerId" -> inklerId))
 
 		Box.addInkler(boxId, inklerId)
 		Redirect(request.headers.get(REFERER).get)
 	}
 
 	def removeInkler(boxId: Long, inklerId: Long) = CanRemoveFromBox(boxId, inklerId) { username => implicit request =>
+		log("removeInkler", Map("boxId" -> boxId, "inklerId" -> inklerId))
 
 		Box.removeInkler(boxId, inklerId)
 		Redirect(request.headers.get(REFERER).get)
 	}
 
 	def follows = IsAuthenticated { username => _ =>
+		log("follows")
 
 		val inklerId = Inkler.findIdByUsername(username).get
 
@@ -73,6 +81,7 @@ object Boxes extends Controller with Guard {
 	}
 
 	def follow(boxId: Long) = CanFollowBox(boxId) { username => implicit request =>
+		log("follow", Map("boxId" -> boxId))
 
 		val inklerId = Inkler.findIdByUsername(username).get
 
@@ -81,6 +90,7 @@ object Boxes extends Controller with Guard {
 	}
 
 	def unfollow(boxId: Long) = CanUnfollowBox(boxId) { username => implicit request =>
+		log("unfollow", Map("boxId" -> boxId))
 
 		val inklerId = Inkler.findIdByUsername(username).get
 

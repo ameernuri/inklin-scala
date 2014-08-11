@@ -2,21 +2,30 @@ package models
 
 import org.anormcypher._
 import org.anormcypher.CypherParser._
+import tools.Loggers._
 
-case class Inkler(id: Long, username: String, firstName: String, lastName: String, email: String, password: String, invitationCode: String)
+case class Inkler(id: Long, username: String, firstName: String, lastName: String, email: String)
 
 object Inkler {
+
+	private def log(log: String, params: Map[String, Any] = Map()) = modelLogger("Inkler", log, params)
+
 	val simple = {
-		get[Long]("inkler.id") ~
+		get[Long]("inklerId") ~
 		get[String]("inkler.username") ~
-		get[String]("inkler.first_name") ~
-		get[String]("inkler.last_name") ~
-		get[String]("inkler.email") ~
-		get[String]("inkler.invitation_code") ~
-		get[String]("inkler.password") map {
-			case id~username~firstName~lastName~email~password~invitationCode =>
-				Inkler(id, username, firstName, lastName, email, password, invitationCode)
+		get[String]("inkler.firstName") ~
+		get[String]("inkler.lastName") ~
+		get[String]("inkler.email")  map {
+			case id~username~firstName~lastName~email =>
+				Inkler(id, username, firstName, lastName, email)
 		}
+	}
+
+	def simpleReturn(inkler: String = "inkler"): String = {
+		s"""
+		  |id($inkler) as inklerId, $inkler.username,
+		  |$inkler.firstName, $inkler.lastName, $inkler.email
+		""".stripMargin
 	}
 
 	val withInkler = Inkle.simple ~ Inkler.simple map {
@@ -24,118 +33,137 @@ object Inkler {
 	}
 
 	def authenticate(username: String, password: String): Option[Inkler] = {
+		log("authenticate", Map("username" -> username, "password" -> password))
+		
 		Cypher(
-			"""
-				select * from inkler where
-				(
-					username = {username} or email = {username}
-				) and password = {password}
-			"""
+			s"""
+			  |MATCH (inkler:Inkler)
+			  |WHERE inkler.username = {username} and
+			  |inkler.password = {password}
+			  |RETURN ${simpleReturn()}
+			""".stripMargin
 		).on(
 			"username" -> username,
 			"password" -> password
 		).as(Inkler.simple.singleOpt)
 	}
 
-	def create(username: String, firstName: String, lastName: String, email: String, password: String, invitationCode: String) = {
+	def create(username: String, firstName: String, lastName: String, email: String, password: String) = {
+		log("create", Map(
+			"username" -> username,
+			"firstName" -> firstName,
+			"lastName" -> lastName,
+			"email" -> email,
+			"password" -> password
+		))
 
 		Cypher(
 			"""
-				insert into inkler values(
-					{id}, {username}, {firstName}, {lastName}, {email}, {password}, {invitationCode}
-				)
-			"""
+			  |CREATE (inkler:Inkler {
+			  | username: {username},
+			  | firstName: {firstName},
+			  | lastName: {lastName},
+			  | email: {email},
+			  | password: {password},
+			  | created: timestamp()
+			  |})
+			""".stripMargin
 		).on(
 			"username" -> username,
 			"firstName" -> firstName,
 			"lastName" -> lastName,
 			"email" -> email.toLowerCase,
-			"password" -> password,
-			"invitationCode" -> invitationCode
+			"password" -> password
 		).execute()
 	}
 
-	def findAll: Seq[Inkler] = {
-		Cypher(
-			"""
-				select * from inkler
-			"""
-		).as(simple *)
-	}
-
 	def find(id: Long): Option[Inkler] = {
+		log("find", Map("id" -> id))
+
 		Cypher(
-			"""
-				select * from inkler
-				where inkler.id = {id}
-			"""
+			s"""
+			  |START inkler = node({id})
+			  |RETURN ${simpleReturn()}
+			""".stripMargin
 		).on(
 			"id" -> id
 		).as(simple.singleOpt)
 	}
 
 	def findByUsername(username: String): Option[Inkler] = {
+		log("findByUsername", Map("username" -> username))
+
 		val id = findIdByUsername(username).get
 		find(id)
 	}
 
 	def findIdByUsername(username: String): Option[Long] = {
+		log("findIdByUsername", Map("username" -> username))
+
 		Cypher(
-			"""
-				select inkler.id from inkler
-				where inkler.username = {username}
-			"""
+			s"""
+			  |MATCH (inkler:Inkler)
+			  |WHERE inkler.username = {username}
+			  |RETURN ${simpleReturn()}
+			""".stripMargin
 		).on(
 			"username" -> username
 		).as(scalar[Long].singleOpt)
 	}
 
 	def findUsernameById(id: Long): Option[String] = {
+		log("findUsernameById", Map("id" -> id))
+
 		Cypher(
 			"""
-				select inkler.username
-				from inkler
-				where inkler.id = {id}
-			"""
+			  |START inkler = node({id})
+			  |RETURN inkler.username
+			""".stripMargin
 		).on(
 			"id" -> id
 		).as(scalar[String].singleOpt)
 	}
 
 	def findUsernameByUsernameOrEmail(usernameOrEmail: String): String = {
+		log("findUsernameByUsernameOrEmail", Map("usernameOrEmail" -> usernameOrEmail))
+
 		Cypher(
 			"""
-				select inkler.username
-				from inkler
-				where
-				inkler.username = {usernameOrEmail} or inkler.email = {usernameOrEmail}
-			"""
+			  |MATCH (inkler:Inkler)
+			  |WHERE inkler.username = {usernameOrEmail} or
+			  |inkler.email = {usernameOrEmail}
+			  |RETURN inkler.username
+			""".stripMargin
 		).on(
 			"usernameOrEmail" -> usernameOrEmail
 		).as(scalar[String].single)
 	}
 
 	def usernameExists(username: String): Boolean = {
+		log("usernameExists", Map("username" -> username))
+
 		Cypher(
 			"""
-				select count(inkler.id) = 1
-				from inkler
-				where inkler.username = {username}
-			"""
+			  |MATCH (inkler:Inkler)
+			  |WHERE inkler.username = {username}
+			  |RETURN count(inkler)
+			""".stripMargin
 		).on(
 			"username" -> username
-		).as(scalar[Boolean].single)
+		).as(scalar[Int].single) != 0
 	}
 
 	def emailExists(email: String): Boolean = {
+		log("emailExists", Map("email" -> email))
+
 		Cypher(
 			"""
-				select count(inkler.id) = 1
-				from inkler
-				where inkler.email = {email}
-			"""
+			  |MATCH (inkler:Inkler)
+			  |WHERE inkler.email = {email}
+			  |RETURN count(inkler)
+			""".stripMargin
 		).on(
 			"email" -> email
-		).as(scalar[Boolean].single)
+		).as(scalar[Int].single) != 0
 	}
 }

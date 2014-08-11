@@ -174,9 +174,8 @@
 						} else {
 							followers
 						}
-						.
-						 @(box._1.maxR/2)
-						@if(box._1.maxR/2 == 1) {
+						. >> number of inkles here <<
+						@if(false /** number of inkles == 1 **/) {
 							inkle
 						} else {
 							inkles
@@ -213,7 +212,7 @@
 	</div>
 
 	<div id="content">
-		@if(inkles.total < 40) {
+		@if(inkles.items.size < 10) {
 			<div class="box-suggestions">
 				<h2>Popular boxes to follow:</h2>
 				@Box.suggestPopular(currentInkler.id, 9).map { box =>
@@ -231,9 +230,8 @@
 								} else {
 									followers
 								}
-								.
-							   @(box._1.maxR/2)
-								@if(box._1.maxR/2 == 1) {
+								. >> number of inkles here <<
+								@if(false /** number of inkles == 1**/ ) {
 									inkle
 								} else {
 									inkles
@@ -279,7 +277,7 @@
 					@defining(randomHandle.nextInt(10000)) { stackId =>
 						<div class="stack" id="page-@inkles.page-stack-@stackId-inkle-@inkle._1.id-stack">
 							<div class="stack-box">
-								into @Inkler.findUsernameById(inkle._3.createdBy)'s <a href="/boxes/@inkle._3.id">@inkle._3.name</a>
+								into @Inkler.findUsernameById(inkle._3.owner)'s <a href="/boxes/@inkle._3.id">@inkle._3.name</a>
 								@if(inkle._3.secret == true) {
 									<img src="@routes.Assets.at("images/key.png")">
 								} else {
