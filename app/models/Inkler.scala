@@ -93,8 +93,14 @@ object Inkler {
 	def findByUsername(username: String): Option[Inkler] = {
 		log("findByUsername", Map("username" -> username))
 
-		val id = findIdByUsername(username).get
-		find(id)
+		Cypher(
+			s"""
+				|MATCH (inkler:Inkler {username: {username}})
+			  |RETURN ${simpleReturn()}
+			""".stripMargin
+		).on(
+		  "username" -> username
+		).as(simple.singleOpt)
 	}
 
 	def findIdByUsername(username: String): Option[Long] = {
