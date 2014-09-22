@@ -8,8 +8,6 @@ import scala.concurrent.Future
 
 import tools.Loggers._
 
-import org.apache.commons.lang3.RandomStringUtils._
-
 object Global extends GlobalSettings {
 
 	private def log(log: String, params: Map[String, Any] = Map()) = {
@@ -19,32 +17,21 @@ object Global extends GlobalSettings {
 	override def onStart(app: Application) = {
 		log("onStart", Map("app" -> app))
 
-		if (play.Play.isProd) {
-			Neo4jREST.setServer(
-				"inklin.sb02.stations.graphenedb.com",
-				24789,
-				"/db/data/",
-				"inklin",
-				"ycazBrL2WBSLiggnTSMR",
-				"ext/CypherPlugin/graphdb/execute_query"
-			)
-		} else {
-			Neo4jREST.setServer(
-				"localhost",
-				7474,
-				"/db/data/",
-				"",
-				"",
-				"ext/CypherPlugin/graphdb/execute_query"
-			)
-		}
+		Neo4jREST.setServer(
+			"inklin.sb02.stations.graphenedb.com",
+			24789,
+			"/db/data/",
+			"inklin",
+			"ycazBrL2WBSLiggnTSMR",
+			"ext/CypherPlugin/graphdb/execute_query"
+		)
 	}
 
 	override def onRequestCompletion(request: RequestHeader) {
 		log("onRequestCompletion: [" + request.method + "] " + request.path)
 	}
 
-	override def onHandlerNotFound(request: RequestHeader): Future[play.api.mvc.SimpleResult] = {
+	override def onHandlerNotFound(request: RequestHeader): Future[play.api.mvc.Result] = {
 		log("onHandlerNotFound: [" + request.method + "] " + request.path)
 
 		tools.Email.send(

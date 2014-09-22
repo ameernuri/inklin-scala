@@ -1,0 +1,21 @@
+{
+"manifest_version": 2,
+"name": "Inklin",
+"description": "Capture, play with them and share ideas that pop into your mind.",
+"version": "1.0",
+"icons": {
+"128": "128.png"
+},
+"app": {
+"urls": [
+"http://inklin.herokuapp.com"
+],
+"launch": {
+"web_url": "http://inklin.herokuapp.com"
+}
+},
+"permissions": [
+"unlimitedStorage",
+"notifications"
+]
+}
