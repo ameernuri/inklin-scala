@@ -6,6 +6,8 @@ import play.api.mvc._
 import play.api.mvc.Results._
 import scala.concurrent.Future
 
+import play.Play._
+
 import tools.Loggers._
 
 object Global extends GlobalSettings {
@@ -17,14 +19,25 @@ object Global extends GlobalSettings {
 	override def onStart(app: Application) = {
 		log("onStart", Map("app" -> app))
 
-		Neo4jREST.setServer(
-			"inklin.sb02.stations.graphenedb.com",
-			24789,
-			"/db/data/",
-			"inklin",
-			"ycazBrL2WBSLiggnTSMR",
-			"ext/CypherPlugin/graphdb/execute_query"
-		)
+		if (isProd) {
+			Neo4jREST.setServer(
+				"inklin.sb02.stations.graphenedb.com",
+				24789,
+				"/db/data/",
+				"inklin",
+				"ycazBrL2WBSLiggnTSMR",
+				"ext/CypherPlugin/graphdb/execute_query"
+			)
+		} else {
+			Neo4jREST.setServer(
+				"localhost",
+				7474,
+				"/db/data/",
+				"",
+				"",
+				"ext/CypherPlugin/graphdb/execute_query"
+			)
+		}
 	}
 
 	override def onRequestCompletion(request: RequestHeader) {

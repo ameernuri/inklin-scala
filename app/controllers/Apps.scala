@@ -39,4 +39,16 @@ object Apps extends Controller with Guard {
 		  Ok(html.landing(Inklers.signinForm, Inklers.signupForm))
 	  }
   }
+
+	def newHome = Action { implicit r =>
+		log("newHome")
+
+		Ok(html.newHome())
+	}
+
+	def inkle = Action { implicit r =>
+		log("inkle")
+
+		Ok(html.newInkle())
+	}
 }

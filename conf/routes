@@ -1,7 +1,9 @@
 # Routes
 
 # Home page
-GET         /                                     controllers.Apps.home()
+GET         /                                     controllers.Apps.newHome()
+GET         /new-inkle                            controllers.Apps.inkle()
+GET         /home                                 controllers.Apps.home()
 
 # Box follows
 GET         /boxes/follows                        controllers.Boxes.follows
