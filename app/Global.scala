@@ -8,7 +8,7 @@ import scala.concurrent.Future
 
 import play.Play._
 
-import tools.Loggers._
+import monkeys.Loggers._
 
 object Global extends GlobalSettings {
 
@@ -47,7 +47,7 @@ object Global extends GlobalSettings {
 	override def onHandlerNotFound(request: RequestHeader): Future[play.api.mvc.Result] = {
 		log("onHandlerNotFound: [" + request.method + "] " + request.path)
 
-		tools.Email.send(
+		monkeys.Email.send(
 			">> HANDLER NOT FOUND",
 			s"""
 			  |<b>session email:</b> ${request.session.get("email").getOrElse("NONE")} <br>

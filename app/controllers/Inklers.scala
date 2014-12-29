@@ -7,7 +7,7 @@ import play.api.data.Forms._
 import models._
 import views._
 import security._
-import tools.Loggers._
+import monkeys.Loggers._
 
 object Inklers extends Controller with Guard {
 
@@ -16,8 +16,7 @@ object Inklers extends Controller with Guard {
 	val signupForm = Form(
 		tuple(
 			"username"        -> nonEmptyText(maxLength = 12).verifying("The username is taken", username => !Inkler.usernameExists(username)),
-			"firstName"       -> nonEmptyText,
-			"lastName"        -> nonEmptyText,
+			"name"        -> nonEmptyText,
 			"email"           -> email.verifying("The email address is already in use", email => !Inkler.emailExists(email)),
 			"password"        -> text(minLength = 8)
 		)
@@ -44,16 +43,16 @@ object Inklers extends Controller with Guard {
 		signupForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(html.inkler.signup(formWithErrors)),
 			inkler => {
-				Inkler.create(inkler._1, inkler._2, inkler._3, inkler._4, inkler._5)
+				Inkler.create(inkler._1, inkler._2, inkler._3, inkler._4)
 				Redirect(routes.Apps.home()).withSession("username" -> inkler._1)
 			}
 		)
 	}
 
-	def view(id: Long) = IsAuthenticated { username => _ =>
+	def view(uuid: String) = IsAuthenticated { username => _ =>
 		log("view")
 
-		Inkler.findUsernameById(id).map { viewedUsername =>
+		Inkler.findUsernameByUuid(uuid).map { viewedUsername =>
 			Redirect(routes.Inklers.viewByUsername(viewedUsername))
 		}.getOrElse(NotFound)
 	}
@@ -61,33 +60,19 @@ object Inklers extends Controller with Guard {
 	def viewByUsername(viewedInkler: String) = IsAuthenticated { username => _ =>
 		log("viewByUsername", Map("viewedInkler" -> viewedInkler))
 
-		Inkler.findIdByUsername(viewedInkler).map { viewedInklerId =>
-			val currentInklerId = Inkler.findIdByUsername(username).get
+		Inkler.findUuidByUsername(viewedInkler).map { viewedInklerUuid =>
+			val currentInklerUuid = Inkler.findUuidByUsername(username).get
 
-			val inkler: Inkler = Inkler.find(viewedInklerId).get
-			val currentInkler: Inkler = Inkler.find(currentInklerId).get
+			val inkler: Inkler = Inkler.find(viewedInklerUuid).get
+			val currentInkler: Inkler = Inkler.find(currentInklerUuid).get
 
-			if (currentInklerId == viewedInklerId) {
+			if (currentInklerUuid == viewedInklerUuid) {
 				Ok(
-					html.inkler.view(
-						inkler,
-						currentInkler,
-						Box.findOwned(viewedInklerId),
-						Box.findSecret(viewedInklerId),
-						Box.findSecret(viewedInklerId),
-						Box.findSecret(viewedInklerId)
-					)
+					html.inkler.view()
 				)
 			} else {
 				Ok(
-					html.inkler.view(
-						inkler,
-						currentInkler,
-						Box.findOwned(viewedInklerId),
-						Box.findNonInvitedByOwner(currentInklerId, viewedInklerId),
-						Box.findInvitedByOwner(currentInklerId, viewedInklerId),
-						Box.findInvitedByOwner(viewedInklerId, currentInklerId)
-					)
+					html.inkler.view()
 				)
 			}
 		}.getOrElse(NotFound)

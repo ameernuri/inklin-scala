@@ -1,65 +1,46 @@
-@(signupForm: Form[(String, String, String, String, String)])
+@(signupForm: Form[(String, String, String, String)])
 
 
 @secondary("Inklin : Sign up") {
 
-	@helper.form(routes.Inklers.create) {
+	@helper.form(routes.Inklers.create()) {
 		<div id="signin-page-form">
+			<h2>Sign up</h2>
 			<table>
-				<h2>Sign up</h2>
 				<tr>
-					<td>
 					@helper.inputText(
-						signupForm("firstName"),
+						signupForm("name"),
 						'_label             -> None,
 						'_showConstraints   -> false,
-						'placeholder        -> "First name",
-						'id                 -> "first-name"
+						'placeholder        -> "Your name"
 					)
-					</td>
-
-					<td>
-					@helper.inputText(
-						signupForm("lastName"),
-						'_label             -> None,
-						'_showConstraints   -> false,
-						'placeholder        -> "Last name",
-						'id                 -> "last-name"
-					)
-					</td>
 				</tr>
 
 				<tr>
-					<td colspan="2">
 					@helper.inputText(
 						signupForm("email"),
 						'_label             -> None,
 						'_showConstraints   -> false,
-						'placeholder        -> "Email"
+						'placeholder        -> "you@email.com"
 					)
-					</td>
 				</tr>
 
 				<tr>
-					<td colspan="2">
 					@helper.inputText(
 						signupForm("username"),
 						'_label             -> None,
 						'_showConstraints   -> false,
-						'placeholder        -> "Username"
+						'placeholder        -> "Select username"
 					)
-					</td>
 				</tr>
 
 				<tr>
-					<td colspan="2">
 					@helper.inputPassword(
 						signupForm("password"),
 						'_label             -> None,
 						'_showConstraints   -> false,
-						'placeholder        -> "Password"
+						'placeholder        -> "New password"
 					)
-					</td>
 				</tr>
 			</table>
 			<input type="submit" value="Sign up">

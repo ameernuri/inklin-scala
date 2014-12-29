@@ -6,49 +6,24 @@ import models._
 import views._
 
 import security._
-import tools.Loggers._
+import monkeys.Loggers._
 
 object Apps extends Controller with Guard {
 
 	private def log(log: String, params: Map[String, Any] = Map()) = {
 		controllerLogger("Apps", log, params)
 	}
-  
-  def home = Action { implicit r =>
-	  log("home")
 
-	  if (userOpt.isDefined) {
 
-		  val inklerId = user.id
-		  val inkler = user
+	def home = Action { implicit r =>
+		log("home")
 
-		  val inkles = Inkle.findFollowed(inklerId)
-
-		  Ok(
-			  html.index(
-				  inkles,
-				  Box.findOwned(inklerId),
-				  Box.findSecret(inklerId),
-				  Box.findInvited(inklerId),
-				  Box.findFollowed(inklerId),
-				  inkler
-			  )
-		  )
-
-	  } else {
-		  Ok(html.landing(Inklers.signinForm, Inklers.signupForm))
-	  }
-  }
-
-	def newHome = Action { implicit r =>
-		log("newHome")
-
-		Ok(html.newHome())
+		Ok(html.home())
 	}
 
 	def inkle = Action { implicit r =>
 		log("inkle")
 
-		Ok(html.newInkle())
+		Ok(html.inkle.inkle())
 	}
 }

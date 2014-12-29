@@ -1,9 +1,9 @@
-package tools
+package monkeys
 
 import com.typesafe.plugin._
 import play.api.Play.current
 import play.api.templates.Html
-import tools.Loggers._
+import monkeys.Loggers._
 import play.libs.Akka
 import scala.concurrent.duration._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext

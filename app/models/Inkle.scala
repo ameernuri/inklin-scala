@@ -1,9 +1,11 @@
 package models
 
+
 import org.anormcypher._
 import org.anormcypher.CypherParser._
 import java.util.Date
-import tools.Loggers._
+import java.util.UUID._
+import monkeys.Loggers._
 import org.anormcypher.~
 
 case class Page[A](items: Seq[A], page: Int, offset: Long) {
@@ -12,11 +14,10 @@ case class Page[A](items: Seq[A], page: Int, offset: Long) {
 }
 
 case class Inkle(
-	id: Long,
-	owner: Long,
+	uuid: String,
+	owner: String,
 	inkle: String,
-	boxId: Long,
-	parentId: Option[Long],
+	parentUuid: Option[String],
 	created: Date
 )
 
@@ -25,259 +26,176 @@ object Inkle {
 	private def log(log: String, params: Map[String, Any] = Map()) = modelLogger("Inkle", log, params)
 	
 	val simple = {
-		get[Long]("inkleId") ~
-		get[Long]("inkleOwnerId") ~
+		get[String]("inkleUuid") ~
+		get[String]("inkleOwnerUuid") ~
 		get[String]("inkle.inkle") ~
-		get[Long]("inkleBoxId") ~
-		get[Option[Long]]("inkleParentId") ~
+		get[Option[String]]("inkleParentUuid") ~
 		get[Long]("inkle.created") map {
-			case id ~ owner ~ inkle ~ boxId ~ parentId ~ created =>
-				Inkle(id, owner, inkle, boxId, parentId, new Date(created))
+			case id ~ owner ~ inkle ~ parentUuid ~ created =>
+				Inkle(id, owner, inkle, parentUuid, new Date(created))
 		}
 	}
 
-	def simpleReturn(inkle: String = "inkle", inkler: String = "inkler", box: String = "box", parent: String = "parent"): String = {
+	def simpleReturn(inkle: String = "inkle", inkler: String = "inkler", parent: String = "parent"): String = {
 		s"""
-		  |id($inkle) as inkleId, id($inkler) as inkleOwnerId, $inkle.inkle,
-		  |id($box) as inkleBoxId, id($parent) as inkleParentId, $inkle.created
+		  |$inkle.uuid as inkleUuid, $inkler.uuid as inkleOwnerUuid, $inkle.inkle,
+		  |$parent.uuid as inkleParentUuid, $inkle.created
 		""".stripMargin
 	}
 
-	val withConnected = Inkle.simple ~ Inkler.simple ~ Box.simple map {
-		case inkle ~ inkler ~ box => (inkle, inkler, box)
+	val withConnected = Inkle.simple ~ Inkler.simple map {
+		case inkle ~ inkler => (inkle, inkler)
 	}
 
 	val inkleParser = Inkle.simple ~ Inkle.simple map {
 		case inkle ~ child => (inkle, child)
 	}
 
-	def create(inklerId: Long, box: Long, parentId: Option[Long], inkle: String): Long = {
+	def create(inklerUuid: String, parentUuid: Option[String], inkle: String): String = {
 		log("create", Map(
-			"inklerId" -> inklerId,
-			"box" -> box,
-			"parentId" -> parentId,
+			"inklerUuid" -> inklerUuid,
+			"parentUuid" -> parentUuid,
 			"inkle" -> inkle
 		))
 
-		val parentQuery = if(parentId.isDefined) {
-			"(inkle)-[:has_parent]->(parent), (inkle)-[:is_dependent_on]->(box),"
+		val parentQuery = if(parentUuid.isDefined) {
+			", (inkle)-[:has_parent]->(parent)"
 		} else { "" }
 
-		val parentNode = if(parentId.isDefined) { ", parent = node({parentId})" } else { "" }
+		val parentNode = if(parentUuid.isDefined) { ", (parent:Inkle {uuid: {parentUuid}})" } else { "" }
 
 		val cypher =
 			s"""
-			  |START inkler = node({inklerId}), box = node({boxId})
+			  |MATCH (inkler:Inkler {uuid: {inklerUuid}})
 			  |$parentNode
 			  |CREATE (inkle:Inkle {
+				| uuid: "$randomUUID",
 			  | inkle: {inkle},
 			  | created: timestamp()
-			  |})-[:added_into]->(box),
-			  |(inkler)-[:owns_inkle]->(inkle),
-			  |$parentQuery
-			  |(inkle)-[:is_dependent_on]->(inkler),
-			  |(inkle)-[:is_dependent_on]->(box)
-			  |RETURN id(inkle)
+			  |}),
+			  |(inkler)-[:owns_inkle]->(inkle)
+			  |$parentQuery,
+			  |(inkle)-[:is_dependent_on]->(inkler)
+			  |RETURN inkle.uuid
 			""".stripMargin
 
-		if (parentId.isDefined) {
+		if (parentUuid.isDefined) {
 			Cypher(cypher).on(
-			  "inklerId" -> inklerId,
+			  "inklerUuid" -> inklerUuid,
 			  "inkle" -> inkle,
-			  "boxId" -> box,
-			  "parentId" -> parentId.get
-			).as(scalar[Long].single)
+			  "parentUuid" -> parentUuid.get
+			).as(scalar[String].single)
 
 		} else {
 			Cypher(cypher).on(
-			  "inklerId" -> inklerId,
-			  "inkle" -> inkle,
-			  "boxId" -> box
-			).as(scalar[Long].single)
+			  "inklerUuid" -> inklerUuid,
+			  "inkle" -> inkle
+			).as(scalar[String].single)
 		}
 	}
 
-	def fetchPage(page: Int = 0, pageSize: Int = 10): Page[(Inkle, Inkler, Box)] = {
+	def fetchPage(page: Int = 0, pageSize: Int = 10): Page[(Inkle, Inkler)] = {
 		log("fetchPage", Map("page" -> page, "pageSize" -> pageSize))
 
 		val offset = page * pageSize
 
 		val inkles = Cypher(
 			s"""
-			  |MATCH (inkle:Inkle)-[:added_into]->(box),
-			  |(inkle)-[:has_parent]->(parent),
-			  |(inkler)-[:owns_inkle]->(inkle),
-			  |(boxOwner)-[:owns_box]->(box)
-			  |WHERE box.secret = false
-			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()},
-			  |${Box.simpleReturn(owner = "boxOwner")}
+			  |MATCH (inkler:Inkler)-[:owns_inkle]->(inkle:Inkle)
+				|WITH inkle, inkler
+				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent:Inkle)
+			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()}
 				|ORDER BY inkle.created desc
-				|LIMIT {pageSize}
 				|SKIP {offset}
+				|LIMIT {pageSize}
 			""".stripMargin
 		).on(
 			"pageSize" -> pageSize,
 			"offset" -> offset
-		).as(withConnected *)
+		).as(withConnected.*)
 
 		Page(inkles, page, offset)
 	}
 
-	def findChildren(parentId: Long): Seq[(Inkle, Inkler, Box)] = {
-		log("findChildren", Map("parentId" -> parentId))
+	def findChildren(parentUuid: String): Seq[(Inkle, Inkler)] = {
+		log("findChildren", Map("parentUuid" -> parentUuid))
 
 		Cypher(
 			s"""
-			  |START parent = node({parentId})
-			  |MATCH (inkle)-[:has_parent]->(parent),
-			  |(inkle)-[:added_into]->(box),
-			  |(inkler)-[:owns_inkle]->(inkle),
-			  |(boxOwner)-[:owns_box]->(box)
+			  |MATCH (inkle)-[:has_parent]->(parent {uuid: {parentUuid}}),
+			  |(inkler)-[:owns_inkle]->(inkle)
 			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()},
-			  |${Box.simpleReturn(owner = "boxOwner")}
 			""".stripMargin
 		).on(
-			"parentId" -> parentId
-		).as(withConnected *)
+			"parentUuid" -> parentUuid
+		).as(withConnected.*)
 	}
 
-	def getParent(id: Long): (Inkle, Inkler, Box) = {
-		log("getParent", Map("id" -> id))
+	def getParent(uuid: String): (Inkle, Inkler) = {
+		log("getParent", Map("uuid" -> uuid))
 
 		Cypher(
 			s"""
-			  |START child = node({childId})
-			  |MATCH (child)-[:has_parent]->(inkle:Inkle),
+			  |MATCH (child {uuid: {childUuid}})-[:has_parent]->(inkle:Inkle),
 			  |(inkle)-[:has_parent]->(parent),
-			  |(inkle)-[:added_into]->(box),
-			  |(inkler)-[:owns_inkle]->(inkle),
-			  |(boxOwner)-[:owns_box]->(box)
+			  |(inkler)-[:owns_inkle]->(inkle)
 			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()},
-			  |${Box.simpleReturn(owner = "boxOwner")}
 			""".stripMargin
 		).on(
-			"childId" -> id
+			"childUuid" -> uuid
 		).as(withConnected.single)
 	}
 
-	def childrenCount(id: Long): Long = {
-		log("childrenCount", Map("id" -> id))
+	def childrenCount(uuid: String): Long = {
+		log("childrenCount", Map("uuid" -> uuid))
 
 		Cypher(
 			"""
-			  |START parent = node({parentId})
-			  |MATCH (inkle:Inkle)-[:has_parent]->(parent)
+			  |MATCH (inkle:Inkle)-[:has_parent]->(parent {uuid: {parentUuid}})
 			  |RETURN count(DISTINCT inkle) as count
 			""".stripMargin
 		).on(
-			"parentId" -> id
-		).as(scalar[Long] single)
+			"parentUuid" -> uuid
+		).as(scalar[Long].single)
 	}
 
-	def find(id: Long): (Inkle, Inkler, Box) = {
-		log("find", Map("id" -> id))
+	def find(uuid: String): (Inkle, Inkler) = {
+		log("find", Map("uuid" -> uuid))
 
 		Cypher(
 			s"""
-			  |START inkle = node({inkleId})
-			  |MATCH (inkle)-[:added_into]->(box),
-			  |(inkler)-[:owns_inkle]->(inkle),
-			  |(boxOwner)-[:owns_box]->(box)
-			  |WITH inkle, box, inkler, boxOwner
+			  |MATCH (inkler)-[:owns_inkle]->(inkle:Inkle {uuid: {inkleUuid}})
+			  |WITH inkle, inkler
 			  |OPTIONAL MATCH (inkle)-[:has_parent]->(parent)
-			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()},
-			  |${Box.simpleReturn(owner = "boxOwner")}
+			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()}
 			""".stripMargin
 		).on(
-			"inkleId" -> id
+			"inkleUuid" -> uuid
 		).as(withConnected.single)
 	}
 
-	def findBoxId(id: Long): Long = {
-		log("findBoxId", Map("id" -> id))
-
-		Cypher(
-			"""
-			  |START inkle = node({inkleId})
-			  |MATCH (inkle)-[:added_into]->(box)
-			  |RETURN id(box) as boxId
-			""".stripMargin
-		).on(
-			"inkleId" -> id
-		).as(scalar[Long] single)
-	}
-
-	def findFollowed(inklerId: Long, page: Int = 0, pageSize: Int = 10): Page[(Inkle, Inkler, Box)] = {
-		log("findFollowed", Map("inklerId" -> inklerId, "page" -> page, "pageSize" -> pageSize))
+	def findFollowed(inklerUuid: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, Inkler)] = {
+		log("findFollowed", Map("inklerUuid" -> inklerUuid, "page" -> page, "pageSize" -> pageSize))
 
 		val offset = page * pageSize
 
 		val inkles = Cypher(
 			s"""
-				|START follower = node({followerId})
-			  |MATCH (inkle:Inkle)-[:added_into]->(box),
-			  |(inkler)-[:owns_inkle]->(inkle),
-			  |(boxOwner)-[:owns_box]->(box)
-			  |WITH follower, inkle, box, inkler, boxOwner
+			  |MATCH (follower:Inkler {uuid: {followerUuid}}),
+				|(inkler)-[:owns_inkle]->(inkle)
+			  |WITH follower, inkle, inkler
 			  |OPTIONAL MATCH (inkle)-[:has_parent]->(parent)
-			  |WHERE (
-			  | (follower)-[:has_followed]->(box)
-			  |)
 			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()},
-			  |${Box.simpleReturn(owner = "boxOwner")}
 			  |ORDER BY inkle.created desc
 			  |SKIP {offset}
 			  |LIMIT {pageSize}
 			""".stripMargin
 		).on(
-			"followerId" -> inklerId,
+			"followerUuid" -> inklerUuid,
 			"pageSize" -> pageSize,
 			"offset" -> offset
-		).as(withConnected *)
+		).as(withConnected.*)
 
 		Page(inkles, page, offset)
-	}
-
-	def findByBox(boxId: Long, page: Int = 0, pageSize: Int = 10): Page[(Inkle, Inkler, Box)] = {
-		log("findByBox", Map("boxId" -> boxId, "page" -> page, "pageSize" -> pageSize))
-
-		val offset = page * pageSize
-
-		val inkles = Cypher(
-			s"""
-			  |START box = node({boxId})
-			  |MATCH (inkle:Inkle)-[:added_into]->(box),
-			  |(inkler)-[:owns_inkle]->(inkle),
-			  |(boxOwner)-[:owns_box]->(box)
-			  |WITH box, inkle, inkler, boxOwner
-			  |OPTIONAL MATCH (inkle)-[:has_parent]->(parent)
-			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()},
-			  |${Box.simpleReturn(owner = "boxOwner")}
-			  |ORDER BY inkle.created desc
-			  |SKIP {offset}
-			  |LIMIT {pageSize}
-			""".stripMargin
-		).on(
-			"boxId" -> boxId,
-			"pageSize" -> pageSize,
-			"offset" -> offset
-		).as(withConnected *)
-
-		Page(inkles, page, offset)
-	}
-
-	def isInBox(inkle: Long, box: Long): Boolean = {
-		log("isInBox", Map("inkle" -> inkle, "box" -> box))
-
-		Cypher(
-			"""
-			  |START inkle = node({inkle}), box = node({box})
-			  |MATCH (inkle)-[inBox:added_into]->(box)
-			  |RETURN count(inBox) as count
-			""".stripMargin
-		).on(
-			"inkle" -> inkle,
-			"box" -> box
-		).as(scalar[Int].single) != 0
 	}
 }

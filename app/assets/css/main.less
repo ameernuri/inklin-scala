@@ -1,0 +1,39 @@
+
+@content-width: 500px;
+@light-gray: #DFDFDF;
+@lightest-gray: #F2F2F2;
+@inklin-main: #97C111;
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	color: #333333;
+	font-family: "arial", sans-serif, helvetica;
+	font-size: 13px;
+}
+
+a, a:visited {
+	color: #888888;
+	font-weight: bold;
+	text-decoration: none;
+
+	&:hover {
+		color: #4455CC;
+	}
+}
+
+input[type=text], textarea {
+	border: 1px solid @light-gray;
+	font-family: "arial", sans-serif, helvetica;
+	font-size: 12px;
+	margin: 5px;
+	padding: 5px;
+
+	&:focus {
+		outline: none;
+		border-color: @inklin-main;
+	}
+}

@@ -1,6 +1,6 @@
-package tools
+package monkeys
 
-import tools.Loggers._
+import monkeys.Loggers._
 
 object Inklers {
 
@@ -9,11 +9,11 @@ object Inklers {
 	/**
 	 * get the inklin address of the inkler
 	 *
-	 * @param id id of the inkler
+	 * @param uuid uuid of the inkler
 	 * @return
 	 */
-	def getAddress(id: Long): String = {
-    log("getAddress", Map("id" -> id))
+	def getAddress(uuid: String): String = {
+    log("getAddress", Map("uuid" -> uuid))
 
 		""
 	}
@@ -25,7 +25,7 @@ object Inklers {
 	 * @return
 	 */
 	def getAddress(inkler: models.Inkler): String = {
-    log("getAddress", Map("inkler" -> inkler.id))
+    log("getAddress", Map("inkler" -> inkler.uuid))
 
 		""
 	}

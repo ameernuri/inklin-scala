@@ -1,6 +1,6 @@
-package tools
+package monkeys
 
-import tools.Loggers._
+import monkeys.Loggers._
 
 object CronJobs {
 

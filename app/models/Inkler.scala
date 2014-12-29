@@ -1,30 +1,31 @@
 package models
 
+import java.util.UUID._
+
 import org.anormcypher._
 import org.anormcypher.CypherParser._
-import tools.Loggers._
+import monkeys.Loggers._
 
-case class Inkler(id: Long, username: String, firstName: String, lastName: String, email: String)
+case class Inkler(uuid: String, username: String, name: String, email: String)
 
 object Inkler {
 
 	private def log(log: String, params: Map[String, Any] = Map()) = modelLogger("Inkler", log, params)
 
 	val simple = {
-		get[Long]("inklerId") ~
+		get[String]("inkler.uuid") ~
 		get[String]("inkler.username") ~
-		get[String]("inkler.firstName") ~
-		get[String]("inkler.lastName") ~
+		get[String]("inkler.name") ~
 		get[String]("inkler.email")  map {
-			case id~username~firstName~lastName~email =>
-				Inkler(id, username, firstName, lastName, email)
+			case uuid~username~name~email =>
+				Inkler(uuid, username, name, email)
 		}
 	}
 
 	def simpleReturn(inkler: String = "inkler"): String = {
 		s"""
-		  |id($inkler) as inklerId, $inkler.username,
-		  |$inkler.firstName, $inkler.lastName, $inkler.email
+		  |$inkler.uuid, $inkler.username,
+		  |$inkler.name, $inkler.email
 		""".stripMargin
 	}
 
@@ -48,21 +49,20 @@ object Inkler {
 		).as(Inkler.simple.singleOpt)
 	}
 
-	def create(username: String, firstName: String, lastName: String, email: String, password: String) = {
+	def create(username: String, name: String, email: String, password: String) = {
 		log("create", Map(
 			"username" -> username,
-			"firstName" -> firstName,
-			"lastName" -> lastName,
+			"name" -> name,
 			"email" -> email,
 			"password" -> password
 		))
 
 		Cypher(
-			"""
+			s"""
 			  |CREATE (inkler:Inkler {
+        | uuid: "$randomUUID",
 			  | username: {username},
-			  | firstName: {firstName},
-			  | lastName: {lastName},
+			  | name: {name},
 			  | email: {email},
 			  | password: {password},
 			  | created: timestamp()
@@ -70,23 +70,22 @@ object Inkler {
 			""".stripMargin
 		).on(
 			"username" -> username,
-			"firstName" -> firstName,
-			"lastName" -> lastName,
+			"name" -> name,
 			"email" -> email.toLowerCase,
 			"password" -> password
 		).execute()
 	}
 
-	def find(id: Long): Option[Inkler] = {
-		log("find", Map("id" -> id))
+	def find(uuid: String): Option[Inkler] = {
+		log("find", Map("uuid" -> uuid))
 
 		Cypher(
 			s"""
-			  |START inkler = node({id})
+			  |MATCH (inkler:Inkler {uuid: {uuid}})
 			  |RETURN ${simpleReturn()}
 			""".stripMargin
 		).on(
-			"id" -> id
+			"uuid" -> uuid
 		).as(simple.singleOpt)
 	}
 
@@ -103,30 +102,30 @@ object Inkler {
 		).as(simple.singleOpt)
 	}
 
-	def findIdByUsername(username: String): Option[Long] = {
-		log("findIdByUsername", Map("username" -> username))
+	def findUuidByUsername(username: String): Option[String] = {
+		log("findUuidByUsername", Map("username" -> username))
 
 		Cypher(
 			s"""
 			  |MATCH (inkler:Inkler)
 			  |WHERE inkler.username = {username}
-			  |RETURN ${simpleReturn()}
+			  |RETURN inkler.uuid
 			""".stripMargin
 		).on(
 			"username" -> username
-		).as(scalar[Long].singleOpt)
+		).as(scalar[String].singleOpt)
 	}
 
-	def findUsernameById(id: Long): Option[String] = {
-		log("findUsernameById", Map("id" -> id))
+	def findUsernameByUuid(uuid: String): Option[String] = {
+		log("findUsernameByUuid", Map("uuid" -> uuid))
 
 		Cypher(
 			"""
-			  |START inkler = node({id})
+			  |MATCH (inkler:Inkler {uuid: {uuid}})
 			  |RETURN inkler.username
 			""".stripMargin
 		).on(
-			"id" -> id
+			"uuid" -> uuid
 		).as(scalar[String].singleOpt)
 	}
 

@@ -1,59 +1,24 @@
-@(title: String, inkler: Inkler)(content: Html)
+@(title: String)(content: Html)
 
 <!DOCTYPE html>
 
 <html>
 	<head>
 		<title>@title</title>
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/inkles.css")">
-		<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-		<script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/jquery.timeago.js")" type="text/javascript"></script>
-	</head>
-	<body>
-		<script>
-			jQuery(document).ready(function() {
-				jQuery("div.sibling-date").timeago();
-			});
-		</script>
-		<div id="header">
-			<div id="header-content">
-				<div id="header-logo">
-					<a href="@routes.Apps.home()">
-						<img src="@routes.Assets.at("images/logo.png")" alt="inklin">
-					</a>
-				</div>
+		<link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.min.css")">
 
-				<div id="header-links">
-					<a id="header-links-switch">
-						<div id="header-links-switch-avatar"></div>
-						<span id="header-links-switch-username">@inkler.username</span>
-					</a>
-
-					<div id="header-links-content" class="hidden">
-						<a href="@routes.Inklers.view(inkler.id)">
-							View profile
-						</a>
-
-						<a href="@routes.Inklers.signout()">
-							Sign out
-						</a>
-					</div>
-				</div>
-
-				<script>
-					$("#header-links-switch").click(function() {
-						$("#header-links-content").toggle();
-					});
-					$("#header-links-content").mouseleave(function() {
-						$("#header-links-content").hide();
-					});
-				</script>
+		<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
+		<script src="@routes.Assets.versioned("js/scripts.js")"></script>	</head>
+	<body style="background-color: #fefefe; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif">
+		<div>
+			<div style="text-align: center; padding: 20px;">
+				<img src="@routes.Assets.at("images/big_logo.png")">
+			</div>
+			<div style="margin-top: 120px;">
+				@content
 			</div>
 		</div>
-		<div id="container">
-			@content
-		</div>
+
 	</body>
 </html>
