@@ -33,8 +33,8 @@ object Global extends GlobalSettings {
 				"localhost",
 				7474,
 				"/db/data/",
-				"",
-				"",
+				"neo4j",
+				"ce6ae27b70cb37c3948eeee3afff7874",
 				"ext/CypherPlugin/graphdb/execute_query"
 			)
 		}

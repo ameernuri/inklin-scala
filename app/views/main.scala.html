@@ -4,20 +4,37 @@
 
 <html>
 	<head>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
 		<title>@title</title>
 		<link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.min.css")">
 
 		<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
-		<script src="@routes.Assets.versioned("js/scripts.js")"></script>	</head>
+		<script src="@routes.Assets.versioned("js/scripts.js")"></script>
+		<script src="@routes.Assets.versioned("js/my.js")"></script>
+	</head>
 	<body style="background-color: #fefefe; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif">
 		<div>
-			<div style="text-align: center; padding: 20px;">
-				<img src="@routes.Assets.at("images/big_logo.png")">
+			<div style="text-align: center; padding: 11px;position: fixed;width: 100%;top: 0;background-color: #fafafa;">
+				<img src="@routes.Assets.at("images/big_logo.png")" style="height: 30px;">
 			</div>
-			<div style="margin-top: 120px;">
+			<div style="margin: 106px auto 0; padding: 0 30px; max-width: 1200px;" class="main-container">
 				@content
 			</div>
+
+			<span style="display: none;padding-top : 155px;" class="too-small full-height">
+				<div style="font-size: 18px; text-align: center;padding: 15px; font-weight: 100; color: #888;">
+					Sorry, the screen size is too small. We're working on a mobile version and it should be available soon.
+					<br>
+					<br>
+					For now, please open the app on a desktop computer or a larger tablet.
+				</div>
+				<script>
+					fullHeight();
+				</script>
+			</span>
 		</div>
 
 	</body>

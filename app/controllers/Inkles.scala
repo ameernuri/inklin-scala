@@ -1,27 +1,32 @@
 package controllers
 
+import java.util.UUID
+
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.libs.json.Json._
 
 import models._
-import views._
+import views.html._
 import security._
 import monkeys.Loggers._
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
-import scala.Some
 
 object Inkles extends Controller with Guard {
 
 	private def log(log: String, params: Map[String, Any] = Map()) = controllerLogger("Inkles", log, params)
 
 	val inkleForm = Form(
-		"inkle" -> nonEmptyText(maxLength = 70)
+		"inkle" -> nonEmptyText(maxLength = 80)
 	)
 
-	def create = Action { implicit request =>
+	val editForm = Form(
+		"inkle" -> nonEmptyText(maxLength = 80)
+	)
+
+	def create(returnAs: String = "rendered") = Action { implicit request =>
 		log("create")
 
     userOpt.map { inkler =>
@@ -30,18 +35,24 @@ object Inkles extends Controller with Guard {
       {
         case (inkle) =>
           val uuid = Inkle.create(inkler.uuid, None, inkle)
-          val new_inkle = Inkle.find(uuid)
+          val newInkle = Inkle.find(uuid)
 
-          val json_inkle = obj(
-            "uuid" -> new_inkle._1.uuid,
-            "inkle" -> new_inkle._1.inkle,
-            "createdTime" -> new_inkle._1.created,
-            "inklerUuid" -> new_inkle._2.uuid,
-            "inklerUsername" -> new_inkle._2.username,
-            "childrenCount" -> Inkle.childrenCount(new_inkle._1.uuid)
-          )
+          if (returnAs == "rendered") {
 
-          Ok(json_inkle)
+            Ok(renderers.inkles.inkle(newInkle))
+          } else {
+
+            val json_inkle = obj(
+              "uuid" -> newInkle._1.uuid,
+              "inkle" -> newInkle._1.inkle,
+              "createdTime" -> newInkle._1.created,
+              "inklerUuid" -> newInkle._2.uuid,
+              "inklerUsername" -> newInkle._2.username,
+              "childrenCount" -> Inkle.childrenCount(newInkle._1.uuid)
+            )
+
+            Ok(json_inkle)
+          }
       }
       )
     }.getOrElse {
@@ -49,65 +60,76 @@ object Inkles extends Controller with Guard {
     }
 	}
 
-	def extend(parentUuid: String) = IsAuthenticated { username => implicit request =>
+	def extend(parentUuid: String, pageUuid: String, returnAs: String = "rendered") = IsAuthenticated { username => implicit request =>
 		log("extend", Map("parentUuid" -> parentUuid))
 
 		val inklerUuid = Inkler.findUuidByUsername(username).get
 
 		inkleForm.bindFromRequest.fold(
-			formWithErrors => Forbidden,
+			formWithErrors => BadRequest("something wrong with the data"),
 			{
 				case (inkle) =>
 				val uuid = Inkle.create(inklerUuid, Some(parentUuid), inkle)
-				val new_inkle = Inkle.find(uuid)
+				val newInkle = Inkle.find(uuid)
 
-				val json_inkle = obj(
-					"uuid" -> new_inkle._1.uuid,
-					"inkle" -> new_inkle._1.inkle,
-					"createdTime" -> new_inkle._1.created,
-					"inklerUuid" -> new_inkle._2.uuid,
-					"childrenCount" -> Inkle.childrenCount(new_inkle._1.uuid),
-					"inklerUsername" -> new_inkle._2.username
-				)
+        if (returnAs == "rendered") {
 
-				Ok(json_inkle)
+          Ok(renderers.inkles.extend(newInkle, pageUuid, UUID.randomUUID().toString))
+        } else {
+          val json_inkle = obj(
+            "uuid" -> newInkle._1.uuid,
+            "inkle" -> newInkle._1.inkle,
+            "createdTime" -> newInkle._1.created,
+            "inklerUuid" -> newInkle._2.uuid,
+            "childrenCount" -> Inkle.childrenCount(newInkle._1.uuid),
+            "inklerUsername" -> newInkle._2.username
+          )
+
+          Ok(json_inkle)
+        }
+			}
+		)
+	}
+
+	def edit(inkleUuid: String, pageUuid: String) = IsAuthenticated { username => implicit request =>
+		log("edit", Map("inkleUuid" -> inkleUuid))
+
+		editForm.bindFromRequest.fold(
+			formWithErrors => BadRequest("something wrong with the data"),
+			inkle => {
+				val editedInkle = Inkle.edit(inkleUuid, inkle)
+
+        Ok(renderers.inkles.central(pageUuid, editedInkle))
 			}
 		)
 	}
 
 	def getChildren(uuid: String) = Action {
-		log("getChildren", Map("uuid" -> uuid))
+    log("getChildren", Map("uuid" -> uuid))
 
-		val inkles = Inkle.findChildren(uuid)
+    val inkles = Inkle.findChildren(uuid)
 
-		val jsonInkles: JsArray = arr(
-			inkles.map { inkle =>
-				obj(
-					"uuid" -> inkle._1.uuid,
-					"inkle" -> inkle._1.inkle,
-					"createdTime" -> inkle._1.created,
-					"inklerUuid" -> inkle._2.uuid,
-					"childrenCount" -> Inkle.childrenCount(inkle._1.uuid),
-					"inklerUsername" -> inkle._2.username
-				)
-			}
-		)
+    val jsonInkles: JsArray = arr(
+      inkles.map { inkle =>
+        obj(
+          "uuid" -> inkle._1.uuid,
+          "inkle" -> inkle._1.inkle,
+          "createdTime" -> inkle._1.created,
+          "inklerUuid" -> inkle._2.uuid,
+          "childrenCount" -> Inkle.childrenCount(inkle._1.uuid),
+          "inklerUsername" -> inkle._2.username
+        )
+      }
+    )
 
-		Ok(jsonInkles)
-	}
-
-	def getInkle(uuid: String) = Action {
-		log("getInkle", Map("uuid" -> uuid))
-
-		val inkle = Inkle.find(uuid)
-		Ok(inkle._1.inkle)
-	}
+    Ok(jsonInkles)
+  }
 
 	def view(uuid: String) = IsAuthenticated { username => _ =>
 		log("view", Map("uuid" -> uuid))
 
 		Ok(
-			html.inkle.view()
+			inkle.view()
 		)
 	}
 
@@ -199,6 +221,16 @@ object Inkles extends Controller with Guard {
     )
 
     Ok(fetchedInkles)
+
+  }
+
+  def getInkle(uuid: String) = Action {
+	  log("getInkle", Map("uuid" -> uuid))
+
+    val inkle = Inkle.find(uuid)
+
+
+    Ok(renderers.inkles.inkle(inkle))
 
   }
 }

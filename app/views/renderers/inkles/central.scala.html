@@ -1,0 +1,43 @@
+@(pageUuid: String, inkle: (Inkle, Inkler))
+
+<div style="display: table; table-layout: fixed; width: 33%; float: left;" id="page-@pageUuid-@{inkle._1.uuid}-center-wrapper">
+  <div style="font-size: 30px; padding: 0 30px; display: table-cell; vertical-align: middle;" class="full-height">
+    <span style="color: #eee;">
+    @if(inkle._1.parentUuid.isDefined) { ••• } else { ◉ <br> }
+    </span>
+
+    <span id="page-@pageUuid-@{inkle._1.uuid}-inkle-text" style="overflow: auto;">
+      @inkle._1.inkle
+      <span style="display: none; color: #aaa; font-style: italic; cursor: pointer; font-size: 14px; vertical-align: middle;" id="page-@pageUuid-@{inkle._1.uuid}-edit-switch">edit</span>
+    </span>
+
+
+    <span id="page-@pageUuid-@{inkle._1.uuid}-edit-form-wrapper" style="display: none; font-size: 30px;">
+      @helper.form(routes.Inkles.edit(inkle._1.uuid, pageUuid), 'id -> s"page-$pageUuid-${inkle._1.uuid}-edit-form") {
+
+	      <textarea name="inkle" id="page-@pageUuid-@{inkle._1.uuid}-edit-textarea" style="font-size: 30px; width: 100%; text-align: center; margin: 0; border-radius: 8px; box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
+	      <input type="submit" value="•••" style="display: none;">
+      }
+    </span>
+
+    <div style="overflow: auto; border-radius: 8px;margin: 20px 5px 0;" id="@{inkle._1.uuid}-extend-form-wrapper">
+      <div style="text-align: center; width: 100%;padding: 10px 0;background: #fafafa;cursor: pointer;color: #aaa; font-size: 14px;" id="page-@pageUuid-@{inkle._1.uuid}-extend-switch">
+        •••<br>
+        extend this idea
+      </div>
+      <div style="display:none;" id="page-@pageUuid-@{inkle._1.uuid}-extend-form-div">
+      @helper.form(routes.Inkles.extend(inkle._1.uuid, pageUuid.toString), 'id -> s"page-$pageUuid-${inkle._1.uuid}-extend-form") {
+        <textarea id="page-@pageUuid-@{inkle._1.uuid}-extend-textarea" name="inkle" style="width: 100%; border: solid #fafafa; border-width: 0 1px 1px;border-radius: 0 0 8px 8px; font-size: 17px;padding: 15px 15px 3px; text-align: center;box-sizing: border-box;height: 60px;margin: 0; background-color: #fdfdfd;" maxlength="80" class="inkle-textarea" placeholder="how about..."></textarea>
+
+        <div style="float: right; display: none;">
+          <input type="submit" value="•••" style="font-size: 16px;color: #fff; border: none;padding: 6px 10px;margin-right: 8px;" id="page-@pageUuid-@{inkle._1.uuid}-extend-submit">
+        </div>
+      }
+      </div>
+
+      <script>
+      inkleActions('@pageUuid', '@inkle._1.uuid', '@routes.Inkles.extend(inkle._1.uuid, pageUuid.toString)', '@routes.Inkles.edit(inkle._1.uuid, pageUuid)');
+      </script>
+    </div>
+  </div>
+</div>

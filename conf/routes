@@ -5,11 +5,12 @@ GET         /new-inkle                        controllers.Apps.inkle()
 GET         /                                 controllers.Apps.home()
 GET         /home                             controllers.Apps.home()
 
-POST        /inkles/create                    controllers.Inkles.create
-POST        /inkles/extend/:parentUuid        controllers.Inkles.extend(parentUuid: String)
+POST        /inkles/create                    controllers.Inkles.create(returnAs: String ?= "rendered")
+POST        /inkles/extend/:parentUuid        controllers.Inkles.extend(parentUuid: String, pageUuid: String, returnAs: String ?= "rendered")
 GET         /inkles/:uuid                     controllers.Inkles.view(uuid: String)
-GET         /inkles/get_inkle/:uuid           controllers.Inkles.getInkle(uuid: String)
+POST        /inkles/get_inkle/:uuid           controllers.Inkles.getInkle(uuid: String)
 
+POST        /inkles/edit/:uuid                controllers.Inkles.edit(uuid: String, pageUuid: String)
 # Ajax fetchers
 POST        /inkles/fetch/:page               controllers.Inkles.fetchPage(page: Int)
 POST        /inkles/fetch_oops/:page          controllers.Inkles.fetchOopsPage(page: Int)

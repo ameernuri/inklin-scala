@@ -7,11 +7,15 @@
 * {
 	margin: 0;
 	padding: 0;
+
+	&:focus {
+		outline: none;
+	}
 }
 
 body {
 	color: #333333;
-	font-family: "arial", sans-serif, helvetica;
+	font-family: "Helvetica Neue", helvetica, "arial", sans-serif;
 	font-size: 13px;
 }
 
@@ -27,13 +31,70 @@ a, a:visited {
 
 input[type=text], textarea {
 	border: 1px solid @light-gray;
-	font-family: "arial", sans-serif, helvetica;
+	font-family: "Helvetica Neue", helvetica, "arial", sans-serif;
 	font-size: 12px;
 	margin: 5px;
 	padding: 5px;
+	font-weight: 200;
 
 	&:focus {
 		outline: none;
-		border-color: @inklin-main;
+	}
+}
+
+input[type=submit] {
+	&:hover {
+		background-color: @inklin-main;
+		cursor: pointer;
+	}
+}
+
+@media(max-width: 666px) {
+	.main-container {
+		display: none;
+	}
+
+	.too-small {
+		display: block !important;
+	}
+}
+
+@media(min-width: 666px) {
+	.too-small {
+		display: none;
+	}
+}
+
+@media(max-height: 400px) {
+	.main-container {
+		display: none;
+	}
+
+	.too-small {
+		display: block !important;
+	}
+}
+
+@media(min-height: 400px) {
+	.too-small {
+		display: none;
+	}
+}
+
+.inkle-textarea {
+	resize: none;
+}
+
+.child {
+	border: 1px solid #f8f8f8;
+	border-radius: 8px;
+
+	&:hover {
+		border-color: #ddd;
+		cursor: pointer;
+
+		.child-ellipsis {
+			color:red;
+		}
 	}
 }
