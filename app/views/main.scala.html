@@ -10,15 +10,38 @@
 		<title>@title</title>
 		<link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.min.css")">
+		<link href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))' rel='stylesheet'>
 
 		<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
 		<script src="@routes.Assets.versioned("js/scripts.js")"></script>
 		<script src="@routes.Assets.versioned("js/my.js")"></script>
 	</head>
 	<body style="background-color: #fefefe; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif">
+		<span class="loader" id="main-loader" style="position: fixed; top: 80px; right: 80px; z-index: 100;"></span>
+
 		<div>
-			<div style="text-align: center; padding: 11px;position: fixed;width: 100%;top: 0;background-color: #fafafa;">
-				<img src="@routes.Assets.at("images/big_logo.png")" style="height: 30px;">
+			<div style="text-align: center; padding: 11px 50px;position: fixed;width: 100%;top: 0;background-color: #fafafa;">
+				<a href="@routes.Apps.home()">
+					<img src="@routes.Assets.at("images/big_logo.png")" style="height: 30px;">
+				</a>
+
+				<div id="main-add-btn">
+					<a href="#" style="color: #888;margin-right: 70px;font-size: 30px;position: fixed;right: 0;top: 10px;
+					">
+						<span class="glyphicon glyphicon-plus pull-right"></span>
+					</a>
+				</div>
+				<script>
+				$('#main-add-btn').click(function() {
+
+					$('#inkle-textarea').focus();
+					$('html, body').animate({
+						scrollTop: 0
+					});
+
+					return false;
+				});
+				</script>
 			</div>
 			<div style="margin: 106px auto 0; padding: 0 30px; max-width: 1200px;" class="main-container">
 				@content
@@ -29,7 +52,7 @@
 					Sorry, the screen size is too small. We're working on a mobile version and it should be available soon.
 					<br>
 					<br>
-					For now, please open the app on a desktop computer or a larger tablet.
+					In the mean time, you can open the app on a desktop computer or a larger tablet and enjoy!
 				</div>
 				<script>
 					fullHeight();

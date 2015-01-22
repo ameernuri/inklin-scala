@@ -61,9 +61,6 @@ a img {
 }
 
 #header {
-	background-color: #FBFCFB;
-	border-bottom: 1px solid #DDDDDD;
-	margin: 0 0 20px;
 	width: 100%;
 }
 
@@ -155,20 +152,7 @@ a img {
 	float: right;
 }
 
-#signin-page-form {
-	background-color: #F2F0F0;
-	border: 1px solid #DDDDDD;
-	border-radius: 4px;
-	margin: 100px auto 0;
-	padding: 5px;
-	text-align: center;
-	width: 240px;
-}
-
 #landing-page-form {
-	background-color: #FBFBFA;
-	border: 1px solid #E5E5E5;
-	border-width: 1px 0;
 	margin: 0 auto;
 	padding: 5px;
 	text-align: center;
@@ -193,16 +177,38 @@ a img {
 	margin: -28px 0 0 50px;
 }
 
-input[type=text], input[type=password] {
-	width: 172px;
+input[type=text], input[type=password], input[type=submit] {
+	width: 230px;
+	padding: 10px 20px;
+	font-size: 15px;
+	margin: 0;
+	border: solid #eee;
+	border-width: 1px 1px 0;
+	border-radius: 0;
 }
 
-#signin-page-form table {
-	margin: 0 auto;
-}
+#signin-page-form, #signup-page-form  {
+	margin: 0 auto ;
+	padding: 5px;
+	text-align: center;
+	width: 240px;
 
-#first-name, #last-name {
-	width: 67px;
+	h2 {
+		font-weight: 100;
+		margin-bottom: 25px;
+	}
+
+	table {
+		margin: 0 auto;
+	}
+
+	dl {
+		margin: 0;
+	}
+
+	dt {
+		display: none;
+	}
 }
 
 #landing-invitation-message {

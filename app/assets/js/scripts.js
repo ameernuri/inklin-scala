@@ -3,6 +3,7 @@ var pageHeight = $(window).height() - headerHeight;
 var lastScrollTop = 0;
 var scrolling = false;
 
+
 function fullHeight() {
 
 	$('.full-height').css('height', pageHeight);
@@ -141,6 +142,8 @@ function addFormActions(addUrl) {
 
 	$('#home-inkle-form').submit(function() {
 		log('add');
+
+		$('#main-loader').show();
 		$.ajax({
 			url: addUrl,
 			data: $('#home-inkle-form').serialize(),
@@ -150,9 +153,13 @@ function addFormActions(addUrl) {
 				$('#inkle-textarea').val('');
 				fullHeight();
 				pageDown();
+
+				$('#main-loader').hide();
 			},
 			error: function(e) {
 				alert('ERROR: ' + e);
+
+				$('#main-loader').hide();
 			}
 		});
 
@@ -192,6 +199,9 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 	submitOnReturn('#page-'+ pageUuid +'-'+ uuid +'-edit-form', '#page-'+ pageUuid +'-'+ uuid +'-edit-textarea');
 
 	$('#page-'+ pageUuid +'-'+ uuid +'-edit-form').submit(function() {
+
+
+		$('#main-loader').show();
 		$.ajax({
 			url: editUrl,
 			type: "POST",
@@ -199,9 +209,13 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 			success: function (e) {
 				$('#page-'+ pageUuid +'-'+ uuid +'-center-wrapper').replaceWith(e);
 				fullHeight();
+
+				$('#main-loader').hide();
 			},
 			error: function () {
-				alert("ERROR: "+ e)
+				alert("ERROR: "+ e);
+
+				$('#main-loader').hide();
 			}
 		});
 
@@ -210,6 +224,8 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 
 	$('#page-'+ pageUuid +'-'+ uuid +'-extend-form').submit(function() {
 		log('extend');
+
+		$('#main-loader').show();
 		$.ajax({
 			url: extendUrl,
 			data: $('#page-'+ pageUuid +'-'+ uuid +'-extend-form').serialize(),
@@ -217,9 +233,13 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 			success: function(e) {
 				$('#page-'+ pageUuid +'-'+ uuid +'-children-wrapper').append(e);
 				$('#page-'+ pageUuid +'-'+ uuid +'-extend-textarea').val('');
+
+				$('#main-loader').hide();
 			},
 			error: function(e) {
 				alert("ERROR: " + e);
+
+				$('#main-loader').hide();
 			}
 		});
 
@@ -242,12 +262,20 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 function inkleClickActions(element, wrapper, renderUrl) {
 
 	$(element).click(function() {
+
+		$('#main-loader').show();
 		$.ajax({
 			url: renderUrl,
 			type: 'POST',
 			success: function (e) {
 				$(wrapper).replaceWith(e);
 				fullHeight();
+
+				$('#main-loader').hide();
+			},
+			error: function() {
+
+				$('#main-loader').hide();
 			}
 		});
  }).mouseover(function() {

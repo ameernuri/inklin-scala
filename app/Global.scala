@@ -1,4 +1,5 @@
 
+import models.Inkler
 import org.anormcypher.Neo4jREST
 import play.api._
 import play.api.http.HeaderNames._
