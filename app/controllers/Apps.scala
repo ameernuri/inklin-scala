@@ -18,7 +18,7 @@ object Apps extends Controller with Guard {
 	def home = Action { implicit r =>
 		log("home")
 
-		Ok(html.home())
+		Ok(html.home(userOpt))
 	}
 
 	def inkle = Action { implicit r =>

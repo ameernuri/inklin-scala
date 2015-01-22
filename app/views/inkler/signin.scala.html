@@ -3,44 +3,36 @@
 
 @secondary("Inklin : Sign in") {
 
-	@helper.form(routes.Inklers.authenticate) {
-		<div id="signin-page-form">
-			<h2>Sign in</h2>
-			@signinForm.globalError.map { error =>
-				<p class="error">
-					@error.message
-				</p>
-			}
-			<table>
-				<tr>
-					<td>
-					@helper.inputText(
-						signinForm("usernameOrEmail"),
-						'_label           -> Nil,
-						'_showConstraints -> false,
-						'placeholder      -> "Username or Email"
-					)
-					</td>
-				</tr>
+	@helper.form(routes.Inklers.authenticate()) {
+		<div class="col-md-6 col-md-offset-3 text-center">
+			<div id="signin-page-form">
+				<h2>Sign in</h2>
+				@signinForm.globalError.map { error =>
+					<p class="error">
+						@error.message
+					</p>
+				}
 
-				<tr>
-					<td>
-					@helper.inputPassword(
-						signinForm("password"),
-						'_label           -> Nil,
-						'_showConstraints -> false,
-						'placeholder      -> "Password"
-					)
-					</td>
-				</tr>
+				@helper.inputText(
+					signinForm("usernameOrEmail"),
+					'_label           -> "",
+					'_showConstraints -> false,
+					'placeholder      -> "username or email"
+				)
+				@helper.inputPassword(
+					signinForm("password"),
+					'_label           -> "",
+					'_showConstraints -> false,
+					'placeholder      -> "password"
+				)
 
-				<tr>
-					<td><input type="submit" value="Sign in"></td>
-				</tr>
-			</table>
-		</div>
-		<div id="no-account">
-			<span>Don't have an account? <a href="@routes.Inklers.signup()">Sign up</a></span>
+				<div>
+					<input type="submit" value="Sign in" style="width: 100%;">
+				</div>
+			</div>
+			<div id="no-account">
+				<span>Don't have an account? <a href="@routes.Inklers.signup()">Create an Account</a></span>
+			</div>
 		</div>
 	}
 }

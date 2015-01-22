@@ -172,10 +172,10 @@ object Inkles extends Controller with Guard {
     Ok(fetchedInkles)
   }
 
-  def fetchOopsPage(page: Int) = Action {
+  def fetchOopsPage(page: Int) = Action { implicit r =>
 	  log("fetchOopsPage", Map("page" -> page))
 
-    val inkles = Inkle.fetchPage(page)
+    val inkles = Inkle.fetchPage(user.uuid, page)
 
     val fetchedInkles: JsArray = arr(
       inkles.items.map { inkle =>

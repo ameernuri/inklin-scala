@@ -4,46 +4,51 @@
 @secondary("Inklin : Sign up") {
 
 	@helper.form(routes.Inklers.create()) {
-		<div id="signin-page-form">
-			<h2>Sign up</h2>
-			<table>
-				<tr>
-					@helper.inputText(
-						signupForm("name"),
-						'_label             -> None,
-						'_showConstraints   -> false,
-						'placeholder        -> "Your name"
-					)
-				</tr>
+		<div class="col-md-6 col-md-offset-3">
+			<div id="signup-page-form">
+				<h2>Sign up</h2>
+				<table>
+					<tr>
+						@helper.inputText(
+							signupForm("name"),
+							'_label             -> None,
+							'_showConstraints   -> false,
+							'placeholder        -> "your name"
+						)
+					</tr>
 
-				<tr>
-					@helper.inputText(
-						signupForm("email"),
-						'_label             -> None,
-						'_showConstraints   -> false,
-						'placeholder        -> "you@email.com"
-					)
-				</tr>
+					<tr>
+						@helper.inputText(
+							signupForm("email"),
+							'_label             -> None,
+							'_showConstraints   -> false,
+							'placeholder        -> "you@email.com"
+						)
+					</tr>
 
-				<tr>
-					@helper.inputText(
-						signupForm("username"),
-						'_label             -> None,
-						'_showConstraints   -> false,
-						'placeholder        -> "Select username"
-					)
-				</tr>
+					<tr>
+						@helper.inputText(
+							signupForm("username"),
+							'_label             -> None,
+							'_showConstraints   -> false,
+							'placeholder        -> "select username"
+						)
+					</tr>
 
-				<tr>
-					@helper.inputPassword(
-						signupForm("password"),
-						'_label             -> None,
-						'_showConstraints   -> false,
-						'placeholder        -> "New password"
-					)
-				</tr>
-			</table>
-			<input type="submit" value="Sign up">
+					<tr>
+						@helper.inputPassword(
+							signupForm("password"),
+							'_label             -> None,
+							'_showConstraints   -> false,
+							'placeholder        -> "new password"
+						)
+					</tr>
+				</table>
+				<input type="submit" value="Create Account">
+			</div>
+			<div id="no-account">
+				<span>Already on inklin? <a href="@routes.Inklers.signin()">Sign in</a></span>
+			</div>
 		</div>
 	}
 }

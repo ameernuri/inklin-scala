@@ -111,14 +111,14 @@ object Inkle {
 		).as(withConnected.single)
 	}
 
-	def fetchPage(page: Int = 0, pageSize: Int = 10): Page[(Inkle, Inkler)] = {
-		log("fetchPage", Map("page" -> page, "pageSize" -> pageSize))
+	def fetchPage(inkler: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, Inkler)] = {
+		log("fetchPage", Map("inkler" -> inkler, "page" -> page, "pageSize" -> pageSize))
 
 		val offset = page * pageSize
 
 		val query =
 			s"""
-			  |MATCH (inkler:Inkler)-[:owns_inkle]->(inkle:Inkle)
+			  |MATCH (inkler:Inkler {uuid: {inklerUuid}})-[:owns_inkle]->(inkle:Inkle)
 				|WITH inkle, inkler
 				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent:Inkle)
 				|WITH inkle, inkler, parent
@@ -137,14 +137,15 @@ object Inkle {
 			""".stripMargin
 		).on(
 			"pageSize" -> pageSize,
-			"offset" -> offset
+			"offset" -> offset,
+			"inklerUuid" -> inkler
 		).as(withConnected.*)
 
 		val total = Cypher(
 			s"""
 			  |$query count(DISTINCT inkle)
 			""".stripMargin
-		).as(scalar[Long].single)
+		).on("inklerUuid" -> inkler).as(scalar[Long].single)
 
 		Page(inkles, page, offset, total)
 	}
