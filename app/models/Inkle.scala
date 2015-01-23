@@ -167,7 +167,7 @@ object Inkle {
 		val inkles = Cypher(
 			s"""
 			  |$query DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()}
-				|ORDER BY inkle.created ASC
+				|ORDER BY inkle.created DESC
 				|SKIP {offset}
 				|LIMIT {pageSize}
 			""".stripMargin

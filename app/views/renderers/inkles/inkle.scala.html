@@ -5,15 +5,17 @@
 @defining(UUID.randomUUID()) { pageUuid =>
 <div style="width: 100%; overflow: auto; height: 100%; text-align: center; font-weight: 300;" id="page-@pageUuid-@{inkle._1.uuid}-inkle" class="full-height">
 
-  <div style="display: table; table-layout: fixed; width: 33%; float: left;">
+  <div style="display: table; table-layout: fixed; float: left;" class="col-sm-4">
     <div style="padding: 0 30px; display: table-cell; vertical-align: middle; text-align: right; font-size: 14px; color: #888;" class="full-height">
-      @Inkle.getParents(inkle._1.uuid).items.map { parent =>
-        @defining(inkle._1.parentUuid.getOrElse("") == parent._1.uuid) { isParent =>
-          @defining(UUID.randomUUID()) { rand =>
-            <div style="margin : 5 px ; cursor : pointer ; @if(isParent) { font-size: 20px; color: #444; } else { margin-right: 35px; font-weight: 300;}" id="@rand-@parent._1.uuid">
-            <span style="color : #bbb ;">
-            @if(!parent._1.parentUuid.isDefined) { ◉ }
-            </span>
+      @defining(Inkle.getParents(inkle._1.uuid).items.reverse) { parents =>
+
+        @parents.map { parent =>
+          @defining(inkle._1.parentUuid.getOrElse("") == parent._1.uuid) { isParent =>
+            @defining(UUID.randomUUID()) { rand =>
+              <div style="width: 100%; overflow: auto; cursor : pointer ; @if(isParent) { font-size: 20px; color: #444; } else { padding-right: 35px; font-weight: 300;}" id="@rand-@parent._1.uuid">
+              <span style="color : #bbb ;">
+              @if(!parent._1.parentUuid.isDefined) { ◉ }
+              </span>
 
             @parent._1.inkle
             @if(isParent) {
@@ -21,16 +23,34 @@
                 ••▷
               </span>
             } else {
-              <span style="color : #eee ;">
-                •••
+              <span style="
+                  width: 10px;
+                  float: right;
+                  margin: 3px 5px 0;
+              ">
+                <span style="
+                  border: 1px solid #ddd;
+                  float: right;
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50%;
+                "></span>
+                <span style="
+                  border: 1px solid #ddd;
+                  height: 10px;
+                  margin-right: 4px;
+                  float: right;
+                "></span>
+
               </span>
             }
             </div>
 
-            <script>
+              <script>
 
               inkleClickActions('#@rand-@parent._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle', '@routes.Inkles.getInkle(parent._1.uuid)');
-            </script>
+              </script>
+            }
           }
         }
       }
@@ -39,7 +59,7 @@
 
   @renderers.inkles.central(pageUuid.toString, inkle)
 
-  <div style="display: table; table-layout: fixed; width: 33%; float: left;" class="full-height">
+  <div style="display: table; table-layout: fixed; float: left;" class="full-height col-sm-4">
     <div style="display: table-cell; vertical-align: middle;">
       @defining(Inkle.findPageOfChildren(inkle._1.uuid)) { children =>
         @defining(UUID.randomUUID()) { rand =>

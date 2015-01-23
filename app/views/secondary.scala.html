@@ -16,7 +16,7 @@
 		<script src="@routes.Assets.versioned("js/jquery-1.9.0.min.js")" type="text/javascript"></script>
 	</head>
 
-	<body style="background-color: #fafafa;">
+	<body style="background-color: #fefefe;">
 		<div id="header" style="text-align: center; padding: 30px 20px 20px; width: 100%;">
 			<div id="header-content">
 				<div id="header-logo">
@@ -35,7 +35,7 @@
 			<div id="footer-copy" class="text-center">
 				@defining(new Date) { date =>
 
-					inklin &copy; @date.format("yyyy")
+					@date.format("yyyy") &copy; inklin
 				}
 			</div>
 			<br>

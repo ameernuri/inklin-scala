@@ -82,9 +82,10 @@ input[type=submit] {
 
 .main-add-btn {
 	a {
-		&:hover {
-			color: @inklin-main;
-		}
+		background: @inklin-main;
+		width: 50px;
+		height: 50px;
+		border-radius: 100%;
 	}
 }
 
@@ -95,13 +96,35 @@ input[type=submit] {
 .child {
 	border: 1px solid #f8f8f8;
 	border-radius: 8px;
+	min-height: 46px;
 
 	&:hover {
-		border-color: #ddd;
+		background-color: #fafafa;
 		cursor: pointer;
 
 		.child-ellipsis {
 			color:red;
+		}
+	}
+}
+
+.extend-form-wrapper {
+	overflow: auto;
+	border-radius: 8px;
+	margin: 20px 5px 0;
+
+	.extend-form-switch {
+		text-align: center;
+		width: 100%;
+		padding: 10px 0;
+		background: #fafafa;
+		cursor: pointer;
+		color: #aaa;
+		font-size: 14px;
+
+		&:hover {
+			background: #f8f8f8;
+			color: #888;
 		}
 	}
 }
@@ -133,7 +156,7 @@ input[type=submit] {
 	border-color: @inklin-main;
 	border-bottom-color: transparent;
 	border-radius: 100%;
-	display: none;
+	display: block;
 }
 
 @keyframes rotate {

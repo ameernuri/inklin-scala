@@ -1,13 +1,17 @@
 @(inkler: Option[Inkler])
 
 @inkler.map { inkler =>
+
 	@main("Inklin") {
 		<div class="full-height" id="home-inkle-form-page">
 			<div style="display: table; table-layout: fixed; width: 100%;">
 				<div style="display: table-cell; vertical-align: middle;" class="full-height">
 					<h1 style="text-align: center; font-weight: 100; margin: 0  0 50px">
-						Something in you mind?
+						Something in your mind?
 					</h1>
+					<p class="text-center" style="font-size: 15px; font-weight: 200; font-style: italic;">
+						big ideas start with an inkling. write it down.
+					</p>
 
 					<div style="text-align: center; max-width: 50%; margin: auto;">
 					@helper.form(routes.Inkles.create(), 'id -> "home-inkle-form") {
@@ -26,20 +30,25 @@
 			</div>
 		</div>
 
-		<div id="inkles-wrapper">
+		<div id="inkles-wrapper" style="margin-top: 55px; ">
 		@Inkle.fetchPage(inkler.uuid).items.map { item =>
 			@renderers.inkles.inkle(item)
 		}
 		</div>
 	}
 }.getOrElse {
-	@secondary("Inklin • Welcome") {
+	@secondary("inklin • welcome") {
 		<div class="text-center">
-			<h3>a thinking tool.</h3>
-			<a href="@routes.Inklers.signin()">Sign In</a> |
-			<a href="@routes.Inklers.signup()">Sign Up</a>
+			<h3 style="font-weight: 100; margin-bottom: 40px;">a thinking tool.</h3>
 
-			<p style="margin-top: 30px; text-style: italic;">inklin is currently on private beta.</p>
+			<div style="color: #aaa;">
+				<a href="@routes.Inklers.signin()" class="sign-button">Sign In</a> OR
+				<a href="@routes.Inklers.signup()" class="sign-button">Sign Up</a>
+			</div>
+
+			<p style="margin-top: 50px; font-weight: 100; font-size: 16px;">
+				shhh! don't tell anybody. this is a private beta.
+			</p>
 		</div>
 	}
 }

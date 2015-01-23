@@ -1,9 +1,9 @@
 @(pageUuid: String, inkle: (Inkle, Inkler))
 
-<div style="display: table; table-layout: fixed; width: 33%; float: left;" id="page-@pageUuid-@{inkle._1.uuid}-center-wrapper">
+<div style="display: table; table-layout: fixed; float: left;" class="col-sm-4" id="page-@pageUuid-@{inkle._1.uuid}-center-wrapper">
   <div style="font-size: 30px; padding: 0 30px; display: table-cell; vertical-align: middle;" class="full-height">
     <span style="color: #eee;">
-    @if(inkle._1.parentUuid.isDefined) { ••• } else { ◉ <br> }
+    @if(inkle._1.parentUuid.isDefined) { ••• } else { ◉<br> }
     </span>
 
     <span id="page-@pageUuid-@{inkle._1.uuid}-inkle-text" style="overflow: auto;">
@@ -20,8 +20,8 @@
       }
     </span>
 
-    <div style="overflow: auto; border-radius: 8px;margin: 20px 5px 0;" id="@{inkle._1.uuid}-extend-form-wrapper">
-      <div style="text-align: center; width: 100%;padding: 10px 0;background: #fafafa;cursor: pointer;color: #aaa; font-size: 14px;" id="page-@pageUuid-@{inkle._1.uuid}-extend-switch">
+    <div class="extend-form-wrapper" id="@{inkle._1.uuid}-extend-form-wrapper">
+      <div class="extend-form-switch" id="page-@pageUuid-@{inkle._1.uuid}-extend-switch">
         •••<br>
         extend this idea
       </div>

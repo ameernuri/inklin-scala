@@ -5,7 +5,7 @@
 
 body {
 	background-color: #FBFCFC;
-	font-family: "arial", sans-serif, helvetica;
+	font-family: "Helvetica Neue", helvetica, "arial", sans-serif;
 	font-size: 14px;
 }
 
@@ -26,7 +26,7 @@ a:hover {
 
 input, textarea {
 	border: 1px solid #DDDDDD;
-	font-family: "arial", sans-serif, helvetica;
+	font-family: "Helvetica Neue", helvetica, "arial", sans-serif;
 	padding: 5px;
 }
 
@@ -182,9 +182,10 @@ input[type=text], input[type=password], input[type=submit] {
 	padding: 10px 20px;
 	font-size: 15px;
 	margin: 0;
-	border: solid #eee;
+	border: solid #f4f4f4;
 	border-width: 1px 1px 0;
 	border-radius: 0;
+	font-weight: 200;
 }
 
 #signin-page-form, #signup-page-form  {
@@ -249,4 +250,19 @@ input[type=text], input[type=password], input[type=submit] {
 
 .hidden {
 	display: none;
+}
+
+.sign-button {
+	background: #fafafa;
+	color: #888;
+	padding: 6px 10px;
+	border-radius: 5px;
+	font-weight: normal;
+	border: 1px solid #f4f4f4;
+	display: inline-block;
+
+	&:hover {
+		background: #f8f8f8;
+
+	}
 }
