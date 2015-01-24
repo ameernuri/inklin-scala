@@ -17,6 +17,8 @@ POST        /inkles/fetch_oops/:page          controllers.Inkles.fetchOopsPage(p
 POST        /inkles/get_parent/:inkle         controllers.Inkles.getParent(inkle: String)
 POST        /inkles/get_children/:uuid        controllers.Inkles.getChildren(uuid: String)
 
+POST        /inkles/delete                    controllers.Inkles.delete
+
 # Inklers
 GET         /signup                           controllers.Inklers.signup
 POST        /signup                           controllers.Inklers.create

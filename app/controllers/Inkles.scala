@@ -26,6 +26,13 @@ object Inkles extends Controller with Guard {
 		"inkle" -> nonEmptyText(maxLength = 80)
 	)
 
+	val deleteForm = Form(
+    tuple(
+      "uuid" -> nonEmptyText(),
+      "children" -> nonEmptyText()
+    )
+	)
+
 	def create(returnAs: String = "rendered") = Action { implicit request =>
 		log("create")
 
@@ -34,7 +41,7 @@ object Inkles extends Controller with Guard {
       formWithErrors => BadRequest,
       {
         case (inkle) =>
-          val uuid = Inkle.create(inkler.uuid, None, inkle)
+          val uuid = Inkle.create(inkler.uuid, inkle)
           val newInkle = Inkle.find(uuid)
 
           if (returnAs == "rendered") {
@@ -69,7 +76,9 @@ object Inkles extends Controller with Guard {
 			formWithErrors => BadRequest("something wrong with the data"),
 			{
 				case (inkle) =>
-				val uuid = Inkle.create(inklerUuid, Some(parentUuid), inkle)
+
+        val origin = Inkle.getOriginUuid(parentUuid)
+				val uuid = Inkle.create(inklerUuid, inkle, Some(parentUuid), origin)
 				val newInkle = Inkle.find(uuid)
 
         if (returnAs == "rendered") {
@@ -100,6 +109,24 @@ object Inkles extends Controller with Guard {
 				val editedInkle = Inkle.edit(inkleUuid, inkle)
 
         Ok(renderers.inkles.central(pageUuid, editedInkle))
+			}
+		)
+	}
+
+	def delete = IsAuthenticated { username => implicit request =>
+		log("delete")
+
+		deleteForm.bindFromRequest.fold(
+			formWithErrors => BadRequest("something wrong with the data"),
+			inkle => {
+        if (inkle._2 == "delete") {
+          if (Inkle.deleteWithChildren(inkle._1)) Ok("deleted")
+          else InternalServerError("something went wrong")
+        } else {
+          if (Inkle.delete(inkle._1)) Ok(renderers.inkles.inkle(Inkle.find(inkle._1)))
+          else InternalServerError("something went wrong")
+        }
+
 			}
 		)
 	}

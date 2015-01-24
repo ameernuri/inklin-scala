@@ -3,21 +3,38 @@
 <div style="display: table; table-layout: fixed; float: left;" class="col-sm-4" id="page-@pageUuid-@{inkle._1.uuid}-center-wrapper">
   <div style="font-size: 30px; padding: 0 30px; display: table-cell; vertical-align: middle;" class="full-height">
     <span style="color: #eee;">
-    @if(inkle._1.parentUuid.isDefined) { ••• } else { ◉<br> }
+    @if(inkle._1.parentUuid.isDefined) { ••• } else {
+      <span class="glyphicon glyphicon-record"></span>
+      <br>
+    }
     </span>
 
-    <span id="page-@pageUuid-@{inkle._1.uuid}-inkle-text" style="overflow: auto;">
-      @inkle._1.inkle
-      <span style="display: none; color: #aaa; font-style: italic; cursor: pointer; font-size: 14px; vertical-align: middle;" id="page-@pageUuid-@{inkle._1.uuid}-edit-switch"> edit</span>
+    <span id="page-@pageUuid-@{inkle._1.uuid}-inkle-text" style="overflow: auto; cursor: pointer;">
+      @if(!inkle._1.deleted) {
+        @inkle._1.inkle
+      } else {
+        <br>
+        <samp class="text-muted" style="font-size: 15px">[DELETED IDEA]</samp>
+      }
     </span>
 
-
-    <span id="page-@pageUuid-@{inkle._1.uuid}-edit-form-wrapper" style="display: none; font-size: 30px;">
+    <span class="edit-form-wrapper" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-wrapper">
       @helper.form(routes.Inkles.edit(inkle._1.uuid, pageUuid), 'id -> s"page-$pageUuid-${inkle._1.uuid}-edit-form") {
-
-	      <textarea name="inkle" id="page-@pageUuid-@{inkle._1.uuid}-edit-textarea" style="font-size: 30px; width: 100%; text-align: center; margin: 0; border-radius: 8px; box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
+        <div class="pull-right">
+          <button id="page-@pageUuid-@{inkle._1.uuid}-edit-form-cancel" class="glyphicon glyphicon-remove"></button>
+          <button id="page-@pageUuid-@{inkle._1.uuid}-edit-form-submit" class="glyphicon glyphicon-ok"></button>
+        </div>
+	      <textarea name="inkle" id="page-@pageUuid-@{inkle._1.uuid}-edit-textarea" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
 	      <input type="submit" value="•••" style="display: none;">
       }
+
+      <div class="text-right inkle-action-buttons" id="page-@pageUuid-@{inkle._1.uuid}-inkle-action-buttons">
+        <button id="page-@pageUuid-@{inkle._1.uuid}-delete-button">
+          <span class="text-danger">
+            <span class="glyphicon glyphicon-trash"></span> Delete
+          </span>
+        </button>
+      </div>
     </span>
 
     <div class="extend-form-wrapper" id="@{inkle._1.uuid}-extend-form-wrapper">
@@ -34,10 +51,10 @@
         </div>
       }
       </div>
-
-      <script>
-      inkleActions('@pageUuid', '@inkle._1.uuid', '@routes.Inkles.extend(inkle._1.uuid, pageUuid.toString)', '@routes.Inkles.edit(inkle._1.uuid, pageUuid)');
-      </script>
     </div>
   </div>
 </div>
+
+<script>
+inkleActions('@pageUuid', '@inkle._1.uuid', '@routes.Inkles.extend(inkle._1.uuid, pageUuid.toString)', '@routes.Inkles.edit(inkle._1.uuid, pageUuid)');
+</script>

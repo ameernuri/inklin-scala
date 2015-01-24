@@ -18,7 +18,8 @@ case class Inkle(
 	owner: String,
 	inkle: String,
 	parentUuid: Option[String],
-	created: Date
+	created: Date,
+	deleted: Boolean
 )
 
 object Inkle {
@@ -30,16 +31,17 @@ object Inkle {
 		get[String]("inkleOwnerUuid") ~
 		get[String]("inkle.inkle") ~
 		get[Option[String]]("inkleParentUuid") ~
-		get[Long]("inkle.created") map {
-			case id ~ owner ~ inkle ~ parentUuid ~ created =>
-				Inkle(id, owner, inkle, parentUuid, new Date(created))
+		get[Long]("inkle.created") ~
+		get[Boolean]("inkle.deleted") map {
+			case id ~ owner ~ inkle ~ parentUuid ~ created ~ deleted=>
+				Inkle(id, owner, inkle, parentUuid, new Date(created), deleted)
 		}
 	}
 
 	def simpleReturn(inkle: String = "inkle", inkler: String = "inkler", parent: String = "parent"): String = {
 		s"""
 		  |$inkle.uuid as inkleUuid, $inkler.uuid as inkleOwnerUuid, $inkle.inkle,
-		  |$parent.uuid as inkleParentUuid, $inkle.created
+		  |$parent.uuid as inkleParentUuid, $inkle.created, $inkle.deleted
 		""".stripMargin
 	}
 
@@ -51,7 +53,7 @@ object Inkle {
 		case inkle ~ child => (inkle, child)
 	}
 
-	def create(inklerUuid: String, parentUuid: Option[String], inkle: String): String = {
+	def create(inklerUuid: String, inkle: String, parentUuid: Option[String] = None, originUuid: Option[String] = None): String = {
 		log("create", Map(
 			"inklerUuid" -> inklerUuid,
 			"parentUuid" -> parentUuid,
@@ -59,10 +61,14 @@ object Inkle {
 		))
 
 		val parentQuery = if(parentUuid.isDefined) {
-			", (inkle)-[:has_parent]->(parent)"
-		} else { "" }
+			if (originUuid.isDefined) ", (inkle)-[:has_parent]->(parent), (inkle)-[:has_origin]->(origin)"
+			else ", (inkle)-[:has_parent]->(parent), (inkle)-[:has_origin]->(parent)"
+		} else ""
 
-		val parentNode = if(parentUuid.isDefined) { ", (parent:Inkle {uuid: {parentUuid}})" } else { "" }
+		val parentNode = if(parentUuid.isDefined) {
+			if (originUuid.isDefined) ", (parent:Inkle {uuid: {parentUuid}}), (origin:Inkle {uuid: {originUuid}})"
+			else ", (parent:Inkle {uuid: {parentUuid}})"
+		} else ""
 
 		val cypher =
 			s"""
@@ -71,7 +77,8 @@ object Inkle {
 			  |CREATE (inkle:Inkle {
 				| uuid: "$randomUUID",
 			  | inkle: {inkle},
-			  | created: timestamp()
+			  | created: timestamp(),
+				| deleted: false
 			  |}),
 			  |(inkler)-[:owns_inkle]->(inkle)
 			  |$parentQuery,
@@ -83,7 +90,8 @@ object Inkle {
 			Cypher(cypher).on(
 			  "inklerUuid" -> inklerUuid,
 			  "inkle" -> inkle,
-			  "parentUuid" -> parentUuid.get
+			  "parentUuid" -> parentUuid.get,
+			  "originUuid" -> originUuid.getOrElse("")
 			).as(scalar[String].single)
 
 		} else {
@@ -102,13 +110,46 @@ object Inkle {
 				|MATCH (inkler:Inkler)-[:owns_inkle]->(inkle:Inkle {uuid: {inkleUuid}})
 				|WITH inkler, inkle
 				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent)
-				|SET inkle.inkle = {newInkle}
+				|SET inkle.inkle = {newInkle}, inkle.deleted = false
 				|RETURN ${simpleReturn()}, ${Inkler.simpleReturn()}
 			""".stripMargin
 		).on(
 			"inkleUuid" -> inkleUuid,
 			"newInkle" -> inkle
 		).as(withConnected.single)
+	}
+
+	def delete(inkleUuid: String): Boolean = {
+		log("delete", Map("inkleUuid" -> inkleUuid))
+
+		Cypher(
+			"""
+				|MATCH (inkle:Inkle {uuid: {inkleUuid}})
+				|SET inkle.deleted = true, inkle.inkle = ""
+			""".stripMargin
+		).on(
+			"inkleUuid" -> inkleUuid
+		).execute()
+	}
+
+	def deleteWithChildren(inkleUuid: String): Boolean = {
+		log("deleteWithChildren", Map("inkleUuid" -> inkleUuid))
+
+		Cypher(
+			"""
+				|MATCH (inkle:Inkle {uuid: {inkleUuid}})
+				|OPTIONAL MATCH ()-[c]-(children)-[:has_parent]->(inkle)
+				|DELETE c, children
+				|WITH inkle
+				|OPTIONAL MATCH ()-[d]-(dependent)-[:is_dependent_on]->(inkle)
+				|DELETE d, dependent
+				|WITH inkle
+				|MATCH (inkle)-[s]-()
+				|DELETE s, inkle
+			""".stripMargin
+		).on(
+			"inkleUuid" -> inkleUuid
+		).execute()
 	}
 
 	def fetchPage(inkler: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, Inkler)] = {
@@ -186,6 +227,35 @@ object Inkle {
 		).as(scalar[Long].single)
 
 		Page(inkles, page, offset, total)
+	}
+
+	def getOrigin(inkleUuid: String): Option[(Inkle, Inkler)] = {
+		log("getOrigin", Map("inkleUuid" -> inkleUuid))
+
+		Cypher(
+			s"""
+			  |MATCH (descendant {uuid: {inkleUuid}})-[:has_origin]->(inkle),
+				|(inkler:Inkler)-[:owns_inkle]->(inkle)
+				|WITH inkler, inkle
+				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent {uuid: {parentUuid}})
+			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()}
+			""".stripMargin
+		).on(
+			"inkleUuid" -> inkleUuid
+		).as(withConnected.singleOpt)
+	}
+
+	def getOriginUuid(inkleUuid: String): Option[String] = {
+		log("getOriginUuid", Map("inkleUuid" -> inkleUuid))
+
+		Cypher(
+			s"""
+			  |MATCH (inkle {uuid: {inkleUuid}})-[:has_origin]->(origin)
+			  |RETURN DISTINCT origin.uuid
+			""".stripMargin
+		).on(
+			"inkleUuid" -> inkleUuid
+		).as(scalar[String].singleOpt)
 	}
 
 	def findChildren(parentUuid: String): Seq[(Inkle, Inkler)] = {

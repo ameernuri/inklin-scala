@@ -16,13 +16,51 @@
 		<script src="@routes.Assets.versioned("js/scripts.js")"></script>
 		<script src="@routes.Assets.versioned("js/my.js")"></script>
 	</head>
-	<body style="background-color: #fefefe; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif">
+	<body style="background-color: #fefefe;">
+		<div id="popover-pad"></div>
 		<div style="width: 100%; position: fixed; top: 75px;z-index: 100; text-align: center;">
 			<span class="loader" id="main-loader" style="display:none;"></span>
 		</div>
 
+
+		<div class="popover-container col-sm-4 col-sm-offset-4" id="inkle-delete">
+			<h3>Delete Idea</h3>
+
+			@helper.form(routes.Inkles.delete(), 'id -> "delete-inkle-form") {
+				<div>
+					<label>
+						<input type="radio" name="children" value="keep" checked>
+						Soft Delete
+					</label>
+					<p class="small text-muted">only the content of this idea is removed, the child ideas will not be affected</p>
+				</div>
+				<div>
+					<label>
+						<input type="radio" name="children" value="delete">
+						Hard Delete
+					</label>
+					<p class="small text-muted">this idea will be deleted with every descendant it has</p>
+				</div>
+
+				<input type="hidden" name="uuid" id="delete-inkle-uuid">
+				<input type="hidden" id="deleted-inkle-page">
+
+				<div>
+					<button class="pull-right btn btn-danger">
+						<span class="glyphicon glyphicon-trash"></span>
+						Delete
+					</button>
+
+					<button class="pull-right btn btn-default popover-close-button">
+						<span class="glyphicon glyphicon-remove"></span>
+						Cancel
+					</button>
+				</div>
+			}
+	  </div>
+
 		<div>
-			<div style="text-align: center; padding: 11px 50px;position: fixed;width: 100%;top: 0;background-color: #fafafa;">
+			<div style="text-align: center; padding: 11px 50px;position: fixed;width: 100%;top: 0;background-color: #fafafa;z-index: 50;">
 				<a href="@routes.Apps.home()">
 					<img src="@routes.Assets.at("images/big_logo.png")" style="height: 30px;">
 				</a>

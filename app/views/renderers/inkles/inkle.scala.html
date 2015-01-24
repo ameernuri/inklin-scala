@@ -7,44 +7,61 @@
 
   <div style="display: table; table-layout: fixed; float: left;" class="col-sm-4">
     <div style="padding: 0 30px; display: table-cell; vertical-align: middle; text-align: right; font-size: 14px; color: #888;" class="full-height">
-      @defining(Inkle.getParents(inkle._1.uuid).items.reverse) { parents =>
+      @defining(Inkle.getParents(inkle._1.uuid)) { plain =>
 
-        @parents.map { parent =>
-          @defining(inkle._1.parentUuid.getOrElse("") == parent._1.uuid) { isParent =>
-            @defining(UUID.randomUUID()) { rand =>
-              <div style="width: 100%; overflow: auto; cursor : pointer ; @if(isParent) { font-size: 20px; color: #444; } else { padding-right: 35px; font-weight: 300;}" id="@rand-@parent._1.uuid">
-              <span style="color : #bbb ;">
-              @if(!parent._1.parentUuid.isDefined) { ◉ }
-              </span>
+        @defining(UUID.randomUUID()) { rand =>
+          @defining(plain.items.reverse) { parents =>
+            @if(plain.total > 5) {
+              @defining(Inkle.getOrigin(inkle._1.uuid)) { origin =>
+                <div class="parents-chain-element parents-chain-non-parent" id="@rand-@origin.get._1.uuid">
+                  <span class="glyphicon glyphicon-record"></span>
+                  @origin.get._1.inkle
 
-            @parent._1.inkle
-            @if(isParent) {
-              <span style="color : #bbb ; font-size : 18 px ;">
-                ••▷
-              </span>
-            } else {
-              <span style="
-                  width: 10px;
-                  float: right;
-                  margin: 3px 5px 0;
-              ">
-                <span style="
-                  border: 1px solid #ddd;
-                  float: right;
-                  width: 10px;
-                  height: 10px;
-                  border-radius: 50%;
-                "></span>
-                <span style="
-                  border: 1px solid #ddd;
-                  height: 10px;
-                  margin-right: 4px;
-                  float: right;
-                "></span>
+                  <span class="parents-chain-pointer">
+                    <span class="parents-chain-point"></span>
+                  </span>
 
-              </span>
+                  <script>
+                    inkleClickActions('#@rand-@origin.get._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle', '@routes.Inkles.getInkle(origin.get._1.uuid)');
+                  </script>
+                </div>
+              }
+
+              @if(plain.total > 6) {
+                <div class="parents-chain-element parents-chain-non-parent text-muted small">
+                  [@(plain.total - 6) more]
+                </div>
+              }
+
             }
-            </div>
+
+            @parents.map { parent =>
+              @defining(inkle._1.parentUuid.getOrElse("") == parent._1.uuid) { isParent =>
+                <div class="parents-chain-element @if(isParent) { parents-chain-parent } else { parents-chain-non-parent}" id="@rand-@parent._1.uuid">
+                  <span style="color : #bbb ;">
+                  @if(!parent._1.parentUuid.isDefined) {
+                    <span class="glyphicon glyphicon-record"></span>
+                  }
+                  </span>
+
+                  @if(!parent._1.deleted) {
+                    @parent._1.inkle
+                  } else {
+                    <samp class="text-muted">[DELETED IDEA]</samp>
+                  }
+
+                  @if(isParent) {
+                    <span style="color : #bbb ; font-size : 18px;">
+                      •<span class="glyphicon glyphicon-chevron-right"></span>
+                    </span>
+                  } else {
+                    <span class="parents-chain-pointer">
+                      <span class="parents-chain-point"></span>
+                      <span class="parents-chain-line"></span>
+                    </span>
+                  }
+                </div>
+              }
 
               <script>
 

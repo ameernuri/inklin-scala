@@ -3,7 +3,62 @@ var pageHeight = $(window).height() - headerHeight;
 var lastScrollTop = 0;
 var scrolling = false;
 
+$(document).ready(function() {
+	$("#popover-pad").click(function() {
+		hidePopover();
+	});
 
+	$(document).keydown(function(e) {
+		if (e.keyCode === 27) {
+			hidePopover();
+		}
+	});
+
+	$('.popover-close-button').click(function() {
+		hidePopover();
+		return false;
+	});
+
+	$('#delete-inkle-form').submit(function() {
+		$('#main-loader').show();
+
+		$.ajax({
+			url: "/inkles/delete",
+			type: "POST",
+			data: $('#delete-inkle-form').serialize(),
+			success: function (e) {
+				$('#main-loader').hide();
+				hidePopover();
+				if (e == "deleted") {
+
+					$($('#deleted-inkle-page').val()).slideUp();
+				} else {
+					$($('#deleted-inkle-page').val()).html(e);
+				}
+
+				fullHeight();
+			},
+			error: function (e) {
+				alert("ERROR: "+ e);
+
+				$('#main-loader').hide();
+				hidePopover();
+			}
+		});
+
+		return false;
+	});
+});
+
+function popover(element) {
+	$(element).show().css("top", $(window).scrollTop() + 100);
+	$("#popover-pad").show();
+}
+
+function hidePopover() {
+	$(".popover-container").fadeOut();
+	$("#popover-pad").fadeOut();
+}
 function fullHeight() {
 
 	$('.full-height').css('height', pageHeight);
@@ -173,19 +228,34 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 		$('#page-'+ pageUuid +'-'+ uuid +'-extend-textarea').focus();
 	});
 
-	$('#page-'+ pageUuid +'-'+ uuid +'-inkle-text').click(function() {
+	$('#page-'+ pageUuid +'-'+ uuid +'-delete-button').click(function() {
+		popover("#inkle-delete");
+		$("#delete-inkle-uuid").val(uuid);
+		$("#deleted-inkle-page").val('#page-'+ pageUuid +'-'+ uuid +'-inkle');
+		return false;
+	});
 
-	}).mouseover(function () {
-		$('#page-'+ pageUuid +'-'+ uuid +'-edit-switch').show();
-	}).mouseleave(function() {
-		$('#page-'+ pageUuid +'-'+ uuid +'-edit-switch').fadeOut();
+	$('#page-'+ pageUuid +'-'+ uuid +'-center-wrapper').click(function() {
+
 	});
 
 	$('#page-'+ pageUuid +'-'+ uuid +'-edit-switch').click(function() {
-
 		$('#page-'+ pageUuid +'-'+ uuid +'-inkle-text').hide();
-		$('#page-'+ pageUuid +'-'+ uuid +'-edit-form-wrapper').show();
+		$('#page-'+ pageUuid +'-'+ uuid +'-edit-form-wrapper').fadeIn();
 		$('#page-'+ pageUuid +'-'+ uuid +'-edit-textarea').focus();
+	});
+
+	$('#page-'+ pageUuid +'-'+ uuid +'-inkle-text').click(function() {
+		$(this).hide();
+		$('#page-'+ pageUuid +'-'+ uuid +'-edit-form-wrapper').fadeIn();
+		$('#page-'+ pageUuid +'-'+ uuid +'-edit-textarea').focus();
+	});
+
+	$('#page-'+ pageUuid +'-'+ uuid +'-edit-form-cancel').click(function() {
+
+		$('#page-'+ pageUuid +'-'+ uuid +'-inkle-text').fadeIn();
+		$('#page-'+ pageUuid +'-'+ uuid +'-edit-form-wrapper').hide();
+		return false;
 	});
 
 	$('#page-'+ pageUuid +'-'+ uuid +'-extend-form-wrapper').focusout(function() {
@@ -212,7 +282,7 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 
 				$('#main-loader').hide();
 			},
-			error: function () {
+			error: function (e) {
 				alert("ERROR: "+ e);
 
 				$('#main-loader').hide();
