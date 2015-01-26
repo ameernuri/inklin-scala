@@ -9,7 +9,7 @@
     }
     </span>
 
-    <span id="page-@pageUuid-@{inkle._1.uuid}-inkle-text" style="overflow: auto; cursor: pointer;">
+    <span data-toggle="tooltip" data-placement="top" title="Edit" id="page-@pageUuid-@{inkle._1.uuid}-inkle-text" style="overflow: auto; cursor: pointer;">
       @if(!inkle._1.deleted) {
         @inkle._1.inkle
       } else {
@@ -21,23 +21,21 @@
     <span class="edit-form-wrapper" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-wrapper">
       @helper.form(routes.Inkles.edit(inkle._1.uuid, pageUuid), 'id -> s"page-$pageUuid-${inkle._1.uuid}-edit-form") {
         <div class="pull-right">
-          <button id="page-@pageUuid-@{inkle._1.uuid}-edit-form-cancel" class="glyphicon glyphicon-remove"></button>
-          <button id="page-@pageUuid-@{inkle._1.uuid}-edit-form-submit" class="glyphicon glyphicon-ok"></button>
+          <button data-toggle="tooltip" data-placement="top" title="Cancel" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-cancel" class="glyphicon glyphicon-remove"></button>
+          <button data-toggle="tooltip" data-placement="top" title="Save" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-submit" class="glyphicon glyphicon-ok"></button>
         </div>
 	      <textarea name="inkle" id="page-@pageUuid-@{inkle._1.uuid}-edit-textarea" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
 	      <input type="submit" value="•••" style="display: none;">
       }
 
       <div class="text-right inkle-action-buttons" id="page-@pageUuid-@{inkle._1.uuid}-inkle-action-buttons">
-        <button id="page-@pageUuid-@{inkle._1.uuid}-delete-button">
-          <span class="text-danger">
-            <span class="glyphicon glyphicon-trash"></span> Delete
-          </span>
+        <button class="text-danger" data-toggle="modal" data-target="#myModal">
+          <span class="glyphicon glyphicon-trash"></span> Delete
         </button>
       </div>
     </span>
 
-    <div class="extend-form-wrapper" id="@{inkle._1.uuid}-extend-form-wrapper">
+    <div class="extend-form-wrapper" id="page-@pageUuid-@{inkle._1.uuid}-extend-form-wrapper">
       <div class="extend-form-switch" id="page-@pageUuid-@{inkle._1.uuid}-extend-switch">
         •••<br>
         extend this idea

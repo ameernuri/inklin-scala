@@ -9,10 +9,12 @@
 
 		<title>@title</title>
 		<link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.min.css")">
+
 		<link href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))' rel='stylesheet'>
+		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.min.css")">
 
 		<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
+		<script src='@routes.WebJarAssets.at(WebJarAssets.locate("js/bootstrap.min.js"))'></script>
 		<script src="@routes.Assets.versioned("js/scripts.js")"></script>
 		<script src="@routes.Assets.versioned("js/my.js")"></script>
 	</head>
@@ -22,6 +24,47 @@
 			<span class="loader" id="main-loader" style="display:none;"></span>
 		</div>
 
+		<div class="modal fade" id="inkle-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="myModalLabel">Delete Idea</h4>
+		      </div>
+			    @helper.form(routes.Inkles.delete(), 'id -> "delete-inkle-form") {
+				    <div class="modal-body">
+		   				<div>
+		   					<label>
+		   						<input type="radio" name="children" value="keep" checked>
+		   						Soft Delete
+		   					</label>
+		   					<p class="small text-muted">only the content of this idea is removed, the child ideas will not be affected</p>
+		   				</div>
+		   				<div>
+		   					<label>
+		   						<input type="radio" name="children" value="delete">
+		   						Hard Delete
+		   					</label>
+		   					<p class="small text-muted">this idea will be deleted with every descendant it has</p>
+		   				</div>
+
+		   				<input type="hidden" name="uuid" id="delete-inkle-uuid">
+		   				<input type="hidden" id="deleted-inkle-page">
+		   			}
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">
+			        <span class="glyphicon glyphicon-remove"></span>
+		   				Cancel
+		        </button>
+		        <button type="button" class="btn btn-danger">
+			        <span class="glyphicon glyphicon-trash"></span>
+			        Delete
+		        </button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
 
 		<div class="popover-container col-sm-4 col-sm-offset-4" id="inkle-delete">
 			<h3>Delete Idea</h3>
@@ -65,11 +108,26 @@
 					<img src="@routes.Assets.at("images/big_logo.png")" style="height: 30px;">
 				</a>
 
-				<div id="main-add-btn">
-					<a href="#" style="color: #97C111;margin-right: 70px;font-size: 35px;position: fixed; right: 0;top: 10px;
-					">
-						<span class="glyphicon glyphicon-plus-sign pull-right"></span>
-					</a>
+				<div style="margin-right: 70px;font-size: 25px;position: fixed; right: 0;top: 10px;padding: 1px" class="pull-right top-menu">
+					<div class="dropdown">
+						<button data-toggle="tooltip" data-placement="bottom" title="New Inkle" id="main-add-btn" class="glyphicon glyphicon-plus">
+						</button>
+
+						<button data-toggle="tooltip" data-placement="bottom" title="Origins" id="main-origin-btn" class="glyphicon glyphicon-record">
+						</button>
+
+						<button id="main-menu-btn" data-toggle="dropdown" class="glyphicon glyphicon-chevron-down" style="color: #97C111;border:none;background:none;">
+						</button>
+
+						<ul class="dropdown-menu dropdown-menu-left" role="menu" aria-labelledby="main-menu-btn" style="right: 0;left: auto;">
+							<li role="presentation">
+								<a role="menuitem" href="#">Account Settings</a>
+							</li>
+							<li role="presentation">
+								<a role="menuitem" href="@routes.Inklers.signout()">Sign Out</a>
+							</li>
+					  </ul>
+					</div>
 				</div>
 				<script>
 				$('#main-add-btn').click(function() {

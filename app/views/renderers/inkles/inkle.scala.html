@@ -78,23 +78,9 @@
 
   <div style="display: table; table-layout: fixed; float: left;" class="full-height col-sm-4">
     <div style="display: table-cell; vertical-align: middle;">
+
       @defining(Inkle.findPageOfChildren(inkle._1.uuid)) { children =>
-        @defining(UUID.randomUUID()) { rand =>
-          <div id="page-@pageUuid-@{inkle._1.uuid}-children-wrapper">
-          @children.items.map { child =>
-            @renderers.inkles.extend(child, pageUuid.toString, rand.toString)
-          }
-          </div>
-
-          @if(children.total > 5) {
-            @defining(children.total - 5) { remaining =>
-              <div>
-                @remaining more @if(remaining == 1) { inkle } else { inkles }
-              </div>
-            }
-          }
-
-        }
+        @renderers.inkles.children(inkle, children, pageUuid.toString)
       }
     </div>
   </div>

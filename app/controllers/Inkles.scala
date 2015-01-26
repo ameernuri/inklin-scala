@@ -152,6 +152,14 @@ object Inkles extends Controller with Guard {
     Ok(jsonInkles)
   }
 
+	def getPageOfChildren(uuid: String, pageUuid: String, page: Int = 1) = Action {
+    log("getPageOfChildren", Map("uuid" -> uuid, "page" -> page))
+
+    val inkles = Inkle.findPageOfChildren(uuid, page)
+
+    Ok(renderers.inkles.children(Inkle.find(uuid), inkles, pageUuid, page))
+  }
+
 	def view(uuid: String) = IsAuthenticated { username => _ =>
 		log("view", Map("uuid" -> uuid))
 
@@ -159,7 +167,6 @@ object Inkles extends Controller with Guard {
 			inkle.view()
 		)
 	}
-
 
   /** ajax actions **/
 

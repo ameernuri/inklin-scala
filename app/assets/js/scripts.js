@@ -3,7 +3,17 @@ var pageHeight = $(window).height() - headerHeight;
 var lastScrollTop = 0;
 var scrolling = false;
 
+$(document).bind('DOMSubtreeModified', function() {
+	$(function () {
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+});
+
 $(document).ready(function() {
+	$(function () {
+	  $('[data-toggle="tooltip"]').tooltip();
+	});
+
 	$("#popover-pad").click(function() {
 		hidePopover();
 	});
@@ -222,7 +232,27 @@ function addFormActions(addUrl) {
 	});
 }
 
+function childrenPaginationActions(button, pageUuid, inkleUuid, pageNumber, fetcherUrl) {
+
+	$(button).click(function () {
+		$("#main-loader").show();
+		$.ajax({
+			url: fetcherUrl,
+			type: "POST",
+			success: function (e) {
+				$("#main-loader").hide();
+				$('#page-'+ pageUuid +'-'+ inkleUuid +'-children-wrapper').html(e)
+			},
+			error: function () {
+				alert("error");
+				$("#main-loader").hide();
+			}
+		});
+	})
+}
+
 function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
+
 	$('#page-'+ pageUuid +'-'+ uuid +'-extend-switch').click(function() {
 		$('#page-'+ pageUuid +'-'+ uuid +'-extend-form-div').slideToggle();
 		$('#page-'+ pageUuid +'-'+ uuid +'-extend-textarea').focus();
@@ -258,7 +288,7 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 		return false;
 	});
 
-	$('#page-'+ pageUuid +'-'+ uuid +'-extend-form-wrapper').focusout(function() {
+	$('#page-'+ pageUuid +'-'+ uuid +'-extend-textarea').focusout(function() {
 		if ($('#page-'+ pageUuid +'-'+ uuid +'-extend-textarea').val == '') {
 			$('#page-'+ pageUuid +'-'+ uuid +'-extend-switch').slideDown();
 			$('#page-'+ pageUuid +'-'+ uuid +'-extend-form-div').slideUp();
