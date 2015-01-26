@@ -20,7 +20,7 @@
 	</head>
 	<body style="background-color: #fefefe;">
 		<div id="popover-pad"></div>
-		<div style="width: 100%; position: fixed; top: 75px;z-index: 100; text-align: center;">
+		<div style="width: 100%; position: fixed; top: 75px;z-index: 1060; text-align: center;">
 			<span class="loader" id="main-loader" style="display:none;"></span>
 		</div>
 
@@ -28,7 +28,9 @@
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			        <span aria-hidden="true">&times;</span>
+		        </button>
 		        <h4 class="modal-title" id="myModalLabel">Delete Idea</h4>
 		      </div>
 			    @helper.form(routes.Inkles.delete(), 'id -> "delete-inkle-form") {
@@ -50,18 +52,19 @@
 
 		   				<input type="hidden" name="uuid" id="delete-inkle-uuid">
 		   				<input type="hidden" id="deleted-inkle-page">
-		   			}
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">
-			        <span class="glyphicon glyphicon-remove"></span>
-		   				Cancel
-		        </button>
-		        <button type="button" class="btn btn-danger">
-			        <span class="glyphicon glyphicon-trash"></span>
-			        Delete
-		        </button>
-		      </div>
+				    </div>
+
+				    <div class="modal-footer">
+					    <button type="button" class="btn btn-default" data-dismiss="modal">
+						    <span class="glyphicon glyphicon-remove"></span>
+						    Cancel
+					    </button>
+					    <button type="submit" class="btn btn-danger">
+						    <span class="glyphicon glyphicon-trash"></span>
+						    Delete
+					    </button>
+				    </div>
+			    }
 		    </div>
 		  </div>
 		</div>
@@ -104,7 +107,7 @@
 
 		<div>
 			<div style="text-align: center; padding: 11px 50px;position: fixed;width: 100%;top: 0;background-color: #fafafa;z-index: 50;">
-				<a href="@routes.Apps.home()">
+				<a class="home-link" href="@routes.Apps.home()">
 					<img src="@routes.Assets.at("images/big_logo.png")" style="height: 30px;">
 				</a>
 
@@ -113,7 +116,7 @@
 						<button data-toggle="tooltip" data-placement="bottom" title="New Inkle" id="main-add-btn" class="glyphicon glyphicon-plus">
 						</button>
 
-						<button data-toggle="tooltip" data-placement="bottom" title="Origins" id="main-origin-btn" class="glyphicon glyphicon-record">
+						<button data-target="@routes.Apps.origins()" data-toggle="tooltip" data-placement="bottom" title="Origins" id="main-origin-btn" class="glyphicon glyphicon-record">
 						</button>
 
 						<button id="main-menu-btn" data-toggle="dropdown" class="glyphicon glyphicon-chevron-down" style="color: #97C111;border:none;background:none;">
@@ -124,7 +127,7 @@
 								<a role="menuitem" href="#">Account Settings</a>
 							</li>
 							<li role="presentation">
-								<a role="menuitem" href="@routes.Inklers.signout()">Sign Out</a>
+								<a role="menuitem" href="@routes.Users.signout()">Sign Out</a>
 							</li>
 					  </ul>
 					</div>
@@ -138,6 +141,14 @@
 					});
 
 					return false;
+				});
+				$('#main-origin-btn').click(function() {
+				   window.history.pushState('obj', 'newtitle', '/origins');
+				   return false;
+				});
+				$('.home-link').click(function() {
+				   window.history.pushState('obj', 'newtitle', '/');
+				   return false;
 				});
 				</script>
 			</div>

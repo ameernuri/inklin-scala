@@ -1,8 +1,8 @@
 @(user: Option[User])
 
-@user.map { user =>
 
-	@main("Inklin") {
+@main("Inklin • Origins") {
+	@user.map { user =>
 		<div class="full-height" id="home-inkle-form-page">
 			<div style="display: table; table-layout: fixed; width: 100%;">
 				<div style="display: table-cell; vertical-align: middle;" class="full-height">
@@ -31,25 +31,9 @@
 		</div>
 
 		<div id="inkles-wrapper" style="margin-top: 55px; ">
-		@Inkle.fetchPage(user.uuid).items.map { item =>
+		@Inkle.originsPage(user.uuid).items.map { item =>
 			@renderers.inkles.inkle(item)
 		}
 		</div>
 	}
-}.getOrElse {
-	@secondary("inklin • welcome") {
-		<div class="text-center">
-			<h3 style="font-weight: 100; margin-bottom: 40px;">a thinking tool.</h3>
-
-			<div style="color: #aaa;">
-				<a href="@routes.Users.signin()" class="sign-button">Sign In</a> OR
-				<a href="@routes.Users.signup()" class="sign-button">Sign Up</a>
-			</div>
-
-			<p style="margin-top: 50px; font-weight: 100; font-size: 16px;">
-				shhh! don't tell anybody. this is a private beta.
-			</p>
-		</div>
-	}
 }
-

@@ -2,14 +2,14 @@ package monkeys
 
 import monkeys.Loggers._
 
-object Inklers {
+object Users {
 
 	private def log(log: String, params: Map[String, Any] = Map()) = toolsLogger("People", log, params)
 
 	/**
-	 * get the inklin address of the inkler
+	 * get the inklin address of the user
 	 *
-	 * @param uuid uuid of the inkler
+	 * @param uuid uuid of the user
 	 * @return
 	 */
 	def getAddress(uuid: String): String = {
@@ -19,13 +19,13 @@ object Inklers {
 	}
 
 	/**
-	 * get the inklin address of the inkler
+	 * get the inklin address of the user
 	 *
-	 * @param inkler the inkler
+	 * @param user the user
 	 * @return
 	 */
-	def getAddress(inkler: models.Inkler): String = {
-    log("getAddress", Map("inkler" -> inkler.uuid))
+	def getAddress(user: models.User): String = {
+    log("getAddress", Map("user" -> user.uuid))
 
 		""
 	}

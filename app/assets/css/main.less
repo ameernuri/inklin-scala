@@ -1,3 +1,5 @@
+@import "lib/bootstrap/less/variables.less";
+
 @content-width: 500px;
 @light-gray: #DFDFDF;
 @lightest-gray: #F2F2F2;
@@ -260,6 +262,7 @@ input[type=submit] {
 	border-bottom-color: transparent;
 	border-radius: 100%;
 	display: block;
+	background: rgba(250, 250, 250, 0.5);
 }
 
 @keyframes rotate {
@@ -314,4 +317,37 @@ div.tooltip-inner {
 
 .tooltip.bottom .tooltip-arrow {
 	border-bottom-color: #ddd;
+}
+
+.modal-dialog {
+	margin-top: 80px;
+
+	.modal-content {
+		border-radius: 10px;
+		border: none;
+
+		.modal-header {
+			border-radius: 10px 10px 0 0;
+			text-align: center;
+			border: none;
+			background-color: #fafafa;
+
+			h4 {
+				color: #888;
+				text-transform: uppercase;
+				font-weight: 200;
+				font-size: 16px;
+			}
+		}
+
+		.modal-footer {
+			border-radius: 0 0 10px 10px;
+			border-top-color: #f4f4f4;
+			margin: 0;
+		}
+
+		.modal-body {
+			padding: 25px;
+		}
+	}
 }

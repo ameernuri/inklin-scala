@@ -36,12 +36,12 @@ object Inkles extends Controller with Guard {
 	def create(returnAs: String = "rendered") = Action { implicit request =>
 		log("create")
 
-    userOpt.map { inkler =>
+    currentUserOpt.map { user =>
       inkleForm.bindFromRequest.fold(
       formWithErrors => BadRequest,
       {
         case (inkle) =>
-          val uuid = Inkle.create(inkler.uuid, inkle)
+          val uuid = Inkle.create(user.uuid, inkle)
           val newInkle = Inkle.find(uuid)
 
           if (returnAs == "rendered") {
@@ -53,8 +53,8 @@ object Inkles extends Controller with Guard {
               "uuid" -> newInkle._1.uuid,
               "inkle" -> newInkle._1.inkle,
               "createdTime" -> newInkle._1.created,
-              "inklerUuid" -> newInkle._2.uuid,
-              "inklerUsername" -> newInkle._2.username,
+              "userUuid" -> newInkle._2.uuid,
+              "userUsername" -> newInkle._2.username,
               "childrenCount" -> Inkle.childrenCount(newInkle._1.uuid)
             )
 
@@ -63,14 +63,14 @@ object Inkles extends Controller with Guard {
       }
       )
     }.getOrElse {
-      Redirect(routes.Inklers.signin())
+      Redirect(routes.Users.signin())
     }
 	}
 
 	def extend(parentUuid: String, pageUuid: String, returnAs: String = "rendered") = IsAuthenticated { username => implicit request =>
 		log("extend", Map("parentUuid" -> parentUuid))
 
-		val inklerUuid = Inkler.findUuidByUsername(username).get
+		val userUuid = User.findUuidByUsername(username).get
 
 		inkleForm.bindFromRequest.fold(
 			formWithErrors => BadRequest("something wrong with the data"),
@@ -78,7 +78,7 @@ object Inkles extends Controller with Guard {
 				case (inkle) =>
 
         val origin = Inkle.getOriginUuid(parentUuid)
-				val uuid = Inkle.create(inklerUuid, inkle, Some(parentUuid), origin)
+				val uuid = Inkle.create(userUuid, inkle, Some(parentUuid), origin)
 				val newInkle = Inkle.find(uuid)
 
         if (returnAs == "rendered") {
@@ -89,9 +89,9 @@ object Inkles extends Controller with Guard {
             "uuid" -> newInkle._1.uuid,
             "inkle" -> newInkle._1.inkle,
             "createdTime" -> newInkle._1.created,
-            "inklerUuid" -> newInkle._2.uuid,
+            "userUuid" -> newInkle._2.uuid,
             "childrenCount" -> Inkle.childrenCount(newInkle._1.uuid),
-            "inklerUsername" -> newInkle._2.username
+            "userUsername" -> newInkle._2.username
           )
 
           Ok(json_inkle)
@@ -142,9 +142,9 @@ object Inkles extends Controller with Guard {
           "uuid" -> inkle._1.uuid,
           "inkle" -> inkle._1.inkle,
           "createdTime" -> inkle._1.created,
-          "inklerUuid" -> inkle._2.uuid,
+          "userUuid" -> inkle._2.uuid,
           "childrenCount" -> Inkle.childrenCount(inkle._1.uuid),
-          "inklerUsername" -> inkle._2.username
+          "userUsername" -> inkle._2.username
         )
       }
     )
@@ -173,9 +173,9 @@ object Inkles extends Controller with Guard {
   def fetchPage(page: Int) = IsAuthenticated { username => _ =>
 	  log("fetchPage", Map("page" -> page))
 
-    val inklerUuid = Inkler.findUuidByUsername(username).get
+    val userUuid = User.findUuidByUsername(username).get
 
-    val inkles = Inkle.findFollowed(inklerUuid, page)
+    val inkles = Inkle.findFollowed(userUuid, page)
 
     val fetchedInkles: JsArray = arr(
       inkles.items.map { inkle =>
@@ -184,18 +184,18 @@ object Inkles extends Controller with Guard {
           "inkle" -> inkle._1.inkle,
           "parentUuid" -> inkle._1.parentUuid,
           "createdTime" -> inkle._1.created,
-          "inklerUuid" -> inkle._2.uuid,
+          "userUuid" -> inkle._2.uuid,
           "childrenCount" -> Inkle.childrenCount(inkle._1.uuid),
-          "inklerUsername" -> inkle._2.username,
+          "userUsername" -> inkle._2.username,
           "children" -> arr(
             Inkle.findChildren(inkle._1.uuid).map { child =>
               obj(
                 "uuid" -> child._1.uuid,
                 "inkle" -> child._1.inkle,
                 "createdTime" -> child._1.created,
-                "inklerUuid" -> child._2.uuid,
+                "userUuid" -> child._2.uuid,
                 "childrenCount" -> Inkle.childrenCount(child._1.uuid),
-                "inklerUsername" -> child._2.username
+                "userUsername" -> child._2.username
               )
             }
           )
@@ -209,7 +209,7 @@ object Inkles extends Controller with Guard {
   def fetchOopsPage(page: Int) = Action { implicit r =>
 	  log("fetchOopsPage", Map("page" -> page))
 
-    val inkles = Inkle.fetchPage(user.uuid, page)
+    val inkles = Inkle.fetchPage(currentUser.uuid, page)
 
     val fetchedInkles: JsArray = arr(
       inkles.items.map { inkle =>
@@ -217,18 +217,18 @@ object Inkles extends Controller with Guard {
           "uuid" -> inkle._1.uuid,
           "inkle" -> inkle._1.inkle,
           "createdTime" -> inkle._1.created,
-          "inklerUuid" -> inkle._2.uuid,
+          "userUuid" -> inkle._2.uuid,
           "childrenCount" -> Inkle.childrenCount(inkle._1.uuid),
-          "inklerUsername" -> inkle._2.username,
+          "userUsername" -> inkle._2.username,
           "children" -> arr(
             Inkle.findChildren(inkle._1.uuid).map { child =>
               obj(
                 "uuid" -> child._1.uuid,
                 "inkle" -> child._1.inkle,
                 "createdTime" -> child._1.created,
-                "inklerUuid" -> child._2.uuid,
+                "userUuid" -> child._2.uuid,
                 "childrenCount" -> Inkle.childrenCount(child._1.uuid),
-                "inklerUsername" -> child._2.username
+                "userUsername" -> child._2.username
               )
             }
           )
@@ -249,9 +249,9 @@ object Inkles extends Controller with Guard {
       "inkle" -> inkle._1.inkle,
       "parentUuid" -> inkle._1.parentUuid,
       "createdTime" -> inkle._1.created,
-      "inklerUuid" -> inkle._2.uuid,
+      "userUuid" -> inkle._2.uuid,
       "childrenCount" -> Inkle.childrenCount(inkle._1.uuid),
-      "inklerUsername" -> inkle._2.username
+      "userUsername" -> inkle._2.username
     )
 
     Ok(fetchedInkles)

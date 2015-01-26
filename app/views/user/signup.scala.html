@@ -3,7 +3,7 @@
 
 @secondary("Inklin : Sign up") {
 
-	@helper.form(routes.Inklers.create()) {
+	@helper.form(routes.Users.create()) {
 		<div class="col-md-6 col-md-offset-3">
 			<div id="signup-page-form">
 				<h2>Sign up</h2>
@@ -47,7 +47,7 @@
 				<input type="submit" value="Create Account">
 			</div>
 			<div id="no-account">
-				<span>Already on inklin? <a href="@routes.Inklers.signin()">Sign in</a></span>
+				<span>Already on inklin? <a href="@routes.Users.signin()">Sign in</a></span>
 			</div>
 		</div>
 	}

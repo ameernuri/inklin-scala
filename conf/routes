@@ -1,9 +1,9 @@
 # Routes
 
 # Home page
-GET         /new-inkle                        controllers.Apps.inkle()
-GET         /                                 controllers.Apps.home()
-GET         /home                             controllers.Apps.home()
+GET         /new-inkle                        controllers.Apps.inkle
+GET         /                                 controllers.Apps.home
+GET         /origins                          controllers.Apps.origins
 
 POST        /inkles/create                    controllers.Inkles.create(returnAs: String ?= "rendered")
 POST        /inkles/extend/:parentUuid        controllers.Inkles.extend(parentUuid: String, pageUuid: String, returnAs: String ?= "rendered")
@@ -20,14 +20,14 @@ POST        /inkles/get_children/:pageUuid/:uuid   controllers.Inkles.getPageOfC
 
 POST        /inkles/delete                    controllers.Inkles.delete
 
-# Inklers
-GET         /signup                           controllers.Inklers.signup
-POST        /signup                           controllers.Inklers.create
-GET         /signin                           controllers.Inklers.signin
-POST        /signin                           controllers.Inklers.authenticate
-GET         /signout                          controllers.Inklers.signout
-GET         /:uuid                            controllers.Inklers.view(uuid: String)
-GET         /$username<[a-zA-Z0-9_]+>         controllers.Inklers.viewByUsername(username: String)
+# Users
+GET         /signup                           controllers.Users.signup
+POST        /signup                           controllers.Users.create
+GET         /signin                           controllers.Users.signin
+POST        /signin                           controllers.Users.authenticate
+GET         /signout                          controllers.Users.signout
+GET         /:uuid                            controllers.Users.view(uuid: String)
+GET         /$username<[a-zA-Z0-9_]+>         controllers.Users.viewByUsername(username: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                     controllers.Assets.at(path="/public", file)

@@ -38,24 +38,24 @@ object Inkle {
 		}
 	}
 
-	def simpleReturn(inkle: String = "inkle", inkler: String = "inkler", parent: String = "parent"): String = {
+	def simpleReturn(inkle: String = "inkle", user: String = "user", parent: String = "parent"): String = {
 		s"""
-		  |$inkle.uuid as inkleUuid, $inkler.uuid as inkleOwnerUuid, $inkle.inkle,
+		  |$inkle.uuid as inkleUuid, $user.uuid as inkleOwnerUuid, $inkle.inkle,
 		  |$parent.uuid as inkleParentUuid, $inkle.created, $inkle.deleted
 		""".stripMargin
 	}
 
-	val withConnected = Inkle.simple ~ Inkler.simple map {
-		case inkle ~ inkler => (inkle, inkler)
+	val withConnected = Inkle.simple ~ User.simple map {
+		case inkle ~ user => (inkle, user)
 	}
 
 	val inkleParser = Inkle.simple ~ Inkle.simple map {
 		case inkle ~ child => (inkle, child)
 	}
 
-	def create(inklerUuid: String, inkle: String, parentUuid: Option[String] = None, originUuid: Option[String] = None): String = {
+	def create(userUuid: String, inkle: String, parentUuid: Option[String] = None, originUuid: Option[String] = None): String = {
 		log("create", Map(
-			"inklerUuid" -> inklerUuid,
+			"userUuid" -> userUuid,
 			"parentUuid" -> parentUuid,
 			"inkle" -> inkle
 		))
@@ -72,7 +72,7 @@ object Inkle {
 
 		val cypher =
 			s"""
-			  |MATCH (inkler:Inkler {uuid: {inklerUuid}})
+			  |MATCH (user:User {uuid: {userUuid}})
 			  |$parentNode
 			  |CREATE (inkle:Inkle {
 				| uuid: "$randomUUID",
@@ -80,15 +80,15 @@ object Inkle {
 			  | created: timestamp(),
 				| deleted: false
 			  |}),
-			  |(inkler)-[:owns_inkle]->(inkle)
+			  |(user)-[:owns_inkle]->(inkle)
 			  |$parentQuery,
-			  |(inkle)-[:is_dependent_on]->(inkler)
+			  |(inkle)-[:is_dependent_on]->(user)
 			  |RETURN inkle.uuid
 			""".stripMargin
 
 		if (parentUuid.isDefined) {
 			Cypher(cypher).on(
-			  "inklerUuid" -> inklerUuid,
+			  "userUuid" -> userUuid,
 			  "inkle" -> inkle,
 			  "parentUuid" -> parentUuid.get,
 			  "originUuid" -> originUuid.getOrElse("")
@@ -96,22 +96,22 @@ object Inkle {
 
 		} else {
 			Cypher(cypher).on(
-			  "inklerUuid" -> inklerUuid,
+			  "userUuid" -> userUuid,
 			  "inkle" -> inkle
 			).as(scalar[String].single)
 		}
 	}
 
-	def edit(inkleUuid: String, inkle: String): (Inkle, Inkler) = {
+	def edit(inkleUuid: String, inkle: String): (Inkle, User) = {
 		log("edit", Map("inkleUuid" -> inkleUuid, "inkle" -> inkle))
 
 		Cypher(
 			s"""
-				|MATCH (inkler:Inkler)-[:owns_inkle]->(inkle:Inkle {uuid: {inkleUuid}})
-				|WITH inkler, inkle
+				|MATCH (user:User)-[:owns_inkle]->(inkle:Inkle {uuid: {inkleUuid}})
+				|WITH user, inkle
 				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent)
 				|SET inkle.inkle = {newInkle}, inkle.deleted = false
-				|RETURN ${simpleReturn()}, ${Inkler.simpleReturn()}
+				|RETURN ${simpleReturn()}, ${User.simpleReturn()}
 			""".stripMargin
 		).on(
 			"inkleUuid" -> inkleUuid,
@@ -152,26 +152,26 @@ object Inkle {
 		).execute()
 	}
 
-	def fetchPage(inkler: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, Inkler)] = {
-		log("fetchPage", Map("inkler" -> inkler, "page" -> page, "pageSize" -> pageSize))
+	def fetchPage(user: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, User)] = {
+		log("fetchPage", Map("user" -> user, "page" -> page, "pageSize" -> pageSize))
 
 		val offset = page * pageSize
 
 		val query =
 			s"""
-			  |MATCH (inkler:Inkler {uuid: {inklerUuid}})-[:owns_inkle]->(inkle:Inkle)
-				|WITH inkle, inkler
+			  |MATCH (user:User {uuid: {userUuid}})-[:owns_inkle]->(inkle:Inkle)
+				|WITH inkle, user
 				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent:Inkle)
-				|WITH inkle, inkler, parent
+				|WITH inkle, user, parent
 				|OPTIONAL MATCH (child)-[:has_parent]->(inkle)
-				|WITH inkle, inkler, parent, child
+				|WITH inkle, user, parent, child
 				|OPTIONAL MATCH (children)-[:has_parent*..]->(inkle)
 			  |RETURN
 			""".stripMargin
 
 		val inkles = Cypher(
 			s"""
-			  |$query DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()}, (count(child) * 3 + (count(children))) as rating
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, (count(child) * 3 + (count(children))) as rating
 				|ORDER BY rating DESC
 				|SKIP {offset}
 				|LIMIT {pageSize}
@@ -179,19 +179,59 @@ object Inkle {
 		).on(
 			"pageSize" -> pageSize,
 			"offset" -> offset,
-			"inklerUuid" -> inkler
+			"userUuid" -> user
 		).as(withConnected.*)
 
 		val total = Cypher(
 			s"""
 			  |$query count(DISTINCT inkle)
 			""".stripMargin
-		).on("inklerUuid" -> inkler).as(scalar[Long].single)
+		).on("userUuid" -> user).as(scalar[Long].single)
 
 		Page(inkles, page, offset, total)
 	}
 
-	def getParents(inkleUuid: String, page: Int = 0, pageSize: Int = 5): Page[(Inkle, Inkler)] = {
+	def originsPage(user: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, User)] = {
+		log("originsPage", Map("user" -> user, "page" -> page, "pageSize" -> pageSize))
+
+		val offset = page * pageSize
+
+		val query =
+			s"""
+			  |MATCH (user:User {uuid: {userUuid}})-[:owns_inkle]->(inkle:Inkle)
+				|WHERE not((inkle)-[:has_parent]->())
+				|WITH inkle, user
+				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent:Inkle)
+				|WITH inkle, user, parent
+				|OPTIONAL MATCH (child)-[:has_parent]->(inkle)
+				|WITH inkle, user, parent, child
+				|OPTIONAL MATCH (children)-[:has_parent*..]->(inkle)
+			  |RETURN
+			""".stripMargin
+
+		val inkles = Cypher(
+			s"""
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, (count(child) * 3 + (count(children))) as rating
+				|ORDER BY rating DESC
+				|SKIP {offset}
+				|LIMIT {pageSize}
+			""".stripMargin
+		).on(
+			"pageSize" -> pageSize,
+			"offset" -> offset,
+			"userUuid" -> user
+		).as(withConnected.*)
+
+		val total = Cypher(
+			s"""
+			  |$query count(DISTINCT inkle)
+			""".stripMargin
+		).on("userUuid" -> user).as(scalar[Long].single)
+
+		Page(inkles, page, offset, total)
+	}
+
+	def getParents(inkleUuid: String, page: Int = 0, pageSize: Int = 5): Page[(Inkle, User)] = {
 		log("getParents", Map("inkleUuid" -> inkleUuid, "page" -> page, "pageSize" -> pageSize))
 
 		val offset = page * pageSize
@@ -199,15 +239,15 @@ object Inkle {
 		val query =
 			s"""
 			  |MATCH (child:Inkle { uuid: {inkle} })-[:has_parent*..]->(inkle:Inkle),
-				|(inkler)-[:owns_inkle]->(inkle)
-				|WITH inkle, inkler
+				|(user)-[:owns_inkle]->(inkle)
+				|WITH inkle, user
 				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent:Inkle)
 			  |RETURN
 			""".stripMargin
 
 		val inkles = Cypher(
 			s"""
-			  |$query DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()}
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}
 				|ORDER BY inkle.created DESC
 				|SKIP {offset}
 				|LIMIT {pageSize}
@@ -229,16 +269,16 @@ object Inkle {
 		Page(inkles, page, offset, total)
 	}
 
-	def getOrigin(inkleUuid: String): Option[(Inkle, Inkler)] = {
+	def getOrigin(inkleUuid: String): Option[(Inkle, User)] = {
 		log("getOrigin", Map("inkleUuid" -> inkleUuid))
 
 		Cypher(
 			s"""
 			  |MATCH (descendant {uuid: {inkleUuid}})-[:has_origin]->(inkle),
-				|(inkler:Inkler)-[:owns_inkle]->(inkle)
-				|WITH inkler, inkle
+				|(user:User)-[:owns_inkle]->(inkle)
+				|WITH user, inkle
 				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent {uuid: {parentUuid}})
-			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()}
+			  |RETURN DISTINCT ${simpleReturn()}, ${User.simpleReturn()}
 			""".stripMargin
 		).on(
 			"inkleUuid" -> inkleUuid
@@ -258,21 +298,21 @@ object Inkle {
 		).as(scalar[String].singleOpt)
 	}
 
-	def findChildren(parentUuid: String): Seq[(Inkle, Inkler)] = {
+	def findChildren(parentUuid: String): Seq[(Inkle, User)] = {
 		log("findChildren", Map("parentUuid" -> parentUuid))
 
 		Cypher(
 			s"""
 			  |MATCH (inkle)-[:has_parent]->(parent {uuid: {parentUuid}}),
-			  |(inkler)-[:owns_inkle]->(inkle)
-			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()}
+			  |(user)-[:owns_inkle]->(inkle)
+			  |RETURN DISTINCT ${simpleReturn()}, ${User.simpleReturn()}
 			""".stripMargin
 		).on(
 			"parentUuid" -> parentUuid
 		).as(withConnected.*)
 	}
 
-	def findPageOfChildren(parentUuid: String, page: Int = 0, pageSize: Int = 5): Page[(Inkle, Inkler)] = {
+	def findPageOfChildren(parentUuid: String, page: Int = 0, pageSize: Int = 5): Page[(Inkle, User)] = {
 		log("findChildren", Map("parentUuid" -> parentUuid))
 
 		val offset = page * pageSize
@@ -280,15 +320,15 @@ object Inkle {
 		val query =
 			s"""
 			  |MATCH (inkle)-[:has_parent]->(parent {uuid: {parentUuid}}),
-			  |(inkler)-[:owns_inkle]->(inkle)
-				|WITH inkle, inkler, parent
+			  |(user)-[:owns_inkle]->(inkle)
+				|WITH inkle, user, parent
 				|OPTIONAL MATCH (child)-[:has_parent]->(inkle)
 			  |RETURN
 			""".stripMargin
 
 		val inkles = Cypher(
 			s"""
-			  |$query DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()}, count(child) as childCount
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, count(child) as childCount
 				|ORDER BY childCount DESC
 				|SKIP {offset}
 				|LIMIT {pageSize}
@@ -310,15 +350,15 @@ object Inkle {
 		Page(inkles, page, offset, total)
 	}
 
-	def getParent(uuid: String): (Inkle, Inkler) = {
+	def getParent(uuid: String): (Inkle, User) = {
 		log("getParent", Map("uuid" -> uuid))
 
 		Cypher(
 			s"""
 			  |MATCH (child {uuid: {childUuid}})-[:has_parent]->(inkle:Inkle),
 			  |(inkle)-[:has_parent]->(parent),
-			  |(inkler)-[:owns_inkle]->(inkle)
-			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()},
+			  |(user)-[:owns_inkle]->(inkle)
+			  |RETURN DISTINCT ${simpleReturn()}, ${User.simpleReturn()},
 			""".stripMargin
 		).on(
 			"childUuid" -> uuid
@@ -351,44 +391,44 @@ object Inkle {
 		).as(scalar[Long].single)
 	}
 
-	def find(uuid: String): (Inkle, Inkler) = {
+	def find(uuid: String): (Inkle, User) = {
 		log("find", Map("uuid" -> uuid))
 
 		Cypher(
 			s"""
-			  |MATCH (inkler)-[:owns_inkle]->(inkle:Inkle {uuid: {inkleUuid}})
-			  |WITH inkle, inkler
+			  |MATCH (user)-[:owns_inkle]->(inkle:Inkle {uuid: {inkleUuid}})
+			  |WITH inkle, user
 			  |OPTIONAL MATCH (inkle)-[:has_parent]->(parent)
-			  |RETURN DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()}
+			  |RETURN DISTINCT ${simpleReturn()}, ${User.simpleReturn()}
 			""".stripMargin
 		).on(
 			"inkleUuid" -> uuid
 		).as(withConnected.single)
 	}
 
-	def findFollowed(inklerUuid: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, Inkler)] = {
-		log("findFollowed", Map("inklerUuid" -> inklerUuid, "page" -> page, "pageSize" -> pageSize))
+	def findFollowed(userUuid: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, User)] = {
+		log("findFollowed", Map("userUuid" -> userUuid, "page" -> page, "pageSize" -> pageSize))
 
 		val offset = page * pageSize
 
 		val query =
 			s"""
-			  |MATCH (follower:Inkler {uuid: {followerUuid}}),
-				|(inkler)-[:owns_inkle]->(inkle)
-			  |WITH follower, inkle, inkler
+			  |MATCH (follower:User {uuid: {followerUuid}}),
+				|(user)-[:owns_inkle]->(inkle)
+			  |WITH follower, inkle, user
 			  |OPTIONAL MATCH (inkle)-[:has_parent]->(parent)
 			  |RETURN
 			""".stripMargin
 
 		val inkles = Cypher(
 			s"""
-			  |$query DISTINCT ${simpleReturn()}, ${Inkler.simpleReturn()},
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()},
 			  |ORDER BY inkle.created desc
 			  |SKIP {offset}
 			  |LIMIT {pageSize}
 			""".stripMargin
 		).on(
-			"followerUuid" -> inklerUuid,
+			"followerUuid" -> userUuid,
 			"pageSize" -> pageSize,
 			"offset" -> offset
 		).as(withConnected.*)
@@ -398,7 +438,7 @@ object Inkle {
 			  |$query count(DISTINCT inkle)
 			""".stripMargin
 		).on(
-			"followerUuid" -> inklerUuid
+			"followerUuid" -> userUuid
 		).as(scalar[Long].single)
 
 		Page(inkles, page, offset, total)

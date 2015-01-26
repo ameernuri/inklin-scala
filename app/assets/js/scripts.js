@@ -4,15 +4,15 @@ var lastScrollTop = 0;
 var scrolling = false;
 
 $(document).bind('DOMSubtreeModified', function() {
-	$(function () {
-		$('[data-toggle="tooltip"]').tooltip();
-	});
+	modifyActions();
 });
 
 $(document).ready(function() {
-	$(function () {
-	  $('[data-toggle="tooltip"]').tooltip();
-	});
+	mainActions();
+});
+
+function mainActions() {
+	modifyActions();
 
 	$("#popover-pad").click(function() {
 		hidePopover();
@@ -38,7 +38,7 @@ $(document).ready(function() {
 			data: $('#delete-inkle-form').serialize(),
 			success: function (e) {
 				$('#main-loader').hide();
-				hidePopover();
+				$("#inkle-delete").modal('hide');
 				if (e == "deleted") {
 
 					$($('#deleted-inkle-page').val()).slideUp();
@@ -52,13 +52,19 @@ $(document).ready(function() {
 				alert("ERROR: "+ e);
 
 				$('#main-loader').hide();
-				hidePopover();
+				$("#inkle-delete").modal('hide');
 			}
 		});
 
 		return false;
 	});
-});
+}
+
+function modifyActions() {
+	$(function () {
+	  $('[data-toggle="tooltip"]').tooltip();
+	});
+}
 
 function popover(element) {
 	$(element).show().css("top", $(window).scrollTop() + 100);
@@ -111,24 +117,6 @@ $(document).keydown(function(e) {
 		return false;
 	}
 });
-//
-//$(window).scroll(function(e) {
-//
-//	var st = $(document).scrollTop();
-//
-//	if (st < lastScrollTop){
-//		// scrolling up
-//
-//		scrollPageUp();
-//		return false;
-//	} else {
-//		// scrolling down
-//
-//		scrollPageDown();
-//		return false;
-//	}
-//
-//});
 
 $(window).bind('mousewheel DOMMouseScroll', function(e){
 
@@ -259,7 +247,7 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 	});
 
 	$('#page-'+ pageUuid +'-'+ uuid +'-delete-button').click(function() {
-		popover("#inkle-delete");
+		$('#inkle-delete').modal('show');
 		$("#delete-inkle-uuid").val(uuid);
 		$("#deleted-inkle-page").val('#page-'+ pageUuid +'-'+ uuid +'-inkle');
 		return false;

@@ -1,4 +1,4 @@
-@(pageUuid: String, inkle: (Inkle, Inkler))
+@(pageUuid: String, inkle: (Inkle, User))
 
 <div style="display: table; table-layout: fixed; float: left;" class="col-sm-4" id="page-@pageUuid-@{inkle._1.uuid}-center-wrapper">
   <div style="font-size: 30px; padding: 0 30px; display: table-cell; vertical-align: middle;" class="full-height">
@@ -29,7 +29,7 @@
       }
 
       <div class="text-right inkle-action-buttons" id="page-@pageUuid-@{inkle._1.uuid}-inkle-action-buttons">
-        <button class="text-danger" data-toggle="modal" data-target="#myModal">
+        <button class="text-danger" id="page-@pageUuid-@{inkle._1.uuid}-delete-button">
           <span class="glyphicon glyphicon-trash"></span> Delete
         </button>
       </div>
