@@ -7,7 +7,7 @@
 		@templates.components.inkles(currentUser, Inkle.fetchPage(currentUser.uuid))
 	}
 }.getOrElse {
-	@secondary("Inklin • a thinking tool.") {
+	@welcome("Inklin • a thinking tool.") {
 		@templates.components.welcome()
 	}
 }

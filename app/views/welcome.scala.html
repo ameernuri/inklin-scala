@@ -1,0 +1,44 @@
+@(title: String)(content: Html)
+
+@import java.util.Date
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>@title</title>
+		<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
+		<link href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))' rel='stylesheet'>
+		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.min.css")">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/secondary.min.css")">
+
+		<link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+	</head>
+
+	<body style="background-color: #fefefe;">
+		<div id="header" style="text-align: center; padding: 30px 20px 20px; width: 100%;">
+			<div id="header-content">
+				<div style="margin: 40px 0;">
+					<img src="@routes.Assets.versioned("images/inklin.svg")" onerror="this.onerror = null; this.src='@routes.Assets.versioned("images/inklin.png")'" alt="inklin" style="width: 240px;">
+				</div>
+				<div id="header-logo">
+					<img src="@routes.Assets.versioned("images/inklin-beta.svg")" onerror="this.onerror = null; this.src='@routes.Assets.versioned("images/inklin-beta.png")'"  alt="inklin" style="width: 160px;">
+				</div>
+			</div>
+		</div>
+
+		<div id="content" class="col-xs-12" style="overflow: auto; margin-bottom: 90px;">
+			@content
+		</div>
+
+		<div id="footer" class="col-xs-12" style="margin-top: 20px;position: fixed; bottom: 0;">
+			<div id="footer-copy" class="text-center">
+				@defining(new Date) { date =>
+
+					&copy; @date.format("yyyy") &bull; Inklin by Penser Labs.
+				}
+			</div>
+			<br>
+		</div>
+	</body>
+</html>
