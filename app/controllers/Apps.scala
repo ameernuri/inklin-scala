@@ -1,12 +1,14 @@
 package controllers
 
+import play.api.Routes
 import play.api.mvc._
-
-import models._
-import views._
+import views.html._
+import views.html
 
 import security._
 import monkeys.Loggers._
+
+import controllers.routes.javascript
 
 object Apps extends Controller with Guard {
 
@@ -21,6 +23,18 @@ object Apps extends Controller with Guard {
 		Ok(html.home(currentUserOpt))
 	}
 
+	def templateHome = Action { implicit r =>
+		log("templateHome")
+
+		Ok(templates.home(currentUserOpt))
+	}
+
+	def templateOrigins = Action { implicit r =>
+		log("templateOrigins")
+
+		Ok(templates.origins(currentUser))
+	}
+
 	def origins = Action { implicit r =>
 		log("origins")
 
@@ -31,5 +45,17 @@ object Apps extends Controller with Guard {
 		log("inkle")
 
 		Ok(html.inkle.inkle())
+	}
+
+	// js router
+	def javascriptRoutes = Action { implicit request =>
+	  Ok(
+	    Routes.javascriptRouter("jsRoutes")(
+	      routes.javascript.Apps.templateHome,
+	      routes.javascript.Apps.templateOrigins,
+	      routes.javascript.Inkles.templateOrigin,
+	      routes.javascript.Inkles.create
+	    )
+	  ).as("text/javascript")
 	}
 }

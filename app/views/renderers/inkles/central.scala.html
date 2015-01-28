@@ -3,13 +3,12 @@
 <div style="display: table; table-layout: fixed; float: left;" class="col-sm-4" id="page-@pageUuid-@{inkle._1.uuid}-center-wrapper">
   <div style="font-size: 30px; padding: 0 30px; display: table-cell; vertical-align: middle;" class="full-height">
     <span style="color: #eee;">
-    @if(inkle._1.parentUuid.isDefined) { ••• } else {
-      <span class="glyphicon glyphicon-record"></span>
-      <br>
+    @if(inkle._1.parentUuid.isDefined) { •••<br> } else {
+      <span class="glyphicon glyphicon-record"></span><br>
     }
     </span>
 
-    <span data-toggle="tooltip" data-placement="top" title="Edit" id="page-@pageUuid-@{inkle._1.uuid}-inkle-text" style="overflow: auto; cursor: pointer;">
+    <span data-toggle="tooltip" data-placement="top" title="Edit" id="page-@pageUuid-@{inkle._1.uuid}-inkle-text" style="overflow: auto;" class="pointer">
       @if(!inkle._1.deleted) {
         @inkle._1.inkle
       } else {
@@ -24,7 +23,7 @@
           <button data-toggle="tooltip" data-placement="top" title="Cancel" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-cancel" class="glyphicon glyphicon-remove"></button>
           <button data-toggle="tooltip" data-placement="top" title="Save" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-submit" class="glyphicon glyphicon-ok"></button>
         </div>
-	      <textarea name="inkle" id="page-@pageUuid-@{inkle._1.uuid}-edit-textarea" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
+	      <textarea name="inkle" id="page-@pageUuid-@{inkle._1.uuid}-edit-textarea" maxlength="80" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
 	      <input type="submit" value="•••" style="display: none;">
       }
 

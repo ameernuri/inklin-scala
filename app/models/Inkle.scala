@@ -191,6 +191,46 @@ object Inkle {
 		Page(inkles, page, offset, total)
 	}
 
+	def fetchPageByOrigin(origin: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, User)] = {
+		log("fetchPageByOrigin", Map("origin" -> origin, "page" -> page, "pageSize" -> pageSize))
+
+		val offset = page * pageSize
+
+		val query =
+			s"""
+			  |MATCH (origin:Inkle {uuid: {originUuid}})<-[:has_origin]-(inkle:Inkle),
+			  |(user:User)-[:owns_inkle]->(inkle:Inkle)
+				|WITH inkle, user
+				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent:Inkle)
+				|WITH inkle, user, parent
+				|OPTIONAL MATCH (child)-[:has_parent]->(inkle)
+				|WITH inkle, user, parent, child
+				|OPTIONAL MATCH (children)-[:has_parent*..]->(inkle)
+			  |RETURN
+			""".stripMargin
+
+		val inkles = Cypher(
+			s"""
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, (count(child) * 3 + (count(children))) as rating
+				|ORDER BY rating DESC
+				|SKIP {offset}
+				|LIMIT {pageSize}
+			""".stripMargin
+		).on(
+			"pageSize" -> pageSize,
+			"offset" -> offset,
+			"originUuid" -> origin
+		).as(withConnected.*)
+
+		val total = Cypher(
+			s"""
+			  |$query count(DISTINCT inkle)
+			""".stripMargin
+		).on("originUuid" -> origin).as(scalar[Long].single)
+
+		Page(inkles, page, offset, total)
+	}
+
 	def originsPage(user: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, User)] = {
 		log("originsPage", Map("user" -> user, "page" -> page, "pageSize" -> pageSize))
 

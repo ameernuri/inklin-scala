@@ -160,12 +160,22 @@ object Inkles extends Controller with Guard {
     Ok(renderers.inkles.children(Inkle.find(uuid), inkles, pageUuid, page))
   }
 
-	def view(uuid: String) = IsAuthenticated { username => _ =>
-		log("view", Map("uuid" -> uuid))
+	def origin(uuid: String) = IsAuthenticated { username => implicit r =>
+		log("origin", Map("uuid" -> uuid))
 
-		Ok(
-			inkle.view()
-		)
+		Ok(inkle.origin(currentUser, uuid))
+	}
+
+	def templateOrigin(uuid: String) = IsAuthenticated { username => implicit r =>
+		log("templateOrigin", Map("uuid" -> uuid))
+
+		Ok(templates.origin(currentUser, uuid))
+	}
+
+	def view(origin: String, uuid: String) = IsAuthenticated { username => implicit r =>
+		log("view", Map("origin" -> origin, "uuid" -> uuid))
+
+		Ok(inkle.view(currentUser, uuid))
 	}
 
   /** ajax actions **/

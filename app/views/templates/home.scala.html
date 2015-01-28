@@ -1,0 +1,9 @@
+@(user: Option[User])
+
+@user.map { currentUser =>
+	@templates.components.inkleForm()
+	@templates.components.inkles(currentUser, Inkle.fetchPage(currentUser.uuid))
+}.getOrElse {
+	@templates.components.welcome()
+}
+

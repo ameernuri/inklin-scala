@@ -1,0 +1,27 @@
+@()
+
+
+<div style="display: table; table-layout: fixed; float: left;width: 100%">
+  <div style="padding: 0 30px; display: table-cell; vertical-align: middle; text-align: center; width: 100%;" class="full-height">
+	    <h3 style="font-weight: 100; margin-bottom: 40px;">a thinking tool.</h3>
+
+    <div style="color: #aaa;">
+      <a href="@routes.Users.signin()" class="sign-button">Sign In</a> OR
+      <a href="@routes.Users.signup()" class="sign-button">Sign Up</a>
+    </div>
+	  <script>
+			var headerHeight = 250;
+
+			$(document).ready(function() {
+				var pageHeight = $(window).height() - headerHeight;
+				$(".full-height").css("height", pageHeight);
+			});
+
+			$(window).resize(function() {
+				var pageHeight = $(window).height() - headerHeight;
+				$(".full-height").css("height", pageHeight);
+			});
+
+			</script>
+  </div>
+</div>

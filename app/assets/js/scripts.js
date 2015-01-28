@@ -14,6 +14,40 @@ $(document).ready(function() {
 function mainActions() {
 	modifyActions();
 
+	$("#flash-container").click(function() {
+		$("#flash-content").html("");
+		$(this).fadeOut();
+	});
+
+	submitOnReturn('#modal-inkle-form', '#modal-inkle-textarea');
+
+	$('#modal-inkle-form').submit(function() {
+		log('add');
+
+		mainLoader(true);
+
+		$.ajax({
+			url: "/inkles/create?returnAs=json", /** jsRoutes.controllers.Inkles.create() gives error**/
+			data: $("#modal-inkle-form").serialize(),
+			type: "POST",
+			success: function(e) {
+				console.log(e);
+
+				renderRoute(jsRoutes.controllers.Inkles.templateOrigin(e.uuid), "/origins/"+ e.uuid, "Inklin");
+
+				mainLoader(false);
+				$("#add-modal").modal('hide');
+			},
+			error: function(e) {
+				mainLoader(false);
+
+				alert("oops.");
+			}
+		});
+
+		return false;
+	});
+
 	$("#popover-pad").click(function() {
 		hidePopover();
 	});
@@ -64,6 +98,50 @@ function modifyActions() {
 	$(function () {
 	  $('[data-toggle="tooltip"]').tooltip();
 	});
+
+	fullHeight();
+}
+
+function homeInkleAddActions() {
+
+	submitOnReturn('#home-inkle-form', '#inkle-textarea');
+
+	$('#home-inkle-form').submit(function() {
+		log('add');
+
+		mainLoader(true);
+
+		$.ajax({
+			url: "/inkles/create", /** jsRoutes.controllers.Inkles.create() gives error**/
+			data: $("#home-inkle-form").serialize(),
+			type: "Post",
+			success: function (e) {
+				$('#inkles-wrapper').prepend(e);
+				$('#inkle-textarea').val('');
+				fullHeight();
+				pageDown();
+
+				$('#main-loader').hide();
+			},
+			error: function (e) {
+				alert('ERROR: ' + e);
+
+				$('#main-loader').hide();
+			}
+		});
+
+		return false;
+	});
+}
+
+function mainLoader(show) {
+	var loader = $("#main-loader");
+
+	if (!show) {
+		loader.hide()
+	} else {
+		loader.show();
+	}
 }
 
 function popover(element) {
@@ -187,37 +265,6 @@ function pageUp() {
 	} else {
 		return false;
 	}
-}
-
-function addFormActions(addUrl) {
-
-	submitOnReturn('#home-inkle-form', '#inkle-textarea');
-
-	$('#home-inkle-form').submit(function() {
-		log('add');
-
-		$('#main-loader').show();
-		$.ajax({
-			url: addUrl,
-			data: $('#home-inkle-form').serialize(),
-			type: "POST",
-			success: function (e) {
-				$('#inkles-wrapper').prepend(e);
-				$('#inkle-textarea').val('');
-				fullHeight();
-				pageDown();
-
-				$('#main-loader').hide();
-			},
-			error: function(e) {
-				alert('ERROR: ' + e);
-
-				$('#main-loader').hide();
-			}
-		});
-
-		return false;
-	});
 }
 
 function childrenPaginationActions(button, pageUuid, inkleUuid, pageNumber, fetcherUrl) {

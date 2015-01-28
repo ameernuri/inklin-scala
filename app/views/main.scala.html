@@ -12,10 +12,13 @@
 
 		<link href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))' rel='stylesheet'>
 		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.min.css")">
+		<!--link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'-->
 
 		<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
 		<script src='@routes.WebJarAssets.at(WebJarAssets.locate("js/bootstrap.min.js"))'></script>
 		<script src="@routes.Assets.versioned("js/scripts.js")"></script>
+		<script src="@routes.Assets.versioned("js/router.js")"></script>
+		<script type="text/javascript" src="@routes.Apps.javascriptRoutes()"></script>
 		<script src="@routes.Assets.versioned("js/my.js")"></script>
 	</head>
 	<body style="background-color: #fefefe;">
@@ -24,6 +27,18 @@
 			<span class="loader" id="main-loader" style="display:none;"></span>
 		</div>
 
+		<!--div id="flash-container">
+			<span class="pull-right" id="flash-close">&times;</span>
+			<div id=flash-content>
+					<div class="success flash-item">
+					</div>
+					<div class="error flash-item">
+					</div>
+
+			</div>
+		</div-->
+
+		<!-- delete modal -->
 		<div class="modal fade" id="inkle-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog">
 		    <div class="modal-content">
@@ -69,41 +84,25 @@
 		  </div>
 		</div>
 
-		<div class="popover-container col-sm-4 col-sm-offset-4" id="inkle-delete">
-			<h3>Delete Idea</h3>
+		<!-- add modal -->
+		<div class="modal fade" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+			    @helper.form(routes.Inkles.create(), 'id -> "modal-inkle-form") {
+				    <div class="modal-header">
+					    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					    <h4 class="modal-title" id="myModalLabel">Something in your mind?</h4>
+				    </div>
+				    <div class="modal-body" style="overflow : auto;">
+					    <p class="text-center">Big ideas start with an inkling. Write it down:</p>
+					    <textarea id="modal-inkle-textarea" class="inkle-textarea" name="inkle" placeholder="how about..." style="width: 100%; border: 1px solid #ddd;height: 90px; font-size: 25px;padding: 25px; text-align: center;box-sizing: border-box;" autofocus="autofocus" maxlength="80"></textarea>
 
-			@helper.form(routes.Inkles.delete(), 'id -> "delete-inkle-form") {
-				<div>
-					<label>
-						<input type="radio" name="children" value="keep" checked>
-						Soft Delete
-					</label>
-					<p class="small text-muted">only the content of this idea is removed, the child ideas will not be affected</p>
-				</div>
-				<div>
-					<label>
-						<input type="radio" name="children" value="delete">
-						Hard Delete
-					</label>
-					<p class="small text-muted">this idea will be deleted with every descendant it has</p>
-				</div>
-
-				<input type="hidden" name="uuid" id="delete-inkle-uuid">
-				<input type="hidden" id="deleted-inkle-page">
-
-				<div>
-					<button class="pull-right btn btn-danger">
-						<span class="glyphicon glyphicon-trash"></span>
-						Delete
-					</button>
-
-					<button class="pull-right btn btn-default popover-close-button">
-						<span class="glyphicon glyphicon-remove"></span>
-						Cancel
-					</button>
-				</div>
-			}
-	  </div>
+					    <button type="button" class="btn btn-primary pull-right" style="color: #97C111; padding: 0; font-size: 40px; border:none; margin-top: 5px;background:none;">•••</button>
+				    </div>
+			    }
+		    </div>
+		  </div>
+		</div>
 
 		<div>
 			<div style="text-align: center; padding: 11px 50px;position: fixed;width: 100%;top: 0;background-color: #fafafa;z-index: 50;">
@@ -113,7 +112,7 @@
 
 				<div style="margin-right: 70px;font-size: 25px;position: fixed; right: 0;top: 10px;padding: 1px" class="pull-right top-menu">
 					<div class="dropdown">
-						<button data-toggle="tooltip" data-placement="bottom" title="New Inkle" id="main-add-btn" class="glyphicon glyphicon-plus">
+						<button data-target="#add-modal" data-toggle="tooltip" data-placement="bottom" title="New Inkle" id="main-add-btn" class="glyphicon glyphicon-plus">
 						</button>
 
 						<button data-target="@routes.Apps.origins()" data-toggle="tooltip" data-placement="bottom" title="Origins" id="main-origin-btn" class="glyphicon glyphicon-record">
@@ -132,27 +131,9 @@
 					  </ul>
 					</div>
 				</div>
-				<script>
-				$('#main-add-btn').click(function() {
-
-					$('#inkle-textarea').focus();
-					$('html, body').animate({
-						scrollTop: 0
-					});
-
-					return false;
-				});
-				$('#main-origin-btn').click(function() {
-				   window.history.pushState('obj', 'newtitle', '/origins');
-				   return false;
-				});
-				$('.home-link').click(function() {
-				   window.history.pushState('obj', 'newtitle', '/');
-				   return false;
-				});
-				</script>
 			</div>
-			<div style="margin: 56px auto 50px; padding: 0 30px; max-width: 1200px;" class="main-container">
+
+			<div style="margin: 56px auto 50px; padding: 0 30px; max-width: 1200px;" class="main-container" id="template-container">
 				@content
 			</div>
 

@@ -39,7 +39,7 @@ object User {
 		Cypher(
 			s"""
 			  |MATCH (user:User)
-			  |WHERE user.username = {username} and
+			  |WHERE (user.username = {username} OR user.email = {username}) AND
 			  |user.password = {password}
 			  |RETURN ${simpleReturn()}
 			""".stripMargin

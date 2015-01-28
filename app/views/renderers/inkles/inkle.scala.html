@@ -19,6 +19,7 @@
 
                   <span class="parents-chain-pointer">
                     <span class="parents-chain-point"></span>
+                    <span class="parents-chain-line"></span>
                   </span>
 
                   <script>
@@ -29,7 +30,12 @@
 
               @if(plain.total > 6) {
                 <div class="parents-chain-element parents-chain-non-parent text-muted small">
-                  [@(plain.total - 6) more]
+                  <span style="margin-right: -3px; color: #ccc">[@(plain.total - 6) more] ••</span>
+
+                  <span class="parents-chain-pointer">
+                    <span class="parents-chain-point parents-chain-point-more"></span>
+                    <span class="parents-chain-line"></span>
+                  </span>
                 </div>
               }
 

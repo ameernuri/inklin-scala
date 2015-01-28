@@ -1,0 +1,33 @@
+@(currentUser: User)
+
+@defining(Inkle.originsPage(currentUser.uuid)) { origins =>
+
+	<div style="margin-top: 100px; overflow: auto;">
+
+		<h2 style="font-weight: 200; text-align: center;margin-bottom: 15px;">Origins</h2>
+
+		@origins.items.map { origin =>
+			<div id="origins-@origin._1.uuid" class="col-sm-4 text-center origin-brick">
+				<div class="origin-brick-content">
+					<h3>
+						@origin._1.inkle
+					</h3>
+					<div class="text-muted">
+					@defining(Inkle.childrenCount(origin._1.uuid)) { childrenCount =>
+						@defining(Inkle.descendantCount(origin._1.uuid)) { descendantCount =>
+							@childrenCount @if(childrenCount == 1) {child} else {children} •
+							@descendantCount @if(descendantCount == 1) {descendant} else {descendants}
+						}
+					}
+					</div>
+				</div>
+			</div>
+			<script>
+				$("#origins-@origin._1.uuid").click(function() {
+					renderRoute(jsRoutes.controllers.Inkles.templateOrigin("@origin._1.uuid"), "/origins/@origin._1.uuid", "Inklin");
+				});
+			</script>
+		}
+	</div>
+
+}
