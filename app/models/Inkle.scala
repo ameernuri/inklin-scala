@@ -171,7 +171,7 @@ object Inkle {
 
 		val inkles = Cypher(
 			s"""
-			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, (count(child) * 3 + (count(children))) as rating
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, (count(child) * 2 + (count(children))) as rating
 				|ORDER BY rating DESC
 				|SKIP {offset}
 				|LIMIT {pageSize}
@@ -211,7 +211,7 @@ object Inkle {
 
 		val inkles = Cypher(
 			s"""
-			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, (count(child) * 3 + (count(children))) as rating
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, (count(child) * 2 + (count(children))) as rating
 				|ORDER BY rating DESC
 				|SKIP {offset}
 				|LIMIT {pageSize}
@@ -251,7 +251,7 @@ object Inkle {
 
 		val inkles = Cypher(
 			s"""
-			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, (count(child) * 3 + (count(children))) as rating
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, (count(child) * 2 + (count(children))) as rating
 				|ORDER BY rating DESC
 				|SKIP {offset}
 				|LIMIT {pageSize}

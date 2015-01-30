@@ -1,5 +1,5 @@
-@()
+@(currentUser: User, viewedUser: User)
 
-@main("") {
-
+@main("Inklin • " + viewedUser.name, currentUser) {
+	@templates.users.view(viewedUser)
 }

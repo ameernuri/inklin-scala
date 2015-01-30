@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, currentUser: User)(content: Html)
 
 <!DOCTYPE html>
 
@@ -15,6 +15,8 @@
 		<!--link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'-->
 
 		<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
+		<script src="@routes.Assets.versioned("js/autosize.jquery.min.js")"></script>
+
 		<script src='@routes.WebJarAssets.at(WebJarAssets.locate("js/bootstrap.min.js"))'></script>
 		<script src="@routes.Assets.versioned("js/scripts.js")"></script>
 		<script src="@routes.Assets.versioned("js/router.js")"></script>
@@ -39,70 +41,66 @@
 		</div-->
 
 		<!-- delete modal -->
-		<div class="modal fade" id="inkle-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		  <div class="modal-dialog">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-			        <span aria-hidden="true">&times;</span>
-		        </button>
-		        <h4 class="modal-title" id="myModalLabel">Delete Idea</h4>
-		      </div>
-			    @helper.form(routes.Inkles.delete(), 'id -> "delete-inkle-form") {
-				    <div class="modal-body">
-		   				<div>
-		   					<label>
-		   						<input type="radio" name="children" value="keep" checked>
-		   						Soft Delete
-		   					</label>
-		   					<p class="small text-muted">only the content of this idea is removed, the child ideas will not be affected</p>
-		   				</div>
-		   				<div>
-		   					<label>
-		   						<input type="radio" name="children" value="delete">
-		   						Hard Delete
-		   					</label>
-		   					<p class="small text-muted">this idea will be deleted with every descendant it has</p>
-		   				</div>
+		@helper.form(routes.Inkles.delete(), 'id -> "delete-inkle-form") {
+			@commons.modal("Delete Inkle", "inkle-delete") {
+				<div>
+					<label>
+						<input type="radio" name="children" value="keep" checked>
+						Soft Delete
+					</label>
+					<p class="small text-muted">only the content of this idea is removed, the child ideas will not be affected</p>
+				</div>
+				<div>
+					<label>
+						<input type="radio" name="children" value="delete">
+						Hard Delete
+					</label>
+					<p class="small text-muted">this idea will be deleted with every descendant it has</p>
+				</div>
 
-		   				<input type="hidden" name="uuid" id="delete-inkle-uuid">
-		   				<input type="hidden" id="deleted-inkle-page">
-				    </div>
+				<input type="hidden" name="uuid" id="delete-inkle-uuid">
+				<input type="hidden" id="deleted-inkle-page">
+			} {
+				<button type="button" class="btn btn-default" data-dismiss="modal">
+			    <span class="glyphicon glyphicon-remove"></span>
+			    Cancel
+		    </button>
+		    <button type="submit" class="btn btn-danger">
+			    <span class="glyphicon glyphicon-trash"></span>
+			    Delete
+		    </button>
+			}
+		}
 
-				    <div class="modal-footer">
-					    <button type="button" class="btn btn-default" data-dismiss="modal">
-						    <span class="glyphicon glyphicon-remove"></span>
-						    Cancel
-					    </button>
-					    <button type="submit" class="btn btn-danger">
-						    <span class="glyphicon glyphicon-trash"></span>
-						    Delete
-					    </button>
-				    </div>
-			    }
-		    </div>
-		  </div>
-		</div>
+		<!-- change parent modal -->
+		@commons.modal("Change Inkle Parent", "change-parent") {
+			<div>
+				<h2>change parent form goes here!</h2>
+			</div>
 
-		<!-- add modal -->
-		<div class="modal fade" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		  <div class="modal-dialog">
-		    <div class="modal-content">
-			    @helper.form(routes.Inkles.create(), 'id -> "modal-inkle-form") {
-				    <div class="modal-header">
-					    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					    <h4 class="modal-title" id="myModalLabel">Something in your mind?</h4>
-				    </div>
-				    <div class="modal-body" style="overflow : auto;">
-					    <p class="text-center">Big ideas start with an inkling. Write it down:</p>
-					    <textarea id="modal-inkle-textarea" class="inkle-textarea" name="inkle" placeholder="how about..." style="width: 100%; border: 1px solid #ddd;height: 90px; font-size: 25px;padding: 25px; text-align: center;box-sizing: border-box;" autofocus="autofocus" maxlength="80"></textarea>
+			<input type="hidden" name="uuid" id="change-parent-inkle-uuid">
+		} {
+			<button type="button" class="btn btn-default" data-dismiss="modal">
+		    <span class="glyphicon glyphicon-remove"></span>
+		    Cancel
+	    </button>
+	    <button type="submit" class="btn btn-primary">
+		    <span class="glyphicon glyphicon-random"></span>
+		    Change Parent
+	    </button>
+		}
 
-					    <button type="button" class="btn btn-primary pull-right" style="color: #97C111; padding: 0; font-size: 40px; border:none; margin-top: 5px;background:none;">•••</button>
-				    </div>
-			    }
-		    </div>
-		  </div>
-		</div>
+		<!-- add inkle modal -->
+		@commons.modal("Something in your mind?", "add-modal") {
+			@helper.form(routes.Inkles.create(), 'id -> "modal-inkle-form") {
+		    <p class="text-center">Big ideas start with an inkling. Write it down:</p>
+		    <textarea id="modal-inkle-textarea" class="inkle-textarea" name="inkle" placeholder="how about..." style="width: 100%; border: 1px solid #ddd;height: 90px; font-size: 25px;padding: 25px; text-align: center;box-sizing: border-box;" autofocus="autofocus" maxlength="80"></textarea>
+
+		    <button type="button" class="btn btn-primary pull-right" style="color: #97C111; padding: 0; font-size: 40px; border:none; margin-top: 5px;background:none; margin-top:-8px">•••</button>
+		   }
+		} {
+
+		}
 
 		<div>
 			<div style="text-align: center; padding: 11px 50px;position: fixed;width: 100%;top: 0;background-color: #fafafa;z-index: 50;">
@@ -122,6 +120,22 @@
 						</button>
 
 						<ul class="dropdown-menu dropdown-menu-left" role="menu" aria-labelledby="main-menu-btn" style="right: 0;left: auto;">
+							<li class="profile">
+								<button id="main-profile-btn">
+									<div style="background-color: #eee; width: 40px; height: 40px; border-radius: 30%; border: #ddd 1px solid; margin-right: 10px;" class="pull-left">
+										<img style="width: 100%" src="@routes.Assets.versioned("images/inklin_no_bg.svg")" onerror="this.onerror = null; this.src='@routes.Assets.versioned("images/inklin_no_bg.png")'" >
+									</div>
+									<div class="name">@currentUser.name</div>
+								</button>
+								<script>
+									$('#main-profile-btn').click(function() {
+										renderRoute(jsRoutes.controllers.Users.templateView('@currentUser.username'), '/@currentUser.username', "Inklin • @currentUser.name");
+
+										return false;
+									});
+								</script>
+							</li>
+							<li role="presentation" class="divider"></li>
 							<li role="presentation">
 								<a role="menuitem" href="#">Account Settings</a>
 							</li>

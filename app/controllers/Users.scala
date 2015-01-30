@@ -68,13 +68,25 @@ object Users extends Controller with Guard {
 
 			if (currentUserUuid == viewedUserUuid) {
 				Ok(
-					html.user.view()
+					html.user.view(currentUser, user)
 				)
 			} else {
 				Ok(
-					html.user.view()
+					html.user.view(currentUser, user)
 				)
 			}
+		}.getOrElse(NotFound)
+	}
+
+	def templateView(username: String) = Action {
+
+		User.findUuidByUsername(username).map { viewedUserUuid =>
+
+			val user: User = User.find(viewedUserUuid).get
+
+			Ok(
+				html.templates.users.view(user)
+			)
 		}.getOrElse(NotFound)
 	}
 

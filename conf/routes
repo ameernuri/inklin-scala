@@ -27,7 +27,7 @@ POST        /signup                                     controllers.Users.create
 GET         /signin                                     controllers.Users.signin
 POST        /signin                                     controllers.Users.authenticate
 GET         /signout                                    controllers.Users.signout
-GET         /$username<[a-zA-Z0-9_]+>                   controllers.Users.viewByUsername(username: String)
+GET         /users/:uuid                                controllers.Users.view(uuid: String)
 
 # js router
 GET         /js-routes.js                               controllers.Apps.javascriptRoutes
@@ -37,9 +37,11 @@ GET         /js-routes.js                               controllers.Apps.javascr
 GET         /templates/home                             controllers.Apps.templateHome
 GET         /templates/origins                          controllers.Apps.templateOrigins
 GET         /templates/origins/:uuid                    controllers.Inkles.templateOrigin(uuid: String)
+GET         /templates/users/:username                  controllers.Users.templateView(username: String)
 
 # to avoid clashes with /something
-GET         /:uuid                                      controllers.Users.view(uuid: String)
+GET         /$username<[a-zA-Z0-9_]+>                   controllers.Users.viewByUsername(username: String)
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                               controllers.Assets.at(path="/public", file)

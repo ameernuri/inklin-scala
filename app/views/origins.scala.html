@@ -1,6 +1,6 @@
 @(user: Option[User])
 
-@main("Inklin • Origins") {
+@main("Inklin • Origins", user.get) {
 	@user.map { user =>
 		@templates.origins(user)
 	}

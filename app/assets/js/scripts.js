@@ -26,10 +26,8 @@ function mainActions() {
 
 		mainLoader(true);
 
-		$.ajax({
-			url: "/inkles/create?returnAs=json", /** jsRoutes.controllers.Inkles.create() gives error**/
+		jsRoutes.controllers.Inkles.create("json").ajax({
 			data: $("#modal-inkle-form").serialize(),
-			type: "POST",
 			success: function(e) {
 				console.log(e);
 
@@ -99,6 +97,13 @@ function modifyActions() {
 	  $('[data-toggle="tooltip"]').tooltip();
 	});
 
+	var textarea = $('textarea');
+
+	textarea
+		.autosize({append: false})
+		.show()
+		.trigger('autosize.resize');
+
 	fullHeight();
 }
 
@@ -111,8 +116,7 @@ function homeInkleAddActions() {
 
 		mainLoader(true);
 
-		$.ajax({
-			url: "/inkles/create", /** jsRoutes.controllers.Inkles.create() gives error**/
+		jsRoutes.controllers.Inkles.create().ajax({
 			data: $("#home-inkle-form").serialize(),
 			type: "Post",
 			success: function (e) {
@@ -267,13 +271,11 @@ function pageUp() {
 	}
 }
 
-function childrenPaginationActions(button, pageUuid, inkleUuid, pageNumber, fetcherUrl) {
+function childrenPaginationActions(button, pageUuid, inkleUuid, pageNumber) {
 
 	$(button).click(function () {
 		$("#main-loader").show();
-		$.ajax({
-			url: fetcherUrl,
-			type: "POST",
+		jsRoutes.controllers.Inkles.getPageOfChildren(inkleUuid, pageUuid, pageNumber).ajax({
 			success: function (e) {
 				$("#main-loader").hide();
 				$('#page-'+ pageUuid +'-'+ inkleUuid +'-children-wrapper').html(e)
@@ -286,7 +288,7 @@ function childrenPaginationActions(button, pageUuid, inkleUuid, pageNumber, fetc
 	})
 }
 
-function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
+function inkleActions(pageUuid, uuid) {
 
 	$('#page-'+ pageUuid +'-'+ uuid +'-extend-switch').click(function() {
 		$('#page-'+ pageUuid +'-'+ uuid +'-extend-form-div').slideToggle();
@@ -300,6 +302,12 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 		return false;
 	});
 
+	$('#page-'+ pageUuid +'-'+ uuid +'-change-parent-button').click(function() {
+		$('#change-parent').modal('show');
+		$("#change-parent-inkle-uuid").val(uuid);
+		return false;
+	});
+
 	$('#page-'+ pageUuid +'-'+ uuid +'-center-wrapper').click(function() {
 
 	});
@@ -307,13 +315,13 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 	$('#page-'+ pageUuid +'-'+ uuid +'-edit-switch').click(function() {
 		$('#page-'+ pageUuid +'-'+ uuid +'-inkle-text').hide();
 		$('#page-'+ pageUuid +'-'+ uuid +'-edit-form-wrapper').fadeIn();
-		$('#page-'+ pageUuid +'-'+ uuid +'-edit-textarea').focus();
+		$('#page-'+ pageUuid +'-'+ uuid +'-edit-textarea').focus().trigger('autosize.resize');
 	});
 
 	$('#page-'+ pageUuid +'-'+ uuid +'-inkle-text').click(function() {
 		$(this).hide();
 		$('#page-'+ pageUuid +'-'+ uuid +'-edit-form-wrapper').fadeIn();
-		$('#page-'+ pageUuid +'-'+ uuid +'-edit-textarea').focus();
+		$('#page-'+ pageUuid +'-'+ uuid +'-edit-textarea').focus().trigger('autosize.resize');
 	});
 
 	$('#page-'+ pageUuid +'-'+ uuid +'-edit-form-cancel').click(function() {
@@ -321,6 +329,15 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 		$('#page-'+ pageUuid +'-'+ uuid +'-inkle-text').fadeIn();
 		$('#page-'+ pageUuid +'-'+ uuid +'-edit-form-wrapper').hide();
 		return false;
+	});
+
+	$('#page-'+ pageUuid +'-'+ uuid +'-edit-textarea').keydown(function (e) {
+		if (e.keyCode === 27) {
+
+			$('#page-'+ pageUuid +'-'+ uuid +'-inkle-text').fadeIn();
+			$('#page-'+ pageUuid +'-'+ uuid +'-edit-form-wrapper').hide();
+			return false;
+		}
 	});
 
 	$('#page-'+ pageUuid +'-'+ uuid +'-extend-textarea').focusout(function() {
@@ -337,9 +354,7 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 
 
 		$('#main-loader').show();
-		$.ajax({
-			url: editUrl,
-			type: "POST",
+		jsRoutes.controllers.Inkles.edit(uuid).ajax({
 			data: $('#page-'+ pageUuid +'-'+ uuid +'-edit-form').serialize(),
 			success: function (e) {
 				$('#page-'+ pageUuid +'-'+ uuid +'-center-wrapper').replaceWith(e);
@@ -361,10 +376,8 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 		log('extend');
 
 		$('#main-loader').show();
-		$.ajax({
-			url: extendUrl,
+		jsRoutes.controllers.Inkles.extend(uuid, pageUuid).ajax({
 			data: $('#page-'+ pageUuid +'-'+ uuid +'-extend-form').serialize(),
-			type: "POST",
 			success: function(e) {
 				$('#page-'+ pageUuid +'-'+ uuid +'-children-wrapper').append(e);
 				$('#page-'+ pageUuid +'-'+ uuid +'-extend-textarea').val('');
@@ -394,16 +407,14 @@ function inkleActions(pageUuid, uuid, extendUrl, editUrl) {
 	});
 }
 
-function inkleClickActions(element, wrapper, renderUrl) {
+function inkleClickActions(element, pageUuid, inkleUuid, wrapper) {
 
 	$(element).click(function() {
 
 		$('#main-loader').show();
-		$.ajax({
-			url: renderUrl,
-			type: 'POST',
+		jsRoutes.controllers.Inkles.getInkle(inkleUuid).ajax({
 			success: function (e) {
-				$(wrapper).replaceWith(e);
+				$(wrapper).css("background", "red").replaceWith(e);
 				fullHeight();
 
 				$('#main-loader').hide();
@@ -415,10 +426,10 @@ function inkleClickActions(element, wrapper, renderUrl) {
 		});
  }).mouseover(function() {
  		$(element +'-counter').show();
- 	}).mouseleave(function() {
- 		$(element +'-counter').hide();
+	}).mouseleave(function() {
+	  $(element +'-counter').hide();
 
- 	});
+	});
 }
 
 

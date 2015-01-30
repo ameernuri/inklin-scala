@@ -1,6 +1,6 @@
 @(currentUser: User, inkleUuid: String)
 
-@main("Inklin") {
+@main("Inklin", currentUser) {
 
 	<div class="one-page-scroll" id="inkles-wrapper" style="margin-top: 55px; ">
 		@renderers.inkles.inkle(Inkle.find(inkleUuid))

@@ -14,21 +14,21 @@
         </button>
         @if(page > 0) {
           <script>
-          childrenPaginationActions("#page-@pageUuid-@{inkle._1.uuid}-children-paginator-previous", "@pageUuid", "@inkle._1.uuid", @{page - 1}, "@routes.Inkles.getPageOfChildren(inkle._1.uuid, pageUuid, page - 1)");
+          childrenPaginationActions("#page-@pageUuid-@{inkle._1.uuid}-children-paginator-previous", "@pageUuid", "@inkle._1.uuid", @{page - 1});
           </script>
         }
       @for(i <- 0 to (children.total/5).toInt) {
         <button data-toggle="tooltip" data-placement="top" title="@{i+1}" id="page-@pageUuid-@{inkle._1.uuid}-children-paginator-@i" style="width: 15px; height: 15px; border-radius: 50%; border: 2px solid #ddd; background-color: #fefefe; margin: 0 3px; @if(page == i) {background-color: #eee; border-color: #ddd;}">
         </button>
         <script>
-          childrenPaginationActions("#page-@pageUuid-@{inkle._1.uuid}-children-paginator-@i", "@pageUuid", "@inkle._1.uuid", @i, "@routes.Inkles.getPageOfChildren(inkle._1.uuid, pageUuid, i)");
+          childrenPaginationActions("#page-@pageUuid-@{inkle._1.uuid}-children-paginator-@i", "@pageUuid", "@inkle._1.uuid", @i);
         </script>
       }
         <button style="border: none; background: none;color: #ddd;@if(page >= (children.total/5).toInt) { color: #eee;}" class="glyphicon glyphicon-chevron-right" id="page-@pageUuid-@{inkle._1.uuid}-children-paginator-next">
         </button>
         @if(page < (children.total/5).toInt) {
           <script>
-          childrenPaginationActions("#page-@pageUuid-@{inkle._1.uuid}-children-paginator-next", "@pageUuid", "@inkle._1.uuid", @{page + 1}, "@routes.Inkles.getPageOfChildren(inkle._1.uuid, pageUuid, page + 1)");
+          childrenPaginationActions("#page-@pageUuid-@{inkle._1.uuid}-children-paginator-next", "@pageUuid", "@inkle._1.uuid", @{page + 1});
           </script>
         }
       </div>

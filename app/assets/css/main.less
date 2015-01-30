@@ -98,22 +98,42 @@ input[type=submit] {
 		padding: 2px 3px;
 		border:none;
 		background:none;
+
+		&:hover {
+			color: @inklin-main;
+		}
 	}
 
 	.dropdown-menu {
 		border: 1px solid #ddd;
 		border-radius: 10px;
+		min-width: 200px;
+
+		.divider {
+			border-color: #eee;
+			margin: 4px 0;
+		}
 
 		li {
-			a {
+			a, button {
 				text-align: left;
 				color: #666;
 				padding: 10px 20px;
+				overflow: auto;
+				width: 100%;
 
 				&:hover {
 					color: @inklin-main;
 				}
 			}
+		}
+
+		.profile {
+			.name {
+				font-weight: bold;
+				margin-top: 10px;
+			}
+
 		}
 	}
 }
@@ -261,10 +281,6 @@ input[type=submit] {
 	.pointer;
 	color: #bbb;
 
-	&:hover {
-		color: #666;
-	}
-
 	.parents-chain-pointer {
 		width: 10px;
 	  float: right;
@@ -277,6 +293,7 @@ input[type=submit] {
 			height: 10px;
 			border-radius: 50%;
 			background-color: #f6f6f6;
+			.pointer;
 		}
 
 		.parents-chain-point-more {
@@ -291,6 +308,15 @@ input[type=submit] {
 			float: right;
 		}
 	}
+
+	&:hover {
+		color: #666;
+
+		.parents-chain-point {
+			border: 1px solid #ccc;
+			background-color: #f0f0f0;
+		}
+	}
 }
 
 .parents-chain-parent {
@@ -300,7 +326,7 @@ input[type=submit] {
 }
 
 .parents-chain-non-parent {
-	padding-right: 35px;
+	padding-right: 30px;
 	font-weight: 300;
 	overflow: visible;
 }
@@ -462,4 +488,8 @@ div.tooltip-inner {
 		background-color: darken(@inklin-main, 5%);
 		border-color: darken(@inklin-main, 10%);
 	}
+}
+
+.btn {
+	border-radius: 18px;
 }

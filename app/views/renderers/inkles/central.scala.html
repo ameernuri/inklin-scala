@@ -28,6 +28,9 @@
       }
 
       <div class="text-right inkle-action-buttons" id="page-@pageUuid-@{inkle._1.uuid}-inkle-action-buttons">
+        <button id="page-@pageUuid-@{inkle._1.uuid}-change-parent-button">
+          <span class="glyphicon glyphicon-random"></span> Change Parent
+        </button>
         <button class="text-danger" id="page-@pageUuid-@{inkle._1.uuid}-delete-button">
           <span class="glyphicon glyphicon-trash"></span> Delete
         </button>
@@ -39,7 +42,7 @@
         •••<br>
         extend this idea
       </div>
-      <div style="display:none;" id="page-@pageUuid-@{inkle._1.uuid}-extend-form-div">
+      <div style="display:none;" id="page-@pageUuid-@{inkle._1.uuid}-extend-form-div" class="red">
       @helper.form(routes.Inkles.extend(inkle._1.uuid, pageUuid.toString), 'id -> s"page-$pageUuid-${inkle._1.uuid}-extend-form") {
         <textarea id="page-@pageUuid-@{inkle._1.uuid}-extend-textarea" name="inkle" style="width: 100%; border: solid #fafafa; border-width: 0 1px 1px;border-radius: 0 0 8px 8px; font-size: 17px;padding: 15px 15px 3px; text-align: center;box-sizing: border-box;height: 60px;margin: 0; background-color: #fdfdfd;" maxlength="80" class="inkle-textarea" placeholder="how about..."></textarea>
 
@@ -53,5 +56,5 @@
 </div>
 
 <script>
-inkleActions('@pageUuid', '@inkle._1.uuid', '@routes.Inkles.extend(inkle._1.uuid, pageUuid.toString)', '@routes.Inkles.edit(inkle._1.uuid, pageUuid)');
+inkleActions('@pageUuid', '@inkle._1.uuid');
 </script>

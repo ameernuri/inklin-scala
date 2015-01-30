@@ -44,7 +44,7 @@ object Apps extends Controller with Guard {
 	def inkle = Action { implicit r =>
 		log("inkle")
 
-		Ok(html.inkle.inkle())
+		Ok(html.inkle.inkle(currentUser))
 	}
 
 	// js router
@@ -54,8 +54,13 @@ object Apps extends Controller with Guard {
 	      routes.javascript.Apps.templateHome,
 	      routes.javascript.Apps.templateOrigins,
 	      routes.javascript.Inkles.templateOrigin,
-	      routes.javascript.Inkles.create
-	    )
+	      routes.javascript.Inkles.create,
+	      routes.javascript.Inkles.edit,
+	      routes.javascript.Inkles.extend,
+	      routes.javascript.Inkles.getInkle,
+	      routes.javascript.Inkles.getPageOfChildren,
+	      routes.javascript.Users.templateView
+	  )
 	  ).as("text/javascript")
 	}
 }
