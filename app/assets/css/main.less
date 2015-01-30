@@ -236,7 +236,6 @@ input[type=submit] {
 }
 
 .child {
-	border: 1px solid #f8f8f8;
 	border-radius: 8px;
 	min-height: 46px;
 	padding: 10px;
@@ -422,6 +421,19 @@ input[type=submit] {
 	}
 }
 
+.inkle-origin {
+	padding: 10px;
+	position: absolute;
+	left: 0;
+	color: #aaa;
+	.pointer;
+	z-index: 15;
+
+	&:hover {
+		color: #666;
+	}
+}
+
 div.tooltip-inner {
 	background-color: #f4f4f4;
 	color: #aaa;
@@ -487,6 +499,15 @@ div.tooltip-inner {
 	&:hover {
 		background-color: darken(@inklin-main, 5%);
 		border-color: darken(@inklin-main, 10%);
+	}
+}
+
+.btn-default {
+	color: #888;
+	border-color: #aaa;
+
+	&:hover {
+		background-color: #f8f8f8;
 	}
 }
 

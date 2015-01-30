@@ -1,0 +1,73 @@
+@(inkle: (Inkle, User), pageUuid: String)
+
+@import java.util.UUID
+
+@defining(Inkle.getParents(inkle._1.uuid)) { plain =>
+  @defining(UUID.randomUUID()) { rand =>
+    @defining(plain.items.reverse) { parents =>
+      @if(plain.total > 5) {
+        @defining(Inkle.getOrigin(inkle._1.uuid)) { origin =>
+          <div class="parents-chain-element parents-chain-non-parent" id="@rand-@origin.get._1.uuid">
+            <span class="glyphicon glyphicon-record"></span>
+            @origin.get._1.inkle
+
+            <span class="parents-chain-pointer">
+              <span class="parents-chain-point"></span>
+              <span class="parents-chain-line"></span>
+            </span>
+
+            <script>
+              inkleClickActions('#@rand-@origin.get._1.uuid', '@pageUuid', '@origin.get._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle');
+            </script>
+          </div>
+        }
+
+        @if(plain.total > 6) {
+          <div class="parents-chain-element parents-chain-non-parent text-muted small">
+            <span style="margin-right: -3px; color: #ccc">[@(plain.total - 6) more] ••</span>
+
+            <span class="parents-chain-pointer">
+              <span class="parents-chain-point parents-chain-point-more"></span>
+              <span class="parents-chain-line"></span>
+            </span>
+          </div>
+        }
+
+      }
+
+      @parents.map { parent =>
+        @defining(inkle._1.parentUuid.getOrElse("") == parent._1.uuid) { isParent =>
+          <div data-toggle="tooltip" data-placement="right" title="@Inkle.childrenCount(parent._1.uuid)"  class="parents-chain-element @if(isParent) { parents-chain-parent } else { parents-chain-non-parent}" id="@rand-@parent._1.uuid">
+            <span style="color : #bbb ;">
+            @if(!parent._1.parentUuid.isDefined) {
+              <span class="glyphicon glyphicon-record"></span>
+            }
+            </span>
+
+            @if(!parent._1.deleted) {
+              @parent._1.inkle
+            } else {
+              <samp class="text-muted">[DELETED IDEA]</samp>
+            }
+
+            @if(isParent) {
+              <span style="color : #bbb ; font-size : 18px;">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+              </span>
+            } else {
+              <span class="parents-chain-pointer">
+                <span class="parents-chain-point"></span>
+                <span class="parents-chain-line"></span>
+              </span>
+            }
+          </div>
+        }
+
+        <script>
+
+        inkleClickActions('#@rand-@parent._1.uuid', '@pageUuid', '@parent._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle');
+        </script>
+      }
+    }
+  }
+}

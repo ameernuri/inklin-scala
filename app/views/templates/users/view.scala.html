@@ -1,10 +1,10 @@
 @(viewedUser: User)
 
 <div class="col-sm-12" style="margin: 50px 0; float:left;">
-	<div style="background-color: #eee; border: 3px solid #e4e4e4; width: 130px; height: 130px; float: left; margin-right: 20px;border-radius: 30%;">
+	<div style="background-color: #eee; border: 3px solid #e4e4e4; width: 130px; height: 130px; margin: auto; border-radius: 30%;">
 		<img style="width: 100%" src="@routes.Assets.versioned("images/inklin_no_bg.svg")" onerror="this.onerror = null; this.src='@routes.Assets.versioned("images/inklin_no_bg.png")'" >
 	</div>
-	<h2 style="margin: 40px 0; float: left; font-size: 40px; font-weight: 200;">@viewedUser.name</h2>
+	<h2 style="margin: 30px auto 10px; font-size: 40px; font-weight: 200; text-align: center;">@viewedUser.name</h2>
 
 	<div style="float: left; color: #aaa; margin-top: 40px;" class="col-sm-12">
 		<span>

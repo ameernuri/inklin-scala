@@ -1,5 +1,6 @@
 package controllers
 
+import play.api.libs.Crypto._
 import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
@@ -27,7 +28,7 @@ object Users extends Controller with Guard {
 			"usernameOrEmail" -> nonEmptyText,
 			"password"        -> nonEmptyText
 		) verifying("Incorrect username/email or password", result => result match {
-			case (usernameOrEmail, password) => User.authenticate(usernameOrEmail.toLowerCase, password).isDefined
+			case (usernameOrEmail, password) => User.authenticate(usernameOrEmail.toLowerCase, encryptAES(password)).isDefined
 		})
 	)
 
@@ -44,7 +45,7 @@ object Users extends Controller with Guard {
 			formWithErrors => BadRequest(html.user.signup(formWithErrors)),
 			user => {
 				User.create(user._1, user._2, user._3, user._4)
-				Redirect(routes.Apps.home()).withSession("username" -> user._1)
+				Redirect(routes.Apps.home()).withSession("username" -> encryptAES(user._1))
 			}
 		)
 	}

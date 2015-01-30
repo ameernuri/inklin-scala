@@ -75,7 +75,10 @@
 		<!-- change parent modal -->
 		@commons.modal("Change Inkle Parent", "change-parent") {
 			<div>
-				<h2>change parent form goes here!</h2>
+				<h4>Select a new parent:</h4>
+				<div id="change-parent-modal-content">
+
+				</div>
 			</div>
 
 			<input type="hidden" name="uuid" id="change-parent-inkle-uuid">
@@ -96,7 +99,7 @@
 		    <p class="text-center">Big ideas start with an inkling. Write it down:</p>
 		    <textarea id="modal-inkle-textarea" class="inkle-textarea" name="inkle" placeholder="how about..." style="width: 100%; border: 1px solid #ddd;height: 90px; font-size: 25px;padding: 25px; text-align: center;box-sizing: border-box;" autofocus="autofocus" maxlength="80"></textarea>
 
-		    <button type="button" class="btn btn-primary pull-right" style="color: #97C111; padding: 0; font-size: 40px; border:none; margin-top: 5px;background:none; margin-top:-8px">•••</button>
+		    <button type="button" class="btn btn-primary pull-right" style="color: #97C111; padding: 0; font-size: 40px; border:none; margin-top: 5px;background:none; line-height: 18px; margin: 10px 0;">•••</button>
 		   }
 		} {
 
@@ -151,12 +154,17 @@
 				@content
 			</div>
 
-			<span style="display: none;padding-top : 155px;" class="too-small full-height">
-				<div style="font-size: 18px; text-align: center;padding: 15px; font-weight: 100; color: #888;">
-					Sorry, the screen size is too small. We're working on a mobile version and it should be available soon.
-					<br>
-					<br>
-					In the mean time, you can open the app on a desktop computer or a larger tablet and enjoy!
+			<span style="display: none;padding-top : 55px;" class="too-small full-height">
+				<div style="display: table; table-layout: fixed;width: 100%;" class="full-height">
+					<div style="font-size: 18px; text-align: center;padding: 15px; font-weight: 100; color: #888; display: table-cell; vertical-align: middle;">
+						<div style="margin-bottom: 10px;">
+							<img style="width: 140px;" src="@routes.Assets.versioned("images/inklin_shrink.svg")" onerror="this.onerror = null; this.src='@routes.Assets.versioned("images/inklin_shrink.png")'" >
+						</div>
+						Sorry, the screen size is too small. We're working on a mobile version and it should be available soon.
+						<br>
+						<br>
+						In the mean time, you can open inklin on a desktop computer or a larger tablet and enjoy!
+					</div>
 				</div>
 				<script>
 					fullHeight();
