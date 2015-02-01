@@ -3,10 +3,6 @@ var pageHeight = $(window).height() - headerHeight;
 var lastScrollTop = 0;
 var scrolling = false;
 
-if (location.hostname == "herokuapp.com") {
-	window.location.replace("http://inklin.co");
-}
-
 $(document).bind('DOMSubtreeModified', function() {
 	modifyActions();
 });
