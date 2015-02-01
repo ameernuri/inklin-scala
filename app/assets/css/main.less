@@ -39,6 +39,47 @@ button, a, input, textarea {
 	transition: all 0.5s;
 }
 
+.radio {
+	label {
+		display: inline-block;
+		position: relative;
+		padding-left: 25px;
+		margin-right: 15px;
+		font-size: 13px;
+		background-color: #fefefe;
+		.pointer;
+
+		&:before {
+			content: "";
+			display: inline-block;
+			width: 18px;
+			height: 18px;
+			margin-right: 10px;
+			position: absolute;
+			left: 0;
+			bottom: 1px;
+			border: 2px solid @inklin-main;
+			border-radius: 50%;
+			transition: all 0.5s;
+		}
+
+		&:hover {
+			&:before {
+				background-color: #f4f4f4;
+			}
+		}
+	}
+
+	input[type=radio] {
+		display: none;
+
+		&:checked + label:before {
+			background-color: @inklin-main;
+			border-color: darken(@inklin-main, 5%);
+		}
+	}
+}
+
 input[type=text], textarea {
 	border: 1px solid @light-gray;
 	font-family: "Helvetica Neue", helvetica, "arial", sans-serif;
@@ -110,7 +151,7 @@ input[type=submit] {
 		min-width: 200px;
 
 		.divider {
-			border-color: #eee;
+			background-color: #f2f2f2;
 			margin: 4px 0;
 		}
 
@@ -124,6 +165,7 @@ input[type=submit] {
 
 				&:hover {
 					color: @inklin-main;
+					background-color: #f8f8f8;
 				}
 			}
 		}
@@ -330,6 +372,25 @@ input[type=submit] {
 	overflow: visible;
 }
 
+.child-pagination-pointer {
+	width: 15px;
+	height: 15px;
+	border-radius: 50%;
+	border: 2px solid #ddd;
+	background-color: #fefefe;
+	margin: 0 3px;
+
+	&.selected {
+		background-color: #eee;
+		border-color: #ddd;
+	}
+
+	&:hover {
+		background-color: #f4f4f4;
+		border-color: #ccc;
+	}
+}
+
 .transform(@transformer) {
 	transform: @transformer;
 	-ms-transform: @transformer;
@@ -344,11 +405,6 @@ input[type=submit] {
 	margin-bottom: 30px;
 	.pointer;
 
-	h3 {
-		color: #666;
-		font-weight: 300;
-	}
-
 	.origin-brick-content {
 		background-color: #fcfcfc;
 		border: 2px solid #f4f4f4;
@@ -359,8 +415,17 @@ input[type=submit] {
 		text-align: center;
 		border-radius: 10px;
 
+		h3 {
+			color: #888;
+			font-weight: 300;
+		}
+
 		&:hover {
 			background-color: #f8f8f8;
+
+			h3 {
+				color: #666;
+			}
 		}
 	}
 }
@@ -506,11 +571,17 @@ div.tooltip-inner {
 	color: #888;
 	border-color: #aaa;
 
-	&:hover {
+	&:hover, &:focus, &:active, &:visited {
 		background-color: #f8f8f8;
 	}
 }
 
 .btn {
 	border-radius: 18px;
+}
+
+.glyphicon-random {
+	-ms-transform: rotate(-90deg); /* IE 9 */
+  -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+  transform: rotate(-90deg);
 }

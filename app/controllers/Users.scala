@@ -18,7 +18,9 @@ object Users extends Controller with Guard {
 		tuple(
 			"username"        -> nonEmptyText(maxLength = 12).verifying("The username is taken", username => !User.usernameExists(username)),
 			"name"        -> nonEmptyText,
-			"email"           -> email.verifying("The email address is already in use", email => !User.emailExists(email)),
+			"email" -> {
+				email.verifying("The email address is already in use", email => !User.emailExists(email.toLowerCase.trim))
+			},
 			"password"        -> text(minLength = 8)
 		)
 	)

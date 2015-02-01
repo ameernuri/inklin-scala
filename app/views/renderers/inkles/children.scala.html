@@ -18,7 +18,7 @@
           </script>
         }
       @for(i <- 0 to (children.total/5).toInt) {
-        <button data-toggle="tooltip" data-placement="top" title="@{i+1}" id="page-@pageUuid-@{inkle._1.uuid}-children-paginator-@i" style="width: 15px; height: 15px; border-radius: 50%; border: 2px solid #ddd; background-color: #fefefe; margin: 0 3px; @if(page == i) {background-color: #eee; border-color: #ddd;}">
+        <button data-toggle="tooltip" data-placement="top" title="@{i+1}" id="page-@pageUuid-@{inkle._1.uuid}-children-paginator-@i" class="child-pagination-pointer @if(page == i) { selected }">
         </button>
         <script>
           childrenPaginationActions("#page-@pageUuid-@{inkle._1.uuid}-children-paginator-@i", "@pageUuid", "@inkle._1.uuid", @i);

@@ -3,6 +3,10 @@ var pageHeight = $(window).height() - headerHeight;
 var lastScrollTop = 0;
 var scrolling = false;
 
+if (location.hostname == "inklin.herokuapp.com") {
+	window.location.replace("http://inklin.co");
+}
+
 $(document).bind('DOMSubtreeModified', function() {
 	modifyActions();
 });
@@ -110,6 +114,19 @@ function modifyActions() {
 function homeInkleAddActions() {
 
 	submitOnReturn('#home-inkle-form', '#inkle-textarea');
+
+	$('#inkle-textarea').keyup(function() {
+		$('#inkle-textarea-suggestions').slideDown();
+
+		jsRoutes.controllers.Inkles.fetchSuggestions($('inkle-textarea').value).ajax({
+			success: function () {
+				console.log('yeah')
+			},
+			error: function () {
+				console.log('error')
+			}
+		})
+	});
 
 	$('#home-inkle-form').submit(function() {
 		log('add');

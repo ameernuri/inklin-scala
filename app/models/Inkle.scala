@@ -278,7 +278,7 @@ object Inkle {
 
 		val query =
 			s"""
-			  |MATCH (child:Inkle { uuid: {inkle} })-[:has_parent*..]->(inkle:Inkle),
+			  |MATCH (child:Inkle { uuid: {inkle} })-[:has_parent*1..$pageSize]->(inkle:Inkle),
 				|(user)-[:owns_inkle]->(inkle)
 				|WITH inkle, user
 				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent:Inkle)
@@ -479,6 +479,55 @@ object Inkle {
 			""".stripMargin
 		).on(
 			"followerUuid" -> userUuid
+		).as(scalar[Long].single)
+
+		Page(inkles, page, offset, total)
+	}
+
+	def suggest(user: String, q: String): Page[(Inkle, User)] = {
+		log("suggest", Map("user" -> user, "q" -> q))
+
+		val page = 0
+		val pageSize = 3
+
+		val offset = page * pageSize
+
+		val query =
+			s"""
+			  |MATCH (user:User {uuid: {userUuid}}),
+				|(user)-[:owns_inkle]->(inkle)
+				|WHERE
+        |(
+        |  inkle.inkle =~ {query} or
+        |  ('.*' + inkle.inkle) =~ {query} or
+        |  ('.*' + inkle.inkle + '.*') =~ {query}
+        |)
+			  |WITH inkle, user
+			  |OPTIONAL MATCH (inkle)-[:has_parent]->(parent)
+			  |RETURN
+			""".stripMargin
+
+		val inkles = Cypher(
+			s"""
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}
+			  |ORDER BY inkle.created desc
+			  |SKIP {offset}
+			  |LIMIT {pageSize}
+			""".stripMargin
+		).on(
+			"userUuid" -> user,
+			"query" -> q,
+			"pageSize" -> pageSize,
+			"offset" -> offset
+		).as(withConnected.*)
+
+		val total = Cypher(
+			s"""
+			  |$query count(DISTINCT inkle)
+			""".stripMargin
+		).on(
+			"userUuid" -> user,
+			"query" -> q
 		).as(scalar[Long].single)
 
 		Page(inkles, page, offset, total)

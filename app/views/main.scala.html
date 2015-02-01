@@ -43,19 +43,19 @@
 		<!-- delete modal -->
 		@helper.form(routes.Inkles.delete(), 'id -> "delete-inkle-form") {
 			@commons.modal("Delete Inkle", "inkle-delete") {
-				<div>
-					<label>
-						<input type="radio" name="children" value="keep" checked>
-						Soft Delete
-					</label>
-					<p class="small text-muted">only the content of this idea is removed, the child ideas will not be affected</p>
-				</div>
-				<div>
-					<label>
-						<input type="radio" name="children" value="delete">
-						Hard Delete
-					</label>
-					<p class="small text-muted">this idea will be deleted with every descendant it has</p>
+				<div class="radio">
+					<div>
+						<input id="inkle-delete-radio-keep" type="radio" name="children" value="keep" checked>
+
+						<label for="inkle-delete-radio-keep">Soft Delete</label>
+						<p class="text-muted">only the content of this inkle will be erased, the child ideas will not be affected</p>
+					</div>
+					<div>
+						<input id="inkle-delete-radio-delete" type="radio" name="children" value="delete">
+
+						<label for="inkle-delete-radio-delete">Hard Delete</label>
+						<p class="text-muted">this inkle will be deleted with every descendant it has</p>
+					</div>
 				</div>
 
 				<input type="hidden" name="uuid" id="delete-inkle-uuid">
@@ -122,7 +122,7 @@
 						<button id="main-menu-btn" data-toggle="dropdown" class="glyphicon glyphicon-chevron-down" style="color: #97C111;border:none;background:none;">
 						</button>
 
-						<ul class="dropdown-menu dropdown-menu-left" role="menu" aria-labelledby="main-menu-btn" style="right: 0;left: auto;">
+						<ul id="main-dropdown-menu" class="dropdown-menu dropdown-menu-left" role="menu" aria-labelledby="main-menu-btn" style="right: 0;left: auto;">
 							<li class="profile">
 								<button id="main-profile-btn">
 									<div style="background-color: #eee; width: 40px; height: 40px; border-radius: 30%; border: #ddd 1px solid; margin-right: 10px;" class="pull-left">
@@ -134,14 +134,25 @@
 									$('#main-profile-btn').click(function() {
 										renderRoute(jsRoutes.controllers.Users.templateView('@currentUser.username'), '/@currentUser.username', "Inklin • @currentUser.name");
 
+										$('#main-dropdown-menu' ).dropdown('hide');
+
 										return false;
 									});
 								</script>
 							</li>
+
 							<li role="presentation" class="divider"></li>
+
+							<li role="presentation">
+								<a role="menuitem" href="#">Groups</a>
+							</li>
+
+							<li role="presentation" class="divider"></li>
+
 							<li role="presentation">
 								<a role="menuitem" href="#">Account Settings</a>
 							</li>
+
 							<li role="presentation">
 								<a role="menuitem" href="@routes.Users.signout()">Sign Out</a>
 							</li>

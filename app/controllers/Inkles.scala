@@ -277,4 +277,22 @@ object Inkles extends Controller with Guard {
     Ok(renderers.inkles.inkle(inkle))
 
   }
+
+  def fetchSuggestions(q: String) = Action { implicit r =>
+    log("fetchSuggestions", Map("q" -> q))
+
+    val results = Inkle.suggest(currentUser.uuid, q)
+
+    val jsonResults: JsArray = arr(
+  			results.items.map { result =>
+
+  				obj(
+  					"uuid"  -> result._1.uuid,
+  					"inkle" -> result._1.inkle
+  				)
+  			}
+  		)
+
+    Ok(jsonResults)
+  }
 }

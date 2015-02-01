@@ -18,6 +18,7 @@ POST        /inkles/fetch_oops/:page                    controllers.Inkles.fetch
 POST        /inkles/get_parent/:inkle                   controllers.Inkles.getParent(inkle: String)
 POST        /inkles/get_children/:uuid                  controllers.Inkles.getChildren(uuid: String)
 POST        /inkles/get_children/:pageUuid/:uuid        controllers.Inkles.getPageOfChildren(uuid: String, pageUuid: String, page: Int ?= 1)
+POST        /inkles/fetch_suggestions                   controllers.Inkles.fetchSuggestions(q:String ?= "")
 
 POST        /inkles/delete                              controllers.Inkles.delete
 
