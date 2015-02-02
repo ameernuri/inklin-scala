@@ -16,12 +16,12 @@ object Users extends Controller with Guard {
 
 	val signupForm = Form(
 		tuple(
-			"username"        -> nonEmptyText(maxLength = 12).verifying("The username is taken", username => !User.usernameExists(username)),
+			"username" -> nonEmptyText(maxLength = 12).verifying("The username is taken", username => !User.usernameExists(username)),
 			"name"        -> nonEmptyText,
 			"email" -> {
 				email.verifying("The email address is already in use", email => !User.emailExists(email.toLowerCase.trim))
 			},
-			"password"        -> text(minLength = 8)
+			"password" -> text(minLength = 8)
 		)
 	)
 
@@ -46,8 +46,8 @@ object Users extends Controller with Guard {
 		signupForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(html.user.signup(formWithErrors)),
 			user => {
-				User.create(user._1, user._2, user._3, user._4)
-				Redirect(routes.Apps.home()).withSession("username" -> encryptAES(user._1))
+				User.create(user._1, user._2, user._3, encryptAES(user._4))
+				Redirect(routes.Apps.home()).withSession("username" -> user._1)
 			}
 		)
 	}
