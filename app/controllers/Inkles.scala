@@ -33,7 +33,7 @@ object Inkles extends Controller with Guard {
     )
 	)
 
-	def create(returnAs: String = "rendered") = Action { implicit request =>
+	def create(returnAs: String = "rendered") = Action { implicit r =>
 		log("create")
 
     currentUserOpt.map { user =>
@@ -46,7 +46,7 @@ object Inkles extends Controller with Guard {
 
           if (returnAs == "rendered") {
 
-            Ok(renderers.inkles.inkle(newInkle))
+            Ok(renderers.inkles.inkle(currentUser, newInkle))
           } else {
 
             val json_inkle = obj(
@@ -67,7 +67,7 @@ object Inkles extends Controller with Guard {
     }
 	}
 
-	def extend(parentUuid: String, pageUuid: String, returnAs: String = "rendered") = IsAuthenticated { username => implicit request =>
+	def extend(parentUuid: String, pageUuid: String, returnAs: String = "rendered") = IsAuthenticated { username => implicit r =>
 		log("extend", Map("parentUuid" -> parentUuid))
 
 		val userUuid = User.findUuidByUsername(username).get
@@ -80,6 +80,12 @@ object Inkles extends Controller with Guard {
         val origin = Inkle.getOriginUuid(parentUuid)
 				val uuid = Inkle.create(userUuid, inkle, Some(parentUuid), origin)
 				val newInkle = Inkle.find(uuid)
+        val tourStep = User.getTourStep(currentUser.uuid)
+        val pathLength = Inkle.getPathLength(uuid)
+
+        if (tourStep < 3 && tourStep < pathLength) {
+          User.updateTourStep(currentUser.uuid, pathLength)
+        }
 
         if (returnAs == "rendered") {
 
@@ -100,7 +106,7 @@ object Inkles extends Controller with Guard {
 		)
 	}
 
-	def edit(inkleUuid: String, pageUuid: String) = IsAuthenticated { username => implicit request =>
+	def edit(inkleUuid: String, pageUuid: String) = IsAuthenticated { username => implicit r =>
 		log("edit", Map("inkleUuid" -> inkleUuid))
 
 		editForm.bindFromRequest.fold(
@@ -108,12 +114,12 @@ object Inkles extends Controller with Guard {
 			inkle => {
 				val editedInkle = Inkle.edit(inkleUuid, inkle)
 
-        Ok(renderers.inkles.central(pageUuid, editedInkle))
+        Ok(renderers.inkles.central(currentUser, pageUuid, editedInkle))
 			}
 		)
 	}
 
-	def delete = IsAuthenticated { username => implicit request =>
+	def delete = IsAuthenticated { username => implicit r =>
 		log("delete")
 
 		deleteForm.bindFromRequest.fold(
@@ -123,7 +129,7 @@ object Inkles extends Controller with Guard {
           if (Inkle.deleteWithChildren(inkle._1)) Ok("deleted")
           else InternalServerError("something went wrong")
         } else {
-          if (Inkle.delete(inkle._1)) Ok(renderers.inkles.inkle(Inkle.find(inkle._1)))
+          if (Inkle.delete(inkle._1)) Ok(renderers.inkles.inkle(currentUser, Inkle.find(inkle._1)))
           else InternalServerError("something went wrong")
         }
 
@@ -152,12 +158,12 @@ object Inkles extends Controller with Guard {
     Ok(jsonInkles)
   }
 
-	def getPageOfChildren(uuid: String, pageUuid: String, page: Int = 1) = Action {
+	def getPageOfChildren(uuid: String, pageUuid: String, page: Int = 1) = Action { implicit r =>
     log("getPageOfChildren", Map("uuid" -> uuid, "page" -> page))
 
     val inkles = Inkle.findPageOfChildren(uuid, page)
 
-    Ok(renderers.inkles.children(Inkle.find(uuid), inkles, pageUuid, page))
+    Ok(renderers.inkles.children(currentUser, Inkle.find(uuid), inkles, pageUuid, page))
   }
 
 	def origin(uuid: String) = IsAuthenticated { username => implicit r =>
@@ -268,13 +274,13 @@ object Inkles extends Controller with Guard {
 
   }
 
-  def getInkle(uuid: String) = Action {
+  def getInkle(uuid: String) = Action { implicit r =>
 	  log("getInkle", Map("uuid" -> uuid))
 
     val inkle = Inkle.find(uuid)
 
 
-    Ok(renderers.inkles.inkle(inkle))
+    Ok(renderers.inkles.inkle(currentUser, inkle))
 
   }
 

@@ -65,7 +65,8 @@ object User {
 			  | name: {name},
 			  | email: {email},
 			  | password: {password},
-			  | created: timestamp()
+			  | created: timestamp(),
+			  | tourStep: 0
 			  |})
 			""".stripMargin
 		).on(
@@ -266,5 +267,32 @@ object User {
 		  "uuid" -> user,
 		  "password" -> password
 		).execute()
+	}
+
+	def updateTourStep(user: String, step: Int): Boolean = {
+		log("updateTourStep", Map("user" -> user, "step" -> step))
+
+		Cypher(
+			"""
+			  |MATCH (user:User {uuid: {uuid}})
+			  |SET user.tourStep = {step}
+			""".stripMargin
+		).on(
+		  "uuid" -> user,
+		  "step" -> step
+		).execute()
+	}
+
+	def getTourStep(uuid: String): Int = {
+		log("getTourStep", Map("uuid" -> uuid))
+
+		Cypher(
+			"""
+			  |MATCH (user:User {uuid: {uuid}})
+			  |RETURN user.tourStep
+			""".stripMargin
+		).on(
+			"uuid" -> uuid
+		).as(scalar[Int].single)
 	}
 }

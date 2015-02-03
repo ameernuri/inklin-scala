@@ -271,6 +271,19 @@ object Inkle {
 		Page(inkles, page, offset, total)
 	}
 
+	def getPathLength(inkleUuid: String): Int = {
+		log("getPathLength", Map("inkleUuid" -> inkleUuid))
+
+		Cypher(
+			s"""
+			  |MATCH (child:Inkle { uuid: {inkle} })-[:has_parent*..]->(inkle:Inkle)
+			  |RETURN count(inkle)
+			""".stripMargin
+		).on(
+			"inkle" -> inkleUuid
+		).as(scalar[Int].single)
+	}
+
 	def getParents(inkleUuid: String, page: Int = 0, pageSize: Int = 5): Page[(Inkle, User)] = {
 		log("getParents", Map("inkleUuid" -> inkleUuid, "page" -> page, "pageSize" -> pageSize))
 

@@ -88,7 +88,7 @@ object Users extends Controller with Guard {
 					monkeys.DoMail.sendHtml(
 						"Reset your password",
 						html.mails.resetPassword(user.email, resetCode),
-						"ameernuri@gmail.com"
+						user.email
 					)
 
 					Redirect(routes.Apps.home()).flashing(

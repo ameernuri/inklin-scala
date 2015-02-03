@@ -19,6 +19,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
 	"org.anormcypher" %% "anormcypher" % "0.5.1",
+	"com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.0",
 	"com.amazonaws" % "aws-java-sdk" % "1.3.11",
 	"com.drewnoakes" % "metadata-extractor" % "2.6.2",
 	"com.typesafe.akka" % "akka-actor_2.11" % "2.3.3",

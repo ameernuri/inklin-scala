@@ -1,4 +1,4 @@
-@(inkle: (Inkle, User), children: Page[(Inkle, User)], pageUuid: String, page: Int = 0)
+@(user: User, inkle: (Inkle, User), children: Page[(Inkle, User)], pageUuid: String, page: Int = 0)
 
 @import java.util.UUID
 
@@ -33,15 +33,10 @@
         }
       </div>
     }
+
+    @if(true/*User.getTourStep(user.uuid) == 0 && children.total > 0*/) {
+      @commons.apps.popover("Now click on it.", s"${User.getTourStep(user.uuid)} You can also extend this child by clicking on it.", "bottom")
+    }
   </div>
-  @if(true) {
-    <div class="popover bottom" style="position: relative; display: block; text-align: center; border-radius: 10px;border-color: #ddd;">
-      <div class="arrow" style="border-bottom-color: #ccc;"></div>
-      <h3 class="popover-title" style="border-radius: 10px 10px 0 0;">Good job! Now click on it.</h3>
-      <div class="popover-content">
-        <p>You can also extend this child by clicking it.</p>
-      </div>
-    </div>
-  }
 
 }

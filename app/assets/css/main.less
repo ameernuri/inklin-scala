@@ -331,12 +331,13 @@ input[type=submit] {
 		padding: 10px 0;
 		background: #fafafa;
 		.pointer;
-		color: #aaa;
+		color: #999;
 		font-size: 14px;
+		border-radius: 8px 8px 0 0;
 
 		&:hover {
 			background: #f8f8f8;
-			color: #888;
+			color: #666;
 		}
 	}
 }
@@ -608,4 +609,54 @@ div.tooltip-inner {
 	-ms-transform: rotate(-90deg); /* IE 9 */
   -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
   transform: rotate(-90deg);
+}
+
+.custom-popover {
+	.popover {
+		position: relative;
+		//display: block;
+		text-align: center;
+		border-radius: 10px;
+		border-color: #eee;
+		color: #888;
+		font-size: 13px;
+		padding: 0;
+
+		.popover-title {
+			border-radius: 10px 10px 0 0;
+			border: none;
+		}
+
+		.arrow {
+			&:before {
+				border-color: #ddd;
+			}
+		}
+	}
+
+	@arrow-color: #ddd;
+
+	.top {
+		.arrow:after {
+			border-top-color: @arrow-color;
+		}
+	}
+
+	.bottom {
+		.arrow:after {
+			border-bottom-color: @arrow-color;
+		}
+	}
+
+	.right {
+		.arrow:after {
+			border-right-color: @arrow-color;
+		}
+	}
+
+	.left {
+		.arrow:after {
+			border-left-color: @arrow-color;
+		}
+	}
 }

@@ -115,19 +115,6 @@ function homeInkleAddActions() {
 
 	submitOnReturn('#home-inkle-form', '#inkle-textarea');
 
-	$('#inkle-textarea').keyup(function() {
-		$('#inkle-textarea-suggestions').slideDown();
-
-		jsRoutes.controllers.Inkles.fetchSuggestions($('inkle-textarea').value).ajax({
-			success: function () {
-				console.log('yeah')
-			},
-			error: function () {
-				console.log('error')
-			}
-		})
-	});
-
 	$('#home-inkle-form').submit(function() {
 		log('add');
 

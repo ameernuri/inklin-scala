@@ -1,8 +1,6 @@
 package monkeys
 
-import com.typesafe.plugin._
 import org.apache.commons.mail._
-import play.api.Play.current
 import play.twirl.api.Html
 import monkeys.DoLog._
 import play.libs.Akka
