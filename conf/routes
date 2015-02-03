@@ -28,6 +28,10 @@ POST        /signup                                     controllers.Users.create
 GET         /signin                                     controllers.Users.signin
 POST        /signin                                     controllers.Users.authenticate
 GET         /signout                                    controllers.Users.signout
+GET         /password/reset                             controllers.Users.resetPasswordPage
+POST        /password/reset                             controllers.Users.resetPassword
+GET         /password/reset/process                     controllers.Users.resetPasswordProcessPage(email: String, code: String)
+POST        /password/reset/process                     controllers.Users.resetPasswordProcess(email: String, code: String)
 GET         /users/:uuid                                controllers.Users.view(uuid: String)
 
 # js router

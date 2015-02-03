@@ -10,7 +10,7 @@ import play.api.libs.json.Json._
 import models._
 import views.html._
 import security._
-import monkeys.Loggers._
+import monkeys.DoLog._
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
 
@@ -19,11 +19,11 @@ object Inkles extends Controller with Guard {
 	private def log(log: String, params: Map[String, Any] = Map()) = controllerLogger("Inkles", log, params)
 
 	val inkleForm = Form(
-		"inkle" -> nonEmptyText(maxLength = 80)
+		"inkle" -> nonEmptyText(maxLength = 70)
 	)
 
 	val editForm = Form(
-		"inkle" -> nonEmptyText(maxLength = 80)
+		"inkle" -> nonEmptyText(maxLength = 70)
 	)
 
 	val deleteForm = Form(

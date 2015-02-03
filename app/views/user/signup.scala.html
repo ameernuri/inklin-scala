@@ -1,4 +1,4 @@
-@(signupForm: Form[(String, String, String, String)])
+@(signupForm: Form[(String, String, String, String)])(implicit flash: Flash)
 
 
 @secondary("Inklin : Sign up") {
@@ -13,7 +13,8 @@
 							signupForm("name"),
 							'_label             -> None,
 							'_showConstraints   -> false,
-							'placeholder        -> "your name"
+							'placeholder        -> "your name",
+							'autofocus          -> "autofocus"
 						)
 					</tr>
 

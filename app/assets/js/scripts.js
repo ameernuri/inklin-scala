@@ -14,6 +14,10 @@ $(document).ready(function() {
 function mainActions() {
 	modifyActions();
 
+	setTimeout(function() {
+		$(".flash").fadeOut(2000)
+	}, 5000);
+
 	$("#flash-container").click(function() {
 		$("#flash-content").html("");
 		$(this).fadeOut();

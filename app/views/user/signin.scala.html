@@ -1,4 +1,4 @@
-@(signinForm: Form[(String, String)])
+@(signinForm: Form[(String, String)])(implicit flash: Flash)
 
 
 @secondary("Inklin : Sign in") {
@@ -17,7 +17,8 @@
 					signinForm("usernameOrEmail"),
 					'_label           -> "",
 					'_showConstraints -> false,
-					'placeholder      -> "username or email"
+					'placeholder      -> "username or email",
+					'autofocus        -> "autofocus"
 				)
 				@helper.inputPassword(
 					signinForm("password"),
@@ -31,7 +32,8 @@
 				</div>
 			</div>
 			<div id="no-account">
-				<span>Don't have an account? <a href="@routes.Users.signup()">Create an Account</a></span>
+				<span>Not yet on inklin? <a href="@routes.Users.signup()">Create an Account</a><br></span>
+				<span><a href="@routes.Users.resetPasswordPage()">Forgot you password?</a></span>
 			</div>
 		</div>
 	}

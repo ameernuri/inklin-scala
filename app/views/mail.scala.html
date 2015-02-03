@@ -1,0 +1,71 @@
+@(email: String)(pre: Html)(message: Html)(post: Html)
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body style="margin:0;background-color: #fefefe;">
+		<div style="margin:0 auto;padding:0;min-height:100%;width:100%;font-weight:200;">
+			<table style="font-family:Helvetica, Arial, sans-serif;margin:0;padding:0;border-collapse:collapse;height:100%;color: #666;width:100%;border: none;">
+				<tbody>
+					<tr>
+						<td align="center" valign="top" style="padding:50px 20px;margin:0;height:100%;width:100%">
+							<table style="border: none;overflow:hidden;width:100%;min-width:300px;max-width:600px;border-collapse:collapse">
+								<tbody>
+									<tr>
+										<td style="padding:35px;border-bottom:1px solid #eee;text-align:center;">
+											<a href="http://inklin.co"
+											title="Inklin"
+											style="text-decoration:none" target="_blank">
+												<img src="@global.domain@routes.Assets.versioned("images/inklin-beta.png")" style="border:0;color:#6dc6dd !important;font-family:Helvetica, Arial, sans-serif;font-size:60px;font-weight:bold;min-height:auto !important;letter-spacing:-4px;line-height:100%;outline:none;text-align:center;text-decoration:none;max-width: 160px;border-radius:5px;">
+											</a>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											@pre
+										</td>
+									</tr>
+									<tr>
+										<td align="center" valign="top" style="padding:50px 0 30px;">
+											<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#ffffff;border-collapse:separate !important;border-radius:4px">
+												<tbody>
+													<tr>
+														<td align="center" valign="top" style="padding:0 40px;color:#666;font-family:Helvetica, Arial, sans-serif;font-size:15px;line-height:150%;text-align:left
+														" >
+															@message
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											@post
+										</td>
+									</tr>
+									<tr>
+										<td align="center" valign="top">
+											<table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding: 30px 0; border-top: 1px solid #eee;border-collapse:collapse !important;background-color: #fcfcfc;">
+												<tbody>
+													<tr>
+														<td align="center" valign="top" style="color:#808080;font-family:Helvetica, Arial, sans-serif;font-size:13px;line-height:125%">
+																&copy; 2015 &bull; Inklin by Penser Labs.<br><br>
+															<a href="http://inklin.co">inklin.co</a>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>

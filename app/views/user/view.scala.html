@@ -1,4 +1,4 @@
-@(currentUser: User, viewedUser: User)
+@(currentUser: User, viewedUser: User)(implicit flash: Flash)
 
 @main("Inklin • " + viewedUser.name, currentUser) {
 	@templates.users.view(viewedUser)

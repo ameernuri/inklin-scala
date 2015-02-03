@@ -6,7 +6,7 @@ import views.html._
 import views.html
 
 import security._
-import monkeys.Loggers._
+import monkeys.DoLog._
 
 import controllers.routes.javascript
 

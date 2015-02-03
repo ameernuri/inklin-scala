@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(implicit flash: Flash)
 
 @import java.util.Date
 
@@ -8,6 +8,7 @@
 	<head>
 		<title>@title</title>
 		<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
+		<script src="@routes.Assets.versioned("js/secondary.js")"></script>
 		<link href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))' rel='stylesheet'>
 		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.min.css")">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/secondary.min.css")">
@@ -16,12 +17,39 @@
 
 		<script>
 			if (location.hostname == "inklin.herokuapp.com") {
-				window.location.replace("http://inklin.co");
+			$(document ).ready(function () {
+
+				$(document.body).html(
+
+					'<div style="padding:10px;margin-top: 100px; font-family: \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-weight: 200;width: 100%; text-align: center;">' +
+					'<h3 style="font-size: 30px; font-weight: 200;">' +
+					'Redirecting to <b>inklin.co</b>...' +
+					' </h3>' +
+					'<span style="margin-top: 20px; color: #aaa;">' +
+					' <a href="http://inklin.co" style="color: #97c115;text-decoration: none; font-weight: 400;">Click here</a> if it doesn\'t redirect in 5 seconds.' +
+					'</span>' +
+					'</div>'
+				);
+			});
+			setTimeout((function() {
+			     window.location.replace("http://inklin.co");
+			   }), 5000);
 			}
 		</script>
 	</head>
 
 	<body style="background-color: #fefefe;">
+
+		@flash.get("success").map { message =>
+
+			@commons.apps.flash(message)
+		}
+
+		@flash.get("error").map { message =>
+
+			@commons.apps.flash(message, "error")
+		}
+
 		<div id="header" style="text-align: center; padding: 30px 20px 20px; width: 100%;">
 			<div id="header-content">
 				<div style="margin: 40px 0;">

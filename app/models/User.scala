@@ -4,7 +4,7 @@ import java.util.UUID._
 
 import org.anormcypher._
 import org.anormcypher.CypherParser._
-import monkeys.Loggers._
+import monkeys.DoLog._
 
 case class User(uuid: String, username: String, name: String, email: String)
 
@@ -102,6 +102,34 @@ object User {
 		).as(simple.singleOpt)
 	}
 
+	def findByEmail(email: String): Option[User] = {
+		log("findByEmail", Map("email" -> email))
+
+		Cypher(
+			s"""
+				|MATCH (user:User {email: {email}})
+			  |RETURN ${simpleReturn()}
+			""".stripMargin
+		).on(
+		  "email" -> email
+		).as(simple.singleOpt)
+	}
+
+	def findByUsernameOrEmail(usernameOrEmail: String): Option[User] = {
+		log("findByUsername", Map("username" -> usernameOrEmail))
+
+		Cypher(
+			s"""
+				|MATCH (user:User)
+				|WHERE user.username = {usernameOrEmail} OR
+				|user.email = {usernameOrEmail}
+			  |RETURN ${simpleReturn()}
+			""".stripMargin
+		).on(
+		  "usernameOrEmail" -> usernameOrEmail
+		).as(simple.singleOpt)
+	}
+
 	def findUuidByUsername(username: String): Option[String] = {
 		log("findUuidByUsername", Map("username" -> username))
 
@@ -144,6 +172,21 @@ object User {
 		).as(scalar[String].single)
 	}
 
+	def usernameOrEmailExists(usernameOrEmail: String): Boolean = {
+		log("usernameOrEmailExists", Map("usernameOrEmail" -> usernameOrEmail))
+
+		Cypher(
+			"""
+			  |MATCH (user:User)
+			  |WHERE user.username = {usernameOrEmail} or
+			  |user.email = {usernameOrEmail}
+			  |RETURN count(user)
+			""".stripMargin
+		).on(
+			"usernameOrEmail" -> usernameOrEmail
+		).as(scalar[Int].single) != 0
+	}
+
 	def usernameExists(username: String): Boolean = {
 		log("usernameExists", Map("username" -> username))
 
@@ -170,5 +213,58 @@ object User {
 		).on(
 			"email" -> email
 		).as(scalar[Int].single) != 0
+	}
+
+	def createResetPasswordCode(uuid: String, code: String): Boolean = {
+		log("createResetPasswordCode", Map("uuid" -> uuid, "code" -> code))
+
+		Cypher(
+			"""
+				|MATCH (user:User {uuid: {uuid}})
+			  |CREATE (user)-[:password_reset_code]->(code:PasswordResetCode {
+			  | code: {code},
+			  | expired: false,
+			  | created: timestamp()
+			  |}),
+			  |(code)-[:is_dependent_on]->(user)
+			""".stripMargin
+		).on(
+		  "uuid" -> uuid,
+		  "code" -> code
+		).execute()
+	}
+
+	def validatePasswordResetCode(email: String, code: String): Boolean = {
+		log("validatePasswordResetCode", Map("email" -> email, "code" -> code))
+
+		Cypher(
+			"""
+			  |MATCH (user:User)-[resetCode:password_reset_code]->(reset:PasswordResetCode)
+			  |WHERE user.email = {email}
+			  |and reset.code = {code}
+			  |and reset.expired = false
+			  |RETURN count(user) as count
+			""".stripMargin
+		).on(
+		  "email" -> email,
+		  "code" -> code
+		).as(scalar[Long].single) != 0
+	}
+
+	def updatePassword(user: String, password: String): Boolean = {
+		log("updatePassword", Map("user" -> user, "password" -> password))
+
+		Cypher(
+			"""
+			  |MATCH (user:User {uuid: {uuid}})
+			  |SET user.password = {password}, user.passwordUpdated = timestamp()
+				|WITH user
+			  |OPTIONAL MATCH (user)-[code:password_reset_code]->(resetCode)-[r]-()
+			  |DELETE code, r, resetCode
+			""".stripMargin
+		).on(
+		  "uuid" -> user,
+		  "password" -> password
+		).execute()
 	}
 }

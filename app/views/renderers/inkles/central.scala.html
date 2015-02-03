@@ -23,7 +23,7 @@
           <button data-toggle="tooltip" data-placement="top" title="Cancel" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-cancel" class="glyphicon glyphicon-remove"></button>
           <button data-toggle="tooltip" data-placement="top" title="Save" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-submit" class="glyphicon glyphicon-ok"></button>
         </div>
-	      <textarea name="inkle" id="page-@pageUuid-@{inkle._1.uuid}-edit-textarea" maxlength="80" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
+	      <textarea name="inkle" id="page-@pageUuid-@{inkle._1.uuid}-edit-textarea" maxlength="70" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
 	      <input type="submit" value="•••" style="display: none;">
       }
 
@@ -44,7 +44,7 @@
       </div>
       <div style="display:none;" id="page-@pageUuid-@{inkle._1.uuid}-extend-form-div" class="red">
       @helper.form(routes.Inkles.extend(inkle._1.uuid, pageUuid.toString), 'id -> s"page-$pageUuid-${inkle._1.uuid}-extend-form") {
-        <textarea id="page-@pageUuid-@{inkle._1.uuid}-extend-textarea" name="inkle" style="width: 100%; border: solid #fafafa; border-width: 0 1px 1px;border-radius: 0 0 8px 8px; font-size: 17px;padding: 15px 15px 3px; text-align: center;box-sizing: border-box;height: 60px;margin: 0; background-color: #fdfdfd;" maxlength="80" class="inkle-textarea" placeholder="how about..."></textarea>
+        <textarea id="page-@pageUuid-@{inkle._1.uuid}-extend-textarea" name="inkle" style="width: 100%; border: solid #fafafa; border-width: 0 1px 1px;border-radius: 0 0 8px 8px; font-size: 17px;padding: 15px 15px 3px; text-align: center;box-sizing: border-box;height: 60px;margin: 0; background-color: #fdfdfd;" maxlength="70" class="inkle-textarea" placeholder="how about..."></textarea>
 
         <div style="float: right; display: none;">
           <input type="submit" value="•••" style="font-size: 16px;color: #fff; border: none;padding: 6px 10px;margin-right: 8px;" id="page-@pageUuid-@{inkle._1.uuid}-extend-submit">

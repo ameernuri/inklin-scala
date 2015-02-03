@@ -6,10 +6,16 @@ import play.api.http.HeaderNames._
 import play.api.mvc._
 import play.api.mvc.Results._
 import scala.concurrent.Future
+import play.twirl.api.Html
 
 import play.Play._
 
-import monkeys.Loggers._
+import monkeys.DoLog._
+
+package object global {
+
+	val domain = "http://inklin.co"
+}
 
 object Global extends GlobalSettings {
 
@@ -48,9 +54,9 @@ object Global extends GlobalSettings {
 	override def onHandlerNotFound(request: RequestHeader): Future[play.api.mvc.Result] = {
 		log("onHandlerNotFound: [" + request.method + "] " + request.path)
 
-		monkeys.Email.send(
+		monkeys.DoMail.sendHtml(
 			">> HANDLER NOT FOUND",
-			s"""
+			Html(s"""
 			  |<b>session email:</b> ${request.session.get("email").getOrElse("NONE")} <br>
 			  |<br>
 			  |<b>request method:</b> ${request.method} <br>
@@ -60,7 +66,7 @@ object Global extends GlobalSettings {
 			  |<b>user agent:</b> ${request.headers.get(USER_AGENT)} <br>
 			  |<b>flash:</b> ${request.flash.toString} <br>
 			  |<b>request raw query string:</b> ${request.rawQueryString} <br>
-			""".stripMargin,
+			""".stripMargin),
 			"ameernuri@gmail.com"
 		)
 		Future.successful(

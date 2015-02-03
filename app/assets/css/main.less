@@ -1,9 +1,5 @@
 @import "lib/bootstrap/less/variables.less";
-
-@content-width: 500px;
-@light-gray: #DFDFDF;
-@lightest-gray: #F2F2F2;
-@inklin-main: #97C111;
+@import "_commons";
 
 * {
 	margin: 0;
@@ -213,6 +209,34 @@ input[type=submit] {
 		}
 	}
 
+}
+
+.flash {
+	background-color: rgba(245, 245, 245, 0.95);
+	cursor: pointer;
+	padding: 15px;
+	position: fixed;
+	text-align: center;
+	top: 60px;
+	z-index: 1030;
+	color: @inklin-main;
+
+	.flash-close-button {
+		margin: 0 15px;
+		opacity: 0.6;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+}
+
+.flash-error {
+	color: #e55;
+}
+
+.flash-success {
+	color: @inklin-main;
 }
 
 #popover-pad {

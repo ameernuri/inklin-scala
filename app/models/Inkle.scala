@@ -5,7 +5,7 @@ import org.anormcypher._
 import org.anormcypher.CypherParser._
 import java.util.Date
 import java.util.UUID._
-import monkeys.Loggers._
+import monkeys.DoLog._
 import org.anormcypher.~
 
 case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {

@@ -1,0 +1,16 @@
+@(message: String, kind: String = "success", id: String = "", hidden: Boolean = false)
+
+
+<div
+	@if(hidden){ hidden }
+	class="flash
+		@if(kind == "success") { flash-success }
+		@if(kind == "error") { flash-error }
+		@if(kind == "warning") { flash-warning } col-sm-12
+	"
+	@if(id != "") { id="@id" } onclick="$(this).fadeOut('slow')">
+	<div class="righter pointer flash-close-button">
+		<span class="icon-cancel-bold"></span>
+	</div>
+	<div @if(id != "") { id="@id-content" }>@message</div>
+</div>

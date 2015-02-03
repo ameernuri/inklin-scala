@@ -1,6 +1,6 @@
 package monkeys
 
-import monkeys.Loggers._
+import monkeys.DoLog._
 
 object Users {
 

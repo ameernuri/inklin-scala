@@ -1,3 +1,5 @@
+@import "_commons";
+
 * {
 	margin: 0;
 	padding: 0;
@@ -19,10 +21,10 @@ a, a:visited {
 	font-weight: bold;
 	text-decoration: none;
 	transition: all 0.7s;
-}
 
-a:hover {
-	color: #4455CC;
+	&:hover, &:focus {
+		color: darken(@inklin-main, 5%);
+	}
 }
 
 input, textarea {

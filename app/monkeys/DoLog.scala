@@ -1,6 +1,6 @@
 package monkeys
 
-object Loggers {
+object DoLog {
 
 	private def consoleColor(color: String, content: String): String = {
 		val ink = color.toLowerCase match {

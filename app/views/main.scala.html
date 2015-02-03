@@ -24,9 +24,25 @@
 		<script src="@routes.Assets.versioned("js/my.js")"></script>
 
 		<script>
-			if (location.hostname == "inklin.herokuapp.com") {
-				window.location.replace("http://inklin.co");
-			}
+		if (location.hostname == "inklin.herokuapp.com") {
+		$(document ).ready(function () {
+
+			$(document.body).html(
+
+				'<div style="padding:10px;margin-top: 100px; font-family: \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-weight: 200;width: 100%; text-align: center;">' +
+				'<h3 style="font-size: 30px; font-weight: 200;">' +
+				'Redirecting to <b>inklin.co</b>...' +
+				' </h3>' +
+				'<span style="margin-top: 20px; color: #aaa;">' +
+				' <a href="http://inklin.co" style="color: #97c115;text-decoration: none; font-weight: 400;">Click here</a> if it doesn\'t redirect in 5 seconds.' +
+				'</span>' +
+				'</div>'
+			);
+		});
+		setTimeout((function() {
+		     window.location.replace("http://inklin.co");
+		   }), 5000);
+		}
 		</script>
 	</head>
 	<body style="background-color: #fefefe;">
@@ -103,7 +119,7 @@
 		@commons.modal("Something in your mind?", "add-modal") {
 			@helper.form(routes.Inkles.create(), 'id -> "modal-inkle-form") {
 		    <p class="text-center">Big ideas start with an inkling. Write it down:</p>
-		    <textarea id="modal-inkle-textarea" class="inkle-textarea" name="inkle" placeholder="how about..." style="width: 100%; border: 1px solid #ddd;height: 90px; font-size: 25px;padding: 25px; text-align: center;box-sizing: border-box;" autofocus="autofocus" maxlength="80"></textarea>
+		    <textarea id="modal-inkle-textarea" class="inkle-textarea" name="inkle" placeholder="how about..." style="width: 100%; border: 1px solid #ddd;height: 90px; font-size: 25px;padding: 25px; text-align: center;box-sizing: border-box;" autofocus="autofocus" maxlength="70"></textarea>
 
 		    <button type="button" class="btn btn-primary pull-right" style="color: #97C111; padding: 0; font-size: 40px; border:none; margin-top: 5px;background:none; line-height: 18px; margin: 10px 0;">•••</button>
 		   }
@@ -173,10 +189,13 @@
 
 			<span style="display: none;padding-top : 55px;" class="too-small full-height">
 				<div style="display: table; table-layout: fixed;width: 100%;" class="full-height">
-					<div style="font-size: 18px; text-align: center;padding: 15px; font-weight: 100; color: #888; display: table-cell; vertical-align: middle;">
+					<div style="font-size: 16px; text-align: center;padding: 15px; font-weight: 100; color: #888; display: table-cell; vertical-align: middle;">
 						<div style="margin-bottom: 10px;">
 							<img style="width: 140px;" src="@routes.Assets.versioned("images/inklin_shrink.svg")" onerror="this.onerror = null; this.src='@routes.Assets.versioned("images/inklin_shrink.png")'" >
 						</div>
+						<h2 style="font-weight: 200;">
+							Inklin needs more space to fly!
+						</h2>
 						Sorry, the screen size is too small. We're working on a mobile version and it should be available soon.
 						<br>
 						<br>
