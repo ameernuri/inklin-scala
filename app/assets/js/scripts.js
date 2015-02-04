@@ -383,6 +383,7 @@ function inkleActions(pageUuid, uuid) {
 		jsRoutes.controllers.Inkles.extend(uuid, pageUuid).ajax({
 			data: $('#page-'+ pageUuid +'-'+ uuid +'-extend-form').serialize(),
 			success: function(e) {
+				$('.tour').hide();
 				$('#page-'+ pageUuid +'-'+ uuid +'-children-wrapper').append(e);
 				$('#page-'+ pageUuid +'-'+ uuid +'-extend-textarea').val('');
 
