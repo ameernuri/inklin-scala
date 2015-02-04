@@ -5,7 +5,7 @@
 @defining(UUID.randomUUID()) { rand =>
   <div id="page-@pageUuid-@{inkle._1.uuid}-children-wrapper">
     @children.items.map { child =>
-      @renderers.inkles.extend(child, pageUuid.toString, rand.toString)
+      @renderers.inkles.child(user, child, pageUuid.toString, rand.toString)
     }
 
     @if(children.total > 5) {
@@ -32,10 +32,6 @@
           </script>
         }
       </div>
-    }
-
-    @if(true/*User.getTourStep(user.uuid) == 0 && children.total > 0*/) {
-      @commons.apps.popover("Click on it", s"${User.getTourStep(user.uuid)} You can also extend this child by clicking on it.", "bottom")
     }
   </div>
 

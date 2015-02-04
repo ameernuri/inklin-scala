@@ -1,4 +1,4 @@
-@(inkle: (Inkle, User), pageUuid: String, rand: String)
+@(user: User, inkle: (Inkle, User), pageUuid: String, rand: String, isNew: Boolean = false)
 
 <div id="page-@pageUuid-@rand-child-@inkle._1.uuid">
 	<div class="child">
@@ -11,6 +11,23 @@
 	  }
 		<span id="page-@pageUuid-@rand-child-@inkle._1.uuid-counter" style="display: none; float: right; color: #ccc; font-size: 12px;"> • @Inkle.childrenCount(inkle._1.uuid) <span style="font-size: 18px;">&therefore;</span> @Inkle.descendantCount(inkle._1.uuid)</span>
 	</div>
+
+	@if(isNew) {
+		@defining(User.getTourStep(user.uuid)) { tourStep =>
+
+			@if(tourStep < 3) {
+
+				@if(tourStep == 1) {
+					@commons.apps.popover("Click on it", s"${User.getTourStep(user.uuid)} You can also extend this child. Just click on it and see what happens.", "bottom")
+				}
+
+				@if(tourStep == 2) {
+					@commons.apps.popover("Don't stop here!", s"${User.getTourStep(user.uuid)} You can extend this too. It goes on and on and on... infinitely.", "bottom")
+				}
+
+			}
+		}
+ }
 </div>
 
 <script>

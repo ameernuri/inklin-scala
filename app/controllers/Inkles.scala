@@ -89,7 +89,7 @@ object Inkles extends Controller with Guard {
 
         if (returnAs == "rendered") {
 
-          Ok(renderers.inkles.extend(newInkle, pageUuid, UUID.randomUUID().toString))
+          Ok(renderers.inkles.child(currentUser, newInkle, pageUuid, UUID.randomUUID().toString, true))
         } else {
           val json_inkle = obj(
             "uuid" -> newInkle._1.uuid,
