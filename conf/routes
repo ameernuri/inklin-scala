@@ -4,6 +4,7 @@
 GET         /new-inkle                                  controllers.Apps.inkle
 GET         /                                           controllers.Apps.home
 GET         /origins                                    controllers.Apps.origins
+GET         /template-test                              controllers.Apps.templateTest
 
 POST        /inkles/create                              controllers.Inkles.create(returnAs: String ?= "rendered")
 POST        /inkles/extend/:parentUuid                  controllers.Inkles.extend(parentUuid: String, pageUuid: String, returnAs: String ?= "rendered")

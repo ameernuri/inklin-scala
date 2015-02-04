@@ -35,7 +35,7 @@
     }
 
     @if(true/*User.getTourStep(user.uuid) == 0 && children.total > 0*/) {
-      @commons.apps.popover("Now click on it.", s"${User.getTourStep(user.uuid)} You can also extend this child by clicking on it.", "bottom")
+      @commons.apps.popover("Click on it", s"${User.getTourStep(user.uuid)} You can also extend this child by clicking on it.", "bottom")
     }
   </div>
 

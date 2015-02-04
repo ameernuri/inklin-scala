@@ -47,6 +47,10 @@ object Apps extends Controller with Guard {
 		Ok(html.inkle.inkle(currentUser))
 	}
 
+	def templateTest = Action { implicit r =>
+		Ok(html.mails.resetPassword("ameer@inklin.co", "123456"))
+	}
+
 	// js router
 	def javascriptRoutes = Action { implicit request =>
 	  Ok(
