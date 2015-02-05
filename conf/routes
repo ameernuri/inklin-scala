@@ -35,6 +35,13 @@ GET         /password/reset/process                     controllers.Users.resetP
 POST        /password/reset/process                     controllers.Users.resetPasswordProcess(email: String, code: String)
 GET         /users/:uuid                                controllers.Users.view(uuid: String)
 
+# Groups
+GET         /groups                                     controllers.Groups.list
+GET         /groups/:uuid                               controllers.Groups.view(uuid: String)
+POST        /groups/create                              controllers.Groups.create
+
+
+
 # js router
 GET         /js-routes.js                               controllers.Apps.javascriptRoutes
 
@@ -44,6 +51,8 @@ GET         /templates/home                             controllers.Apps.templat
 GET         /templates/origins                          controllers.Apps.templateOrigins
 GET         /templates/origins/:uuid                    controllers.Inkles.templateOrigin(uuid: String)
 GET         /templates/users/:username                  controllers.Users.templateView(username: String)
+
+GET         /templates/groups                           controllers.Groups.templateList
 
 # to avoid clashes with /something
 GET         /$username<[a-zA-Z0-9_]+>                   controllers.Users.viewByUsername(username: String)

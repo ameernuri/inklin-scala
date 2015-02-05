@@ -301,4 +301,16 @@ object Inkles extends Controller with Guard {
 
     Ok(jsonResults)
   }
+
+  def increaseTourStep = Action { implicit r =>
+    log("increaseTourStep")
+
+    val tourStep = User.getTourStep(currentUser.uuid)
+
+    if(User.updateTourStep(currentUser.uuid, tourStep + 1)) {
+      Ok("tour updated")
+    } else {
+      InternalServerError("something terrible happened")
+    }
+  }
 }

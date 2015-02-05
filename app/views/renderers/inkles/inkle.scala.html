@@ -8,7 +8,12 @@
     <span class="glyphicon glyphicon-record"></span>
 
     @Inkle.getOrigin(inkle._1.uuid).map { origin =>
-      @origin._1.inkle
+      @if(origin._1.deleted) {
+        <samp class="text-muted" style="font-size: 15px">[DELETED ORIGIN]</samp>
+      } else {
+        @origin._1.inkle
+      }
+
       <script>
         $('#page-@pageUuid-@{inkle._1.uuid}-origin').click(function() {
 

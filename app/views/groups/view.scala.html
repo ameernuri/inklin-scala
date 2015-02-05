@@ -1,0 +1,5 @@
+@(user: User, group: Group)
+
+@main("Inklin • " + group.name, user) {
+	@templates.groups.view(user, group)
+}

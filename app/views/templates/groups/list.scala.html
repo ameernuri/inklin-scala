@@ -1,0 +1,19 @@
+@(user: User, groups: Seq[Group])
+
+@container() {
+	<div>
+		<button id="create-group-button" class="btn btn-default pull-right">
+			<span class="glyphicon glyphicon-plus"></span>
+			Create a Group
+		</button>
+	</div>
+
+	<h3>Your Groups</h3>
+	@groups.map { group =>
+		<div>
+			<a href="@routes.Groups.view(group.uuid)">
+				@group.name
+			</a>
+		</div>
+	}
+}

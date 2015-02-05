@@ -39,6 +39,7 @@ function mainActions() {
 
 				mainLoader(false);
 				$("#add-modal").modal('hide');
+				$("#modal-inkle-textarea").val('');
 			},
 			error: function(e) {
 				mainLoader(false);
@@ -66,14 +67,14 @@ function mainActions() {
 	});
 
 	$('#delete-inkle-form').submit(function() {
-		$('#main-loader').show();
+		mainLoader();
 
 		$.ajax({
 			url: "/inkles/delete",
 			type: "POST",
 			data: $('#delete-inkle-form').serialize(),
 			success: function (e) {
-				$('#main-loader').hide();
+				mainLoader(false);
 				$("#inkle-delete").modal('hide');
 				if (e == "deleted") {
 
@@ -87,12 +88,24 @@ function mainActions() {
 			error: function (e) {
 				alert("ERROR: "+ e);
 
-				$('#main-loader').hide();
+				mainLoader(false);
 				$("#inkle-delete").modal('hide');
 			}
 		});
 
 		return false;
+	});
+
+	$('#add-modal').on('shown.bs.modal', function (e) {
+	  $('#modal-inkle-textarea').focus();
+	});
+
+	$('#inkle-delete').on('shown.bs.modal', function (e) {
+	  $('#inkle-delete-radio-keep').prop('checked', true);
+	});
+
+	$('#create-group-modal').on('shown.bs.modal', function (e) {
+	  $('#create-group-text-name').focus();
 	});
 }
 
@@ -109,6 +122,12 @@ function modifyActions() {
 		.trigger('autosize.resize');
 
 	fullHeight();
+
+	$('#create-group-button').click(function() {
+		$("#create-group-modal").modal('show');
+
+		return false;
+	});
 }
 
 function homeInkleAddActions() {
@@ -118,7 +137,7 @@ function homeInkleAddActions() {
 	$('#home-inkle-form').submit(function() {
 		log('add');
 
-		mainLoader(true);
+		mainLoader();
 
 		jsRoutes.controllers.Inkles.create().ajax({
 			data: $("#home-inkle-form").serialize(),
@@ -129,12 +148,12 @@ function homeInkleAddActions() {
 				fullHeight();
 				pageDown();
 
-				$('#main-loader').hide();
+				mainLoader(false);
 			},
 			error: function (e) {
 				alert('ERROR: ' + e);
 
-				$('#main-loader').hide();
+				mainLoader(false);
 			}
 		});
 
@@ -143,6 +162,8 @@ function homeInkleAddActions() {
 }
 
 function mainLoader(show) {
+	show = typeof show !== 'undefined' ? show : true;
+
 	var loader = $("#main-loader");
 
 	if (!show) {
@@ -278,15 +299,15 @@ function pageUp() {
 function childrenPaginationActions(button, pageUuid, inkleUuid, pageNumber) {
 
 	$(button).click(function () {
-		$("#main-loader").show();
+		mainLoader();
 		jsRoutes.controllers.Inkles.getPageOfChildren(inkleUuid, pageUuid, pageNumber).ajax({
 			success: function (e) {
-				$("#main-loader").hide();
+				mainLoader(false);
 				$('#page-'+ pageUuid +'-'+ inkleUuid +'-children-wrapper').html(e)
 			},
 			error: function () {
 				alert("error");
-				$("#main-loader").hide();
+				mainLoader(false);
 			}
 		});
 	})
@@ -357,19 +378,19 @@ function inkleActions(pageUuid, uuid) {
 	$('#page-'+ pageUuid +'-'+ uuid +'-edit-form').submit(function() {
 
 
-		$('#main-loader').show();
+		mainLoader();
 		jsRoutes.controllers.Inkles.edit(uuid).ajax({
 			data: $('#page-'+ pageUuid +'-'+ uuid +'-edit-form').serialize(),
 			success: function (e) {
 				$('#page-'+ pageUuid +'-'+ uuid +'-center-wrapper').replaceWith(e);
 				fullHeight();
 
-				$('#main-loader').hide();
+				mainLoader(false);
 			},
 			error: function (e) {
 				alert("ERROR: "+ e);
 
-				$('#main-loader').hide();
+				mainLoader(false);
 			}
 		});
 
@@ -379,7 +400,7 @@ function inkleActions(pageUuid, uuid) {
 	$('#page-'+ pageUuid +'-'+ uuid +'-extend-form').submit(function() {
 		log('extend');
 
-		$('#main-loader').show();
+		mainLoader();
 		jsRoutes.controllers.Inkles.extend(uuid, pageUuid).ajax({
 			data: $('#page-'+ pageUuid +'-'+ uuid +'-extend-form').serialize(),
 			success: function(e) {
@@ -387,12 +408,12 @@ function inkleActions(pageUuid, uuid) {
 				$('#page-'+ pageUuid +'-'+ uuid +'-children-wrapper').append(e);
 				$('#page-'+ pageUuid +'-'+ uuid +'-extend-textarea').val('');
 
-				$('#main-loader').hide();
+				mainLoader(false);
 			},
 			error: function(e) {
 				alert("ERROR: " + e);
 
-				$('#main-loader').hide();
+				mainLoader(false);
 			}
 		});
 
@@ -416,17 +437,17 @@ function inkleClickActions(element, pageUuid, inkleUuid, wrapper) {
 
 	$(element).click(function() {
 
-		$('#main-loader').show();
+		mainLoader();
 		jsRoutes.controllers.Inkles.getInkle(inkleUuid).ajax({
 			success: function (e) {
 				$(wrapper).css("background", "red").replaceWith(e);
 				fullHeight();
 
-				$('#main-loader').hide();
+				mainLoader(false);
 			},
 			error: function() {
 
-				$('#main-loader').hide();
+				mainLoader(false);
 			}
 		});
  }).mouseover(function() {

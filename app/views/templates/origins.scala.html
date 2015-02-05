@@ -10,7 +10,11 @@
 			<div id="origins-@origin._1.uuid" class="col-sm-4 text-center origin-brick">
 				<div class="origin-brick-content">
 					<h3>
-						@origin._1.inkle
+						@if(origin._1.deleted) {
+							<samp class="text-muted small">[DELETED INKLE]</samp>
+						} else {
+							@origin._1.inkle
+						}
 					</h3>
 					<div class="text-muted">
 					@defining(Inkle.childrenCount(origin._1.uuid)) { childrenCount =>

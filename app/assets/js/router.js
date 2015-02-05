@@ -10,8 +10,18 @@ $(document).ready(function() {
 
 		return false;
 	});
+
 	$('.home-link').click(function() {
 		renderRoute(jsRoutes.controllers.Apps.templateHome(), '/', "Inklin");
+		$('#inkle-textarea').focus();
+
+		return false;
+	});
+
+	$('.go-to-groups').click(function() {
+		renderRoute(jsRoutes.controllers.Groups.templateList(), '/groups', "Inklin • Groups");
+
+		$('#main-dropdown-menu' ).dropdown('hide');
 
 		return false;
 	});
@@ -23,7 +33,7 @@ function renderRoute(templateAddress, route, title) {
 	  .done(function(e) {
 			mainLoader(false);
 
-			window.history.pushState('obj', '', route);
+			window.history.pushState('obj', title, route);
 			document.title = title;
 			$("#template-container").html(e)
 		}).fail(function() {

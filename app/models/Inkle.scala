@@ -138,7 +138,7 @@ object Inkle {
 		Cypher(
 			"""
 				|MATCH (inkle:Inkle {uuid: {inkleUuid}})
-				|OPTIONAL MATCH ()-[c]-(children)-[:has_parent]->(inkle)
+				|OPTIONAL MATCH ()-[c]-(children)-[:has_parent*..]->(inkle)
 				|DELETE c, children
 				|WITH inkle
 				|OPTIONAL MATCH ()-[d]-(dependent)-[:is_dependent_on]->(inkle)

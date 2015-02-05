@@ -1,0 +1,5 @@
+@(user: User, groups: Seq[Group])
+
+@main("Inklin • Groups", user) {
+	@templates.groups.list(user, groups)
+}

@@ -3,7 +3,8 @@
 @user.map { currentUser =>
 
 	@main("Inklin", currentUser) {
-		@templates.components.inkleForm()
+		@templates.components.inkleForm(currentUser)
+		@templates.components.homeOrigins()
 		@templates.components.inkles(currentUser, Inkle.fetchPage(currentUser.uuid))
 	}
 }.getOrElse {

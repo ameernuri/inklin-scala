@@ -115,6 +115,26 @@
 	    </button>
 		}
 
+		<!-- create group modal -->
+		@helper.form(routes.Groups.create()) {
+			@commons.modal("Create a Group", "create-group-modal") {
+				<div>
+					<div id="create-group-modal-content">
+						<input style="width: 100%; padding: 10px 20px; font-size: 20px;" id="create-group-text-name" type="text" placeholder="Group Name" name="name">
+					</div>
+				</div>
+			} {
+				<button type="button" class="btn btn-default" data-dismiss="modal">
+					<span class="glyphicon glyphicon-remove"></span>
+					Cancel
+				</button>
+				<button type="submit" class="btn btn-primary">
+					<span class="glyphicon glyphicon-plus"></span>
+					Create Group
+				</button>
+			}
+		}
+
 		<!-- add inkle modal -->
 		@commons.modal("Something in your mind?", "add-modal") {
 			@helper.form(routes.Inkles.create(), 'id -> "modal-inkle-form") {
@@ -166,7 +186,7 @@
 							<li role="presentation" class="divider"></li>
 
 							<li role="presentation">
-								<a role="menuitem" href="#">Groups</a>
+								<a role="menuitem" href="@routes.Groups.list()" class="go-to-groups">Groups</a>
 							</li>
 
 							<li role="presentation" class="divider"></li>
