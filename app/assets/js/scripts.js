@@ -28,7 +28,7 @@ function mainActions() {
 	$('#modal-inkle-form').submit(function() {
 		log('add');
 
-		mainLoader(true);
+		mainLoader();
 
 		jsRoutes.controllers.Inkles.create("json").ajax({
 			data: $("#modal-inkle-form").serialize(),
@@ -139,21 +139,19 @@ function homeInkleAddActions() {
 
 		mainLoader();
 
-		jsRoutes.controllers.Inkles.create().ajax({
+		jsRoutes.controllers.Inkles.create("json").ajax({
 			data: $("#home-inkle-form").serialize(),
-			type: "Post",
-			success: function (e) {
-				$('#inkles-wrapper').prepend(e);
-				$('#inkle-textarea').val('');
-				fullHeight();
-				pageDown();
+			success: function(e) {
+				console.log(e);
+
+				renderRoute(jsRoutes.controllers.Inkles.templateOrigin(e.uuid), "/origins/"+ e.uuid, "Inklin");
 
 				mainLoader(false);
 			},
-			error: function (e) {
-				alert('ERROR: ' + e);
-
+			error: function(e) {
 				mainLoader(false);
+
+				alert("oops.");
 			}
 		});
 
