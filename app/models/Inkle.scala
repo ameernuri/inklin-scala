@@ -291,7 +291,7 @@ object Inkle {
 
 		val query =
 			s"""
-			  |MATCH (child:Inkle { uuid: {inkle} })-[:has_parent*1..$pageSize]->(inkle:Inkle),
+			  |MATCH (child:Inkle { uuid: {inkle} })-[:has_parent*..]->(inkle:Inkle),
 				|(user)-[:owns_inkle]->(inkle)
 				|WITH inkle, user
 				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent:Inkle)

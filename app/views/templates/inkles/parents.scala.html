@@ -5,8 +5,8 @@
 @defining(Inkle.getParents(inkle._1.uuid)) { plain =>
   @defining(UUID.randomUUID()) { rand =>
     @defining(plain.items.reverse) { parents =>
-      @if(plain.total > 5) {
-        @defining(Inkle.getOrigin(inkle._1.uuid)) { origin =>
+      @defining(Inkle.getOrigin(inkle._1.uuid)) { origin =>
+        @if(plain.total > 5) {
           <div class="parents-chain-element parents-chain-non-parent" id="@rand-@origin.get._1.uuid">
             <span class="glyphicon glyphicon-record"></span>
             @origin.get._1.inkle
@@ -23,7 +23,7 @@
         }
 
         @if(plain.total > 6) {
-          <div class="parents-chain-element parents-chain-non-parent text-muted small">
+          <div class="parents-chain-element parents-chain-non-parent text-muted small" id="@rand-@origin.get._1.uuid-more">
             <span style="margin-right: -3px; color: #ccc">[@(plain.total - 6) more] ••</span>
 
             <span class="parents-chain-pointer">
@@ -31,8 +31,11 @@
               <span class="parents-chain-line"></span>
             </span>
           </div>
-        }
 
+          <script>
+            inkleClickActions('#@rand-@origin.get._1.uuid-more', '@pageUuid', '@origin.get._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle');
+          </script>
+        }
       }
 
       @parents.map { parent =>
