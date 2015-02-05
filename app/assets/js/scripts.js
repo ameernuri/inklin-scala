@@ -28,7 +28,7 @@ function mainActions() {
 	$('#modal-inkle-form').submit(function() {
 		log('add');
 
-		mainLoader();
+		loader();
 
 		jsRoutes.controllers.Inkles.create("json").ajax({
 			data: $("#modal-inkle-form").serialize(),
@@ -37,12 +37,12 @@ function mainActions() {
 
 				renderRoute(jsRoutes.controllers.Inkles.templateOrigin(e.uuid), "/origins/"+ e.uuid, "Inklin");
 
-				mainLoader(false);
+				loader(false);
 				$("#add-modal").modal('hide');
 				$("#modal-inkle-textarea").val('');
 			},
 			error: function(e) {
-				mainLoader(false);
+				loader(false);
 
 				alert("oops.");
 			}
@@ -67,14 +67,14 @@ function mainActions() {
 	});
 
 	$('#delete-inkle-form').submit(function() {
-		mainLoader();
+		loader();
 
 		$.ajax({
 			url: "/inkles/delete",
 			type: "POST",
 			data: $('#delete-inkle-form').serialize(),
 			success: function (e) {
-				mainLoader(false);
+				loader(false);
 				$("#inkle-delete").modal('hide');
 				if (e == "deleted") {
 
@@ -88,7 +88,7 @@ function mainActions() {
 			error: function (e) {
 				alert("ERROR: "+ e);
 
-				mainLoader(false);
+				loader(false);
 				$("#inkle-delete").modal('hide');
 			}
 		});
@@ -137,7 +137,7 @@ function homeInkleAddActions() {
 	$('#home-inkle-form').submit(function() {
 		log('add');
 
-		mainLoader();
+		loader();
 
 		jsRoutes.controllers.Inkles.create("json").ajax({
 			data: $("#home-inkle-form").serialize(),
@@ -146,10 +146,10 @@ function homeInkleAddActions() {
 
 				renderRoute(jsRoutes.controllers.Inkles.templateOrigin(e.uuid), "/origins/"+ e.uuid, "Inklin");
 
-				mainLoader(false);
+				loader(false);
 			},
 			error: function(e) {
-				mainLoader(false);
+				loader(false);
 
 				alert("oops.");
 			}
@@ -159,7 +159,7 @@ function homeInkleAddActions() {
 	});
 }
 
-function mainLoader(show) {
+function loader(show) {
 	show = typeof show !== 'undefined' ? show : true;
 
 	var loader = $("#main-loader");
@@ -297,15 +297,15 @@ function pageUp() {
 function childrenPaginationActions(button, pageUuid, inkleUuid, pageNumber) {
 
 	$(button).click(function () {
-		mainLoader();
+		loader();
 		jsRoutes.controllers.Inkles.getPageOfChildren(inkleUuid, pageUuid, pageNumber).ajax({
 			success: function (e) {
-				mainLoader(false);
+				loader(false);
 				$('#page-'+ pageUuid +'-'+ inkleUuid +'-children-wrapper').html(e)
 			},
 			error: function () {
 				alert("error");
-				mainLoader(false);
+				loader(false);
 			}
 		});
 	})
@@ -374,21 +374,19 @@ function inkleActions(pageUuid, uuid) {
 	submitOnReturn('#page-'+ pageUuid +'-'+ uuid +'-edit-form', '#page-'+ pageUuid +'-'+ uuid +'-edit-textarea');
 
 	$('#page-'+ pageUuid +'-'+ uuid +'-edit-form').submit(function() {
-
-
-		mainLoader();
-		jsRoutes.controllers.Inkles.edit(uuid).ajax({
+		loader();
+		jsRoutes.controllers.Inkles.edit(uuid, pageUuid).ajax({
 			data: $('#page-'+ pageUuid +'-'+ uuid +'-edit-form').serialize(),
 			success: function (e) {
 				$('#page-'+ pageUuid +'-'+ uuid +'-center-wrapper').replaceWith(e);
 				fullHeight();
 
-				mainLoader(false);
+				loader(false);
 			},
 			error: function (e) {
 				alert("ERROR: "+ e);
 
-				mainLoader(false);
+				loader(false);
 			}
 		});
 
@@ -398,7 +396,7 @@ function inkleActions(pageUuid, uuid) {
 	$('#page-'+ pageUuid +'-'+ uuid +'-extend-form').submit(function() {
 		log('extend');
 
-		mainLoader();
+		loader();
 		jsRoutes.controllers.Inkles.extend(uuid, pageUuid).ajax({
 			data: $('#page-'+ pageUuid +'-'+ uuid +'-extend-form').serialize(),
 			success: function(e) {
@@ -406,12 +404,12 @@ function inkleActions(pageUuid, uuid) {
 				$('#page-'+ pageUuid +'-'+ uuid +'-children-wrapper').append(e);
 				$('#page-'+ pageUuid +'-'+ uuid +'-extend-textarea').val('');
 
-				mainLoader(false);
+				loader(false);
 			},
 			error: function(e) {
 				alert("ERROR: " + e);
 
-				mainLoader(false);
+				loader(false);
 			}
 		});
 
@@ -435,17 +433,17 @@ function inkleClickActions(element, pageUuid, inkleUuid, wrapper) {
 
 	$(element).click(function() {
 
-		mainLoader();
+		loader();
 		jsRoutes.controllers.Inkles.getInkle(inkleUuid).ajax({
 			success: function (e) {
 				$(wrapper).css("background", "red").replaceWith(e);
 				fullHeight();
 
-				mainLoader(false);
+				loader(false);
 			},
 			error: function() {
 
-				mainLoader(false);
+				loader(false);
 			}
 		});
  }).mouseover(function() {

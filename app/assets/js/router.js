@@ -28,16 +28,16 @@ $(document).ready(function() {
 });
 
 function renderRoute(templateAddress, route, title) {
-	mainLoader(true);
+	loader(true);
 	$.ajax(templateAddress)
 	  .done(function(e) {
-			mainLoader(false);
+			loader(false);
 
 			window.history.pushState('obj', title, route);
 			document.title = title;
 			$("#template-container").html(e)
 		}).fail(function() {
-			mainLoader(false);
+			loader(false);
 
 			alert("oops");
 		});
