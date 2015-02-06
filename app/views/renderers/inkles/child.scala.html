@@ -20,11 +20,19 @@
 				@if(tourStep < 3) {
 
 					@if(tourStep == 1) {
-						@commons.apps.popover("Click on it", "You can also extend this child. Just click on it and see what happens.", "bottom")
+						@commons.apps.popover("Click on it", "bottom") {
+							<p>
+								You can also extend this child. Just click on it and see what happens
+							</p>
+						}
 					}
 
 					@if(tourStep == 2) {
-						@commons.apps.popover("Don't stop here!", "You can extend this too. It goes on and on and on... infinitely.", "bottom")
+						@commons.apps.popover("Don't stop here!", "bottom") {
+							<p>
+								You can extend this too. It goes on and on and on... infinitely.
+							</p>
+						}
 					}
 
 				}

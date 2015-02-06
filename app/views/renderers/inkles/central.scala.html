@@ -1,6 +1,23 @@
 @(user: User, pageUuid: String, inkle: (Inkle, User))
 
-<div style="display: table; table-layout: fixed; float: left;" class="col-sm-4" id="page-@pageUuid-@{inkle._1.uuid}-center-wrapper">
+@extendForm()(message: Html) = {
+  <div class="extend-form-wrapper">
+    <div class="extend-form-switch">
+      @message
+    </div>
+    <div style="display:none;" class="red extend-form-div">
+    @helper.form(routes.Inkles.extend(inkle._1.uuid, pageUuid.toString), 'class -> "extend-form") {
+      <textarea name="inkle" style="width: 100%; border: solid #fafafa; border-width: 0 1px 1px;border-radius: 0 0 8px 8px; font-size: 17px;padding: 15px 15px 3px; text-align: center;box-sizing: border-box;height: 60px;margin: 0; background-color: #fdfdfd;" maxlength="70" class="inkle-textarea" placeholder="how about..."></textarea>
+
+      <div style="float: right; display: none;">
+        <input type="submit" value="•••" style="font-size: 16px;color: #fff; border: none;padding: 6px 10px;margin-right: 8px;">
+      </div>
+    }
+    </div>
+  </div>
+}
+
+<div style="display: table; table-layout: fixed; float: left;" class="col-sm-4 inkle-center-wrapper">
   <div style="font-size: 30px; padding: 0 30px; display: table-cell; vertical-align: middle;" class="full-height">
     <span style="color: #eee;">
     @if(inkle._1.parentUuid.isDefined) { •••<br> } else {
@@ -8,7 +25,7 @@
     }
     </span>
 
-    <span data-toggle="tooltip" data-placement="top" title="Edit" id="page-@pageUuid-@{inkle._1.uuid}-inkle-text" style="overflow: auto;" class="pointer">
+    <span data-toggle="tooltip" data-placement="top" title="Edit" style="overflow: auto;" class="pointer inkle-text">
       @if(!inkle._1.deleted) {
         @inkle._1.inkle
       } else {
@@ -17,41 +34,45 @@
       }
     </span>
 
-    <span class="edit-form-wrapper" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-wrapper">
-      @helper.form(routes.Inkles.edit(inkle._1.uuid, pageUuid), 'id -> s"page-$pageUuid-${inkle._1.uuid}-edit-form") {
+    <span class="edit-form-wrapper">
+      @helper.form(routes.Inkles.edit(inkle._1.uuid, pageUuid), 'class -> "edit-form") {
         <div class="pull-right">
-          <button data-toggle="tooltip" data-placement="top" title="Cancel" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-cancel" class="glyphicon glyphicon-remove"></button>
-          <button data-toggle="tooltip" data-placement="top" title="Save" id="page-@pageUuid-@{inkle._1.uuid}-edit-form-submit" class="glyphicon glyphicon-ok"></button>
+          <button data-toggle="tooltip" data-placement="top" title="Cancel" class="glyphicon glyphicon-remove edit-form-cancel"></button>
+          <button data-toggle="tooltip" data-placement="top" title="Save" class="glyphicon glyphicon-ok edit-form-submit"></button>
         </div>
-	      <textarea name="inkle" id="page-@pageUuid-@{inkle._1.uuid}-edit-textarea" maxlength="70" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
+	      <textarea name="inkle" class="edit-textarea" maxlength="70" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
 	      <input type="submit" value="•••" style="display: none;">
       }
 
-      <div class="text-right inkle-action-buttons" id="page-@pageUuid-@{inkle._1.uuid}-inkle-action-buttons">
-        <button id="page-@pageUuid-@{inkle._1.uuid}-change-parent-button">
+      <div class="text-right inkle-action-buttons">
+        <button class="change-parent-button">
           <span class="glyphicon glyphicon-random"></span> Change Parent
         </button>
-        <button class="text-danger" id="page-@pageUuid-@{inkle._1.uuid}-delete-button">
+        <button class="text-danger delete-inkle-button">
           <span class="glyphicon glyphicon-trash"></span> Delete
         </button>
       </div>
     </span>
 
-    <div class="extend-form-wrapper" id="page-@pageUuid-@{inkle._1.uuid}-extend-form-wrapper">
-      <div class="extend-form-switch" id="page-@pageUuid-@{inkle._1.uuid}-extend-switch">
-        •••<br>
-        extend this idea
-      </div>
-      <div style="display:none;" id="page-@pageUuid-@{inkle._1.uuid}-extend-form-div" class="red">
-      @helper.form(routes.Inkles.extend(inkle._1.uuid, pageUuid.toString), 'id -> s"page-$pageUuid-${inkle._1.uuid}-extend-form") {
-        <textarea id="page-@pageUuid-@{inkle._1.uuid}-extend-textarea" name="inkle" style="width: 100%; border: solid #fafafa; border-width: 0 1px 1px;border-radius: 0 0 8px 8px; font-size: 17px;padding: 15px 15px 3px; text-align: center;box-sizing: border-box;height: 60px;margin: 0; background-color: #fdfdfd;" maxlength="70" class="inkle-textarea" placeholder="how about..."></textarea>
 
-        <div style="float: right; display: none;">
-          <input type="submit" value="•••" style="font-size: 16px;color: #fff; border: none;padding: 6px 10px;margin-right: 8px;" id="page-@pageUuid-@{inkle._1.uuid}-extend-submit">
-        </div>
+    @defining(User.getTourStep(user.uuid)) { tourStep =>
+      @if(tourStep == 0) {
+        @commons.apps.popover("Extend me!", "bottom", "extend-form-popover center-block") {
+
+          @extendForm() {
+            Click here to extend this idea.
+          }
+        }
+      } else {
+        @commons.apps.popover("", "bottom", "extend-form-popover extend-form-popover-muted center-block") {
+
+          @extendForm() {
+            •••<br>
+            extend this idea
+          }
+        }
       }
-      </div>
-    </div>
+    }
   </div>
 </div>
 

@@ -545,4 +545,31 @@ object Inkle {
 
 		Page(inkles, page, offset, total)
 	}
+
+	def originCount(user: String): Int = {
+		log("originCount", Map("user" -> user))
+
+		Cypher(
+			"""
+				|MATCH (user:User {uuid: {uuid}})-[:owns_inkle]->(inkle:Inkle)
+				|WHERE not((inkle)-[:has_parent]->())
+				|RETURN count(inkle) as count
+			""".stripMargin
+		).on(
+			"uuid" -> user
+		).as(scalar[Int].single)
+	}
+
+	def inkleCount(user: String): Int = {
+		log("originCount", Map("user" -> user))
+
+		Cypher(
+			"""
+				|MATCH (user:User {uuid: {uuid}})-[:owns_inkle]->(inkle:Inkle)
+				|RETURN count(inkle) as count
+			""".stripMargin
+		).on(
+			"uuid" -> user
+		).as(scalar[Int].single)
+	}
 }

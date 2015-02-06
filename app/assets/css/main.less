@@ -616,27 +616,6 @@ div.tooltip-inner {
 }
 
 .custom-popover {
-	.popover {
-		position: relative;
-		display: block;
-		text-align: center;
-		border-radius: 10px;
-		border-color: #eee;
-		color: #888;
-		font-size: 13px;
-		padding: 0;
-
-		.popover-title {
-			border-radius: 10px 10px 0 0;
-			border: none;
-		}
-
-		.arrow {
-			&:before {
-				border-color: #ddd;
-			}
-		}
-	}
 
 	@arrow-color: #ddd;
 
@@ -662,5 +641,38 @@ div.tooltip-inner {
 		.arrow:after {
 			border-left-color: @arrow-color;
 		}
+	}
+
+	.popover {
+		position: relative;
+		display: block;
+		text-align: center;
+		border-radius: 10px;
+		border-color: #eee;
+		color: #888;
+		font-size: 13px;
+		padding: 0;
+
+		.popover-title {
+			border-radius: 10px 10px 0 0;
+			border: none;
+		}
+	}
+
+	.extend-form-popover {
+		box-shadow: none;
+		margin-top: 15px;
+
+		.popover-content {
+			padding: 0;
+
+			.extend-form-wrapper {
+				margin: 0;
+			}
+		}
+	}
+
+	.extend-form-popover-muted {
+		border-color: #fefefe;
 	}
 }

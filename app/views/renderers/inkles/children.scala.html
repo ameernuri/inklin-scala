@@ -3,7 +3,7 @@
 @import java.util.UUID
 
 @defining(UUID.randomUUID()) { rand =>
-  <div id="page-@pageUuid-@{inkle._1.uuid}-children-wrapper">
+  <div id="page-@pageUuid-@{inkle._1.uuid}-children-wrapper" class="children-wrapper">
     @children.items.map { child =>
       @renderers.inkles.child(user, child, pageUuid.toString, rand.toString)
     }

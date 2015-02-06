@@ -1,13 +1,13 @@
-@(title: String, message: String, direction: String)
+@(title: String, direction: String, elementClass: String = "")(content: Html)
 
 <div class="custom-popover">
-	<div class="popover @direction">
+	<div class="popover @direction @elementClass">
 	  <div class="arrow"></div>
 		@if(title != "") {
 			<h3 class="popover-title">@title</h3>
 		}
 	  <div class="popover-content">
-	    <p>@message</p>
+	    @content
 	  </div>
 	</div>
 </div>
