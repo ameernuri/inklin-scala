@@ -69,9 +69,7 @@ function mainActions() {
 	$('#delete-inkle-form').submit(function() {
 		loader();
 
-		$.ajax({
-			url: "/inkles/delete",
-			type: "POST",
+		jsRoutes.controllers.Inkles.delete().ajax({
 			data: $('#delete-inkle-form').serialize(),
 			success: function (e) {
 				loader(false);
@@ -325,13 +323,13 @@ function inkleActions(pageUuid, uuid) {
 	inkle.find('.delete-inkle-button').click(function() {
 		$('#inkle-delete').modal('show');
 		$("#delete-inkle-uuid").val(uuid);
-		$("#deleted-inkle-page").val(inkle);
+		$("#deleted-inkle-page").val('#page-'+ pageUuid +'-'+ uuid +'-inkle');
 		return false;
 	});
 
 	inkle.find('.change-parent-button').click(function() {
 		$('#change-parent').modal('show');
-		$("#change-parent-inkle-uuid").val(uuid);
+		$("#change-parent-inkle-uuid").val('#page-'+ pageUuid +'-'+ uuid +'-inkle');
 		return false;
 	});
 

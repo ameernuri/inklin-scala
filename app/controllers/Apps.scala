@@ -60,6 +60,7 @@ object Apps extends Controller with Guard {
 	      routes.javascript.Inkles.templateOrigin,
 	      routes.javascript.Inkles.create,
 	      routes.javascript.Inkles.edit,
+	      routes.javascript.Inkles.delete,
 	      routes.javascript.Inkles.extend,
 	      routes.javascript.Inkles.getInkle,
 	      routes.javascript.Inkles.getPageOfChildren,
