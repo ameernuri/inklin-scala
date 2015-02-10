@@ -27,7 +27,7 @@ object Group {
 		""".stripMargin
 	}
 
-	def create(name: String, admin: String): Boolean = {
+	def create(name: String, admin: String): Option[Group] = {
 		log("create", Map(
 			"name" -> name,
 			"admin" -> admin
@@ -41,11 +41,12 @@ object Group {
 			  | name: {name},
 			  | created: timestamp()
 			  |})
+			  |RETURN ${simpleReturn()}
 			""".stripMargin
 		).on(
 			"name" -> name,
 			"admin" -> admin
-		).execute()
+		).as(simple.singleOpt)
 	}
 
 	def find(uuid: String): Option[Group] = {

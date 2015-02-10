@@ -652,6 +652,7 @@ div.tooltip-inner {
 		color: #888;
 		font-size: 13px;
 		padding: 0;
+		z-index: 0;
 
 		.popover-title {
 			border-radius: 10px 10px 0 0;
@@ -661,7 +662,7 @@ div.tooltip-inner {
 
 	.extend-form-popover {
 		box-shadow: none;
-		margin-top: 15px;
+		margin-top: 20px;
 
 		.popover-content {
 			padding: 0;
@@ -673,6 +674,9 @@ div.tooltip-inner {
 	}
 
 	.extend-form-popover-muted {
-		border-color: #fefefe;
+
+		.arrow {
+			opacity: 0.5;
+		}
 	}
 }

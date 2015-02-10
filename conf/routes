@@ -53,6 +53,7 @@ GET         /templates/origins/:uuid                    controllers.Inkles.templ
 GET         /templates/users/:username                  controllers.Users.templateView(username: String)
 
 GET         /templates/groups                           controllers.Groups.templateList
+GET         /templates/groups/:uuid                     controllers.Groups.templateView(uuid: String)
 
 # to avoid clashes with /something
 GET         /$username<[a-zA-Z0-9_]+>                   controllers.Users.viewByUsername(username: String)

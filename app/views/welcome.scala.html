@@ -41,12 +41,10 @@
 	<body style="background-color: #fefefe;">
 
 		@flash.get("success").map { message =>
-
 			@commons.apps.flash(message)
 		}
 
 		@flash.get("error").map { message =>
-
 			@commons.apps.flash(message, "error")
 		}
 

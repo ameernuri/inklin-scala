@@ -105,6 +105,8 @@ function mainActions() {
 	$('#create-group-modal').on('shown.bs.modal', function (e) {
 	  $('#create-group-text-name').focus();
 	});
+
+	groupActions();
 }
 
 function modifyActions() {
@@ -123,6 +125,33 @@ function modifyActions() {
 
 	$('#create-group-button').click(function() {
 		$("#create-group-modal").modal('show');
+
+		return false;
+	});
+}
+
+function groupActions() {
+
+	$('#modal-group-form').submit(function() {
+
+		loader();
+
+		jsRoutes.controllers.Groups.create("json").ajax({
+			data: $("#modal-group-form").serialize(),
+			success: function(e) {
+
+				renderRoute(jsRoutes.controllers.Groups.templateView(e.uuid), "/origins/"+ e.uuid, "Inklin • "+ e.name);
+
+				loader(false);
+				$("#create-group-modal").modal('hide');
+				$("#create-group-text-name").val('');
+			},
+			error: function(e) {
+				loader(false);
+
+				alert("oops.");
+			}
+		});
 
 		return false;
 	});
@@ -323,7 +352,7 @@ function inkleActions(pageUuid, uuid) {
 	inkle.find('.delete-inkle-button').click(function() {
 		$('#inkle-delete').modal('show');
 		$("#delete-inkle-uuid").val(uuid);
-		$("#deleted-inkle-page").val('#page-'+ pageUuid +'-'+ uuid +'-inkle');
+		$("#deleted-inkle-page").val(inkle.attr('id'));
 		return false;
 	});
 
@@ -338,6 +367,28 @@ function inkleActions(pageUuid, uuid) {
 		inkle.find('.edit-form-wrapper').fadeIn();
 		inkle.find('.edit-textarea').focus().trigger('autosize.resize');
 
+	});
+
+	$(document).click(function(e) {
+    var target = e.target;
+
+    if (
+	    !$(target).is(inkle.find('.edit-form-wrapper')) &&
+	    !$(target).parents().is(inkle.find('.edit-form-wrapper')) &&
+	    !$(target).is(inkle.find('.inkle-text')) &&
+	    !$(target).parents().is(inkle.find('.inkle-text'))
+    ) {
+	    inkle.find('.inkle-text').fadeIn();
+	  	inkle.find('.edit-form-wrapper').hide();
+    }
+
+		if (
+	   !$(target).is(inkle.find('.extend-form-wrapper')) &&
+	   !$(target).parents().is(inkle.find('.extend-form-wrapper'))
+	  ) {
+			inkle.find('.extend-form-switch').slideDown();
+			inkle.find('.extend-form-div').slideUp();
+	  }
 	});
 
 	inkle.find('.edit-form-cancel').click(function() {
@@ -415,7 +466,8 @@ function inkleClickActions(element, pageUuid, inkleUuid, wrapper) {
 		loader();
 		jsRoutes.controllers.Inkles.getInkle(inkleUuid).ajax({
 			success: function (e) {
-				$(wrapper).css("background", "red").replaceWith(e);
+				var element = $(e);
+				$(wrapper).replaceWith(element);
 				fullHeight();
 
 				loader(false);
@@ -432,5 +484,3 @@ function inkleClickActions(element, pageUuid, inkleUuid, wrapper) {
 
 	});
 }
-
-

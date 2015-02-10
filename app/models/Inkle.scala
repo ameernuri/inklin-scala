@@ -160,6 +160,7 @@ object Inkle {
 		val query =
 			s"""
 			  |MATCH (user:User {uuid: {userUuid}})-[:owns_inkle]->(inkle:Inkle)
+				|WHERE NOT((inkle)-[:has_parent]->())
 				|WITH inkle, user
 				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent:Inkle)
 				|WITH inkle, user, parent

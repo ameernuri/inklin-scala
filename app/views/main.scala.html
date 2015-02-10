@@ -116,7 +116,7 @@
 		}
 
 		<!-- create group modal -->
-		@helper.form(routes.Groups.create()) {
+		@helper.form(routes.Groups.create(), 'id -> "modal-group-form") {
 			@commons.modal("Create a Group", "create-group-modal") {
 				<div>
 					<div id="create-group-modal-content">

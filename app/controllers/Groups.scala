@@ -1,7 +1,10 @@
 package controllers
 
+import controllers.Inkles._
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.JsArray
+import play.api.libs.json.Json._
 import play.api.mvc._
 import views.html
 
@@ -32,9 +35,20 @@ object Groups extends Controller with Guard {
 		groupForm.bindFromRequest.fold(
 			error => BadRequest("this is called an error!"),
 			group => {
-				Group.create(group, currentUser.uuid)
 
-				Ok("created")
+				val newGroup = Group.create(group, currentUser.uuid)
+
+				newGroup.map { group =>
+					val jsonGroup = obj(
+						"uuid" -> group.uuid,
+						"name" -> group.name,
+						"admin" -> group.admin
+					)
+
+					Ok(jsonGroup)
+				}.getOrElse {
+					BadRequest("group not found")
+				}
 			}
 		)
 	}
