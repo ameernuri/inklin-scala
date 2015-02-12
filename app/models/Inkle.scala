@@ -409,7 +409,7 @@ object Inkle {
 
 		Cypher(
 			s"""
-			  |MATCH (child {uuid: {childUuid}})-[:has_parent]->(inkle:Inkle),
+			  |MATCH (child:Inkle {uuid: {childUuid}})-[:has_parent]->(inkle:Inkle),
 			  |(inkle)-[:has_parent]->(parent),
 			  |(user)-[:owns_inkle]->(inkle)
 			  |RETURN DISTINCT ${simpleReturn()}, ${User.simpleReturn()},
@@ -417,6 +417,19 @@ object Inkle {
 		).on(
 			"childUuid" -> uuid
 		).as(withConnected.single)
+	}
+
+	def getParentUuid(uuid: String): Option[String] = {
+		log("getParentUuid", Map("uuid" -> uuid))
+
+		Cypher(
+			s"""
+			  |MATCH (inkle:Inkle {uuid: {childUuid}})-[:has_parent]->(parent:Inkle)
+			  |RETURN DISTINCT parent.uuid
+			""".stripMargin
+		).on(
+			"childUuid" -> uuid
+		).as(str("parent.uuid").singleOpt)
 	}
 
 	def childrenCount(uuid: String): Long = {

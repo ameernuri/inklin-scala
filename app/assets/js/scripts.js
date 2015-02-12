@@ -347,6 +347,7 @@ function inkleActions(pageUuid, uuid) {
 	inkle.find('.extend-form-switch').click(function() {
 		inkle.find('.extend-form-div').slideToggle();
 		inkle.find('.inkle-textarea').focus();
+		inkle.find('.extend-form-switch').hide();
 	});
 
 	inkle.find('.delete-inkle-button').click(function() {
@@ -386,15 +387,9 @@ function inkleActions(pageUuid, uuid) {
 	   !$(target).is(inkle.find('.extend-form-wrapper')) &&
 	   !$(target).parents().is(inkle.find('.extend-form-wrapper'))
 	  ) {
-			inkle.find('.extend-form-switch').slideDown();
+			inkle.find('.extend-form-switch').show();
 			inkle.find('.extend-form-div').slideUp();
 	  }
-	});
-
-	inkle.find('.edit-form-cancel').click(function() {
-		inkle.find('.inkle-text').fadeIn();
-		inkle.find('.edit-form-wrapper').hide();
-		return false;
 	});
 
 	inkle.find('.edit-textarea').keydown(function (e) {
@@ -408,6 +403,11 @@ function inkleActions(pageUuid, uuid) {
 	inkle.find('.inkle-textarea').focusout(function() {
 		if (inkle.find('.inkle-textarea').val == '') {
 			inkle.find('.extend-form-switch').slideDown();
+			inkle.find('.extend-form-div').slideUp();
+		}
+	}).keydown(function (e) {
+		if (e.keyCode === 27) {
+			inkle.find('.extend-form-switch').show();
 			inkle.find('.extend-form-div').slideUp();
 		}
 	});

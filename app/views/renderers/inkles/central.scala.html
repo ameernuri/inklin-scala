@@ -18,7 +18,7 @@
 }
 
 <div style="display: table; table-layout: fixed; float: left;" class="col-sm-4 inkle-center-wrapper">
-  <div style="font-size: 30px; padding: 0 30px; display: table-cell; vertical-align: middle;" class="full-height">
+  <div style="font-size: 30px; padding: 0 30px; display: table-cell; vertical-align: middle; word-break: break-word;" class="full-height">
     <span style="color: #eee;">
     @if(inkle._1.parentUuid.isDefined) { •••<br> } else {
       <span class="glyphicon glyphicon-record"></span><br>
@@ -36,10 +36,6 @@
 
     <span class="edit-form-wrapper">
       @helper.form(routes.Inkles.edit(inkle._1.uuid, pageUuid), 'class -> "edit-form") {
-        <div class="pull-right">
-          <button data-toggle="tooltip" data-placement="top" title="Cancel" class="glyphicon glyphicon-remove edit-form-cancel"></button>
-          <button data-toggle="tooltip" data-placement="top" title="Save" class="glyphicon glyphicon-ok edit-form-submit"></button>
-        </div>
 	      <textarea name="inkle" class="edit-textarea" maxlength="70" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
 	      <input type="submit" value="•••" style="display: none;">
       }
@@ -57,10 +53,10 @@
 
     @defining(User.getTourStep(user.uuid)) { tourStep =>
       @if(tourStep == 0) {
-        @commons.apps.popover("Extend me!", "bottom", "extend-form-popover center-block") {
-
+        @commons.apps.popover("•••", "bottom", "extend-form-popover center-block") {
           @extendForm() {
-            Click here to extend this idea.
+            <span style="font-weight: 500;">Try extending it</span> <br>
+            Click here to extend this idea
           }
         }
       } else {

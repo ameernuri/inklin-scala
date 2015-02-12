@@ -47,6 +47,13 @@
             }
             </span>
 
+            @if(!isParent) {
+              <span class="parents-chain-pointer">
+                <span class="parents-chain-point"></span>
+                <span class="parents-chain-line"></span>
+              </span>
+            }
+
             @if(!parent._1.deleted) {
               @parent._1.inkle
             } else {
@@ -56,11 +63,6 @@
             @if(isParent) {
               <span style="color : #bbb ; font-size : 18px;">
                 <span class="glyphicon glyphicon-chevron-right"></span>
-              </span>
-            } else {
-              <span class="parents-chain-pointer">
-                <span class="parents-chain-point"></span>
-                <span class="parents-chain-line"></span>
               </span>
             }
           </div>

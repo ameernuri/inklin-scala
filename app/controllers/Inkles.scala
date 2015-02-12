@@ -19,7 +19,17 @@ object Inkles extends Controller with Guard {
 	private def log(log: String, params: Map[String, Any] = Map()) = controllerLogger("Inkles", log, params)
 
 	val inkleForm = Form(
-		"inkle" -> nonEmptyText(maxLength = 70)
+		"inkle" -> text.verifying(
+      "Please write something",
+      inkle => {
+        inkle.trim.nonEmpty
+      }
+    ).verifying(
+      "That's just too long",
+      inkle => {
+        inkle.trim.length <= 70
+      }
+    )
 	)
 
 	val editForm = Form(
@@ -41,7 +51,7 @@ object Inkles extends Controller with Guard {
       formWithErrors => BadRequest,
       {
         case (inkle) =>
-          val uuid = Inkle.create(user.uuid, inkle)
+          val uuid = Inkle.create(user.uuid, inkle.trim)
           val newInkle = Inkle.find(uuid)
 
           if (returnAs == "rendered") {
