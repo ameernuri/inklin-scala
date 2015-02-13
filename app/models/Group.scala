@@ -106,4 +106,32 @@ object Group {
 			"uuid" -> uuid
 		).as(scalar[Int].single) > 0
 	}
+
+	def isMember(user: String, group: String): Boolean = {
+		log("isMember", Map("user" -> user, "group" -> group))
+
+		Cypher(
+			"""
+			  |MATCH (user:User {uuid: {user}})-[m:is_group_member]->(group:Group {uuid: {group}})
+			  |RETURN count(m)
+			""".stripMargin
+		).on(
+			"user" -> user,
+			"group" -> group
+		).as(scalar[Int].single) > 0
+	}
+
+	def isAdmin(user: String, group: String): Boolean = {
+		log("isAdmin", Map("user" -> user, "group" -> group))
+
+		Cypher(
+			"""
+			  |MATCH (user:User {uuid: {user}})-[m:is_group_admin]->(group:Group {uuid: {group}})
+			  |RETURN count(m)
+			""".stripMargin
+		).on(
+			"user" -> user,
+			"group" -> group
+		).as(scalar[Int].single) > 0
+	}
 }

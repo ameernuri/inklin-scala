@@ -1,9 +1,9 @@
 @(user: User, groups: Seq[Group])
 
 @container() {
-	<h3 class="col-xs-12 text-center" style="font-weight: 200;">Your Groups</h3>
+	<h2 class="col-xs-12 text-center" style="font-weight: 200; margin-top: 30px;">Your Groups</h2>
 
-	<div class="col-xs-12">
+	<div class="col-xs-12" style="margin: 15px 0;">
 		<button id="create-group-button" class="btn btn-default btn-hover-green pull-right">
 			<span class="glyphicon glyphicon-plus"></span>
 			Create a Group
@@ -13,4 +13,6 @@
 	@groups.map { group =>
 		@templates.groups.group(group)
 	}
+
+	<h2 class="col-xs-12 text-center" style="font-weight: 200; margin-top: 30px;">Groups You're a Member</h2>
 }
