@@ -1,26 +1,16 @@
 @(user: User, groups: Seq[Group])
 
 @container() {
-	<div>
+	<h3 class="col-xs-12 text-center" style="font-weight: 200;">Your Groups</h3>
+
+	<div class="col-xs-12">
 		<button id="create-group-button" class="btn btn-default btn-hover-green pull-right">
 			<span class="glyphicon glyphicon-plus"></span>
 			Create a Group
 		</button>
 	</div>
 
-	<h3>Your Groups</h3>
 	@groups.map { group =>
-		<div style="display: table; table-layout: fixed;" class="col-xs-12 col-sm-6 col-lg-4">
-			<div style="display: table-cell; vertical-align: middle;border: 1px solid #ddd; border-radius: 10px; text-align: center; height: 200px; margin-bottom: 25px;">
-				<a href="@routes.Groups.view(group.uuid)">
-					<h3 style="font-weight: 200;">
-							@group.name
-					</h3>
-					<div style="font-size: 15px;">
-						@group.description
-					</div>
-				</a>
-			</div>
-		</div>
+		@templates.groups.group(group)
 	}
 }

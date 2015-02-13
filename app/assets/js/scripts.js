@@ -106,6 +106,8 @@ function mainActions() {
 	  $('#create-group-text-name').focus();
 	});
 
+	submitOnReturn("#modal-group-form", "#create-group-text-description")
+
 	groupActions();
 }
 

@@ -637,7 +637,7 @@ object Inkle {
 	}
 
 	def inkleCount(user: String): Int = {
-		log("originCount", Map("user" -> user))
+		log("inkleCount", Map("user" -> user))
 
 		Cypher(
 			"""
@@ -647,5 +647,32 @@ object Inkle {
 		).on(
 			"uuid" -> user
 		).as(scalar[Int].single)
+	}
+
+	def isAddedInGroup(inkle: String): Boolean = {
+		log("isAddedInGroup", Map("inkle" -> inkle))
+
+		Cypher(
+			"""
+				|MATCH (inkle:Inkle {uuid: {inkle}})-[:added_into]->(group:Group)
+				|RETURN count(group) as count
+			""".stripMargin
+		).on(
+			"inkle" -> inkle
+		).as(scalar[Int].single) > 0
+	}
+
+	def findGroup(inkle: String): Option[Group] = {
+		log("isAddedInGroup", Map("inkle" -> inkle))
+
+		Cypher(
+			s"""
+				|MATCH (inkle:Inkle {uuid: {inkle}})-[:added_into]->(group:Group),
+				|(admin:User)-[:is_group_admin]->(group)
+				|RETURN ${Group.simpleReturn()}
+			""".stripMargin
+		).on(
+			"inkle" -> inkle
+		).as(Group.simple.singleOpt)
 	}
 }

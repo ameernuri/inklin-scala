@@ -1,0 +1,14 @@
+@(group: Group)
+
+<div style="display: table; table-layout: fixed;" class="col-xs-12 col-sm-6 col-lg-4">
+	<div style="display: table-cell; vertical-align: middle;border: 1px solid #ddd; border-radius: 10px; text-align: center; height: 200px; margin-bottom: 25px;">
+		<a href="@routes.Groups.view(group.uuid)">
+			<h3 style="font-weight: 200;">
+					@group.name
+			</h3>
+			<div style="font-size: 15px;">
+				@group.description
+			</div>
+		</a>
+	</div>
+</div>

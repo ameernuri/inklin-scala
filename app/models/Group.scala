@@ -66,17 +66,32 @@ object Group {
 		).as(simple.singleOpt)
 	}
 
-	def findOwned(user: String): Seq[Group] = {
-		log("find", Map("user" -> user))
+	def findOwned(user: String, limit: Int = 10): Seq[Group] = {
+		log("find", Map("user" -> user, "limit" -> limit))
 
 		Cypher(
 			s"""
 			  |MATCH (admin:User {uuid: {user}})-[:is_group_admin]->(group:Group)
 			  |RETURN ${simpleReturn()}
+				|LIMIT {limit}
+			""".stripMargin
+		).on(
+			"user" -> user,
+			"limit" -> limit
+		).as(simple.*)
+	}
+
+	def ownsAny(user: String): Boolean = {
+		log("find", Map("user" -> user))
+
+		Cypher(
+			s"""
+			  |MATCH (admin:User {uuid: {user}})-[:is_group_admin]->(group:Group)
+			  |RETURN count(group)
 			""".stripMargin
 		).on(
 			"user" -> user
-		).as(simple.*)
+		).as(scalar[Int].single) > 0
 	}
 
 	def exists(uuid: String): Boolean = {
@@ -89,6 +104,6 @@ object Group {
 			""".stripMargin
 		).on(
 			"uuid" -> uuid
-		).as(scalar[Int].single) != 0
+		).as(scalar[Int].single) > 0
 	}
 }

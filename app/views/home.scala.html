@@ -4,7 +4,7 @@
 
 	@main("Inklin", currentUser) {
 		@templates.components.inkleForm(currentUser)
-		@templates.components.homeOrigins()
+		@templates.components.homeOrigins(currentUser)
 		@templates.components.inkles(currentUser, Inkle.fetchPage(currentUser.uuid))
 	}
 }.getOrElse {

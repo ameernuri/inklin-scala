@@ -5,9 +5,14 @@
 @defining(UUID.randomUUID()) { pageUuid =>
 <div style="width: 100%; overflow: auto; height: 100%; text-align: center; font-weight: 300;" id="page-@pageUuid-@{inkle._1.uuid}-inkle" class="full-height inkle-page">
   <div class="col-sm-12 inkle-origin" id="page-@pageUuid-@{inkle._1.uuid}-origin">
-    <span class="glyphicon glyphicon-record"></span>
-
     @Inkle.getOrigin(inkle._1.uuid).map { origin =>
+      @Inkle.findGroup(origin._1.uuid).map { group =>
+        <span class="glyphicon glyphicon-certificate"></span>
+        @group.name
+      }
+
+      <span class="glyphicon glyphicon-record"></span>
+
       @if(origin._1.deleted) {
         <samp class="text-muted" style="font-size: 15px">[DELETED ORIGIN]</samp>
       } else {
@@ -23,9 +28,25 @@
         });
       </script>
     }.getOrElse {
+      @Inkle.findGroup(inkle._1.uuid).map { group =>
+        <span class="glyphicon glyphicon-certificate"></span>
+        @group.name
+      }
+
+      <span class="glyphicon glyphicon-record"></span>
+
       @if(inkle._1.parentUuid.isEmpty) {
         @inkle._1.inkle
       }
+
+      <script>
+        $('#page-@pageUuid-@{inkle._1.uuid}-origin').click(function() {
+
+          renderRoute(jsRoutes.controllers.Inkles.templateOrigin('@inkle._1.uuid'), '/origins/@inkle._1.uuid', "Inklin");
+
+          return false;
+        });
+      </script>
     }
     </div>
   <div style="display: table; table-layout: fixed; float: left;" class="col-sm-4">
