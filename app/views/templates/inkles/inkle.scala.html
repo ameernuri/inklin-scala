@@ -34,13 +34,13 @@
     </div>
   </div>
 
-  @renderers.inkles.central(user, pageUuid.toString, inkle)
+  @templates.inkles.central(user, pageUuid.toString, inkle)
 
   <div style="display: table; table-layout: fixed; float: left;" class="full-height col-sm-4">
     <div style="display: table-cell; vertical-align: middle;">
 
       @defining(Inkle.findPageOfChildren(inkle._1.uuid)) { children =>
-        @renderers.inkles.children(user, inkle, children, pageUuid.toString)
+        @templates.inkles.children(user, inkle, children, pageUuid.toString)
       }
     </div>
   </div>

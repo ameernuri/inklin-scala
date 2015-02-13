@@ -186,6 +186,35 @@ function homeInkleAddActions() {
 	});
 }
 
+function groupInkleAddActions() {
+
+	submitOnReturn('#group-inkle-form', '#inkle-textarea');
+
+	$('#group-inkle-form').submit(function() {
+		log('add');
+
+		loader();
+
+		jsRoutes.controllers.Inkles.createInGroup("json").ajax({
+			data: $("#group-inkle-form").serialize(),
+			success: function(e) {
+				console.log(e);
+
+				renderRoute(jsRoutes.controllers.Inkles.templateOrigin(e.uuid), "/origins/"+ e.uuid, "Inklin");
+
+				loader(false);
+			},
+			error: function(e) {
+				loader(false);
+
+				alert("oops.");
+			}
+		});
+
+		return false;
+	});
+}
+
 function loader(show) {
 	show = typeof show !== 'undefined' ? show : true;
 

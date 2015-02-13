@@ -582,6 +582,10 @@ div.tooltip-inner {
 	}
 }
 
+.btn {
+	border-radius: 18px;
+}
+
 .btn-primary {
 	background-color: @inklin-main;
 	border-color: darken(@inklin-main, 5%);
@@ -601,8 +605,14 @@ div.tooltip-inner {
 	}
 }
 
-.btn {
-	border-radius: 18px;
+.btn-hover-green {
+	background-color: #fefefe;
+
+	&:hover {
+		background-color: #fefefe;
+		color: @inklin-main;
+		border-color: @inklin-main;
+	}
 }
 
 .glyphicon-random {
@@ -612,7 +622,7 @@ div.tooltip-inner {
 }
 
 .container {
-	margin-top: 120px;
+	margin-top: 0;
 }
 
 .custom-popover {

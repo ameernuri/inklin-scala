@@ -19,7 +19,10 @@ object Groups extends Controller with Guard {
 	}
 
 	val groupForm = Form(
-		"name" -> nonEmptyText(maxLength = 35)
+		tuple(
+			"name" -> nonEmptyText(maxLength = 35),
+			"description" -> nonEmptyText(maxLength = 70)
+		)
 	)
 
 	def list = Action { implicit r =>
@@ -36,12 +39,13 @@ object Groups extends Controller with Guard {
 			error => BadRequest("this is called an error!"),
 			group => {
 
-				val newGroup = Group.create(group, currentUser.uuid)
+				val newGroup = Group.create(group._1, group._2, currentUser.uuid)
 
 				newGroup.map { group =>
 					val jsonGroup = obj(
 						"uuid" -> group.uuid,
 						"name" -> group.name,
+						"description" -> group.description,
 						"admin" -> group.admin
 					)
 

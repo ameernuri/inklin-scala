@@ -53,12 +53,24 @@ object Inkle {
 		case inkle ~ child => (inkle, child)
 	}
 
-	def create(userUuid: String, inkle: String, parentUuid: Option[String] = None, originUuid: Option[String] = None): String = {
+	def create(
+		          userUuid: String, inkle: String, parentUuid: Option[String] = None,
+		          originUuid: Option[String] = None, groupUuid: Option[String] = None
+		          ): String = {
 		log("create", Map(
 			"userUuid" -> userUuid,
 			"parentUuid" -> parentUuid,
+			"groupUuid" -> groupUuid,
 			"inkle" -> inkle
 		))
+
+		val groupQuery = if(groupUuid.isDefined) {
+			", (inkle)-[:added_into]->(group), (inkle)-[:is_dependent_on]->(group)"
+		} else ""
+
+		val groupNode = if(groupUuid.isDefined) {
+			", (group:Group {uuid: {groupUuid}})"
+		} else ""
 
 		val parentQuery = if(parentUuid.isDefined) {
 			if (originUuid.isDefined) ", (inkle)-[:has_parent]->(parent), (inkle)-[:has_origin]->(origin)"
@@ -74,6 +86,7 @@ object Inkle {
 			s"""
 			  |MATCH (user:User {uuid: {userUuid}})
 			  |$parentNode
+			  |$groupNode
 			  |CREATE (inkle:Inkle {
 				| uuid: "$randomUUID",
 			  | inkle: {inkle},
@@ -81,7 +94,8 @@ object Inkle {
 				| deleted: false
 			  |}),
 			  |(user)-[:owns_inkle]->(inkle)
-			  |$parentQuery,
+			  |$parentQuery
+			  |$groupQuery,
 			  |(inkle)-[:is_dependent_on]->(user)
 			  |RETURN inkle.uuid
 			""".stripMargin
@@ -93,12 +107,19 @@ object Inkle {
 			  "parentUuid" -> parentUuid.get,
 			  "originUuid" -> originUuid.getOrElse("")
 			).as(scalar[String].single)
-
 		} else {
-			Cypher(cypher).on(
-			  "userUuid" -> userUuid,
-			  "inkle" -> inkle
-			).as(scalar[String].single)
+			if (groupUuid.isDefined) {
+				Cypher(cypher).on(
+					"userUuid" -> userUuid,
+					"inkle" -> inkle,
+					"groupUuid" -> groupUuid.get
+				).as(scalar[String].single)
+			} else {
+				Cypher(cypher).on(
+					"userUuid" -> userUuid,
+					"inkle" -> inkle
+				).as(scalar[String].single)
+			}
 		}
 	}
 
@@ -188,6 +209,47 @@ object Inkle {
 			  |$query count(DISTINCT inkle)
 			""".stripMargin
 		).on("userUuid" -> user).as(scalar[Long].single)
+
+		Page(inkles, page, offset, total)
+	}
+
+	def fetchPageByGroup(group: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, User)] = {
+		log("fetchPage", Map("group" -> group, "page" -> page, "pageSize" -> pageSize))
+
+		val offset = page * pageSize
+
+		val query =
+			s"""
+			  |MATCH (group:Group {uuid: {groupUuid}})<-[:added_into]-(inkle:Inkle),
+				|(user:User)-[:owns_inkle]->(inkle)
+				|WHERE NOT((inkle)-[:has_parent]->())
+				|WITH inkle, user
+				|OPTIONAL MATCH (inkle)-[:has_parent]->(parent:Inkle)
+				|WITH inkle, user, parent
+				|OPTIONAL MATCH (child)-[:has_parent]->(inkle)
+				|WITH inkle, user, parent, child
+				|OPTIONAL MATCH (children)-[:has_parent*..]->(inkle)
+			  |RETURN
+			""".stripMargin
+
+		val inkles = Cypher(
+			s"""
+			  |$query DISTINCT ${simpleReturn()}, ${User.simpleReturn()}, (count(child) * 2 + (count(children))) as rating
+				|ORDER BY rating DESC
+				|SKIP {offset}
+				|LIMIT {pageSize}
+			""".stripMargin
+		).on(
+			"pageSize" -> pageSize,
+			"offset" -> offset,
+			"groupUuid" -> group
+		).as(withConnected.*)
+
+		val total = Cypher(
+			s"""
+			  |$query count(DISTINCT inkle)
+			""".stripMargin
+		).on("groupUuid" -> group).as(scalar[Long].single)
 
 		Page(inkles, page, offset, total)
 	}

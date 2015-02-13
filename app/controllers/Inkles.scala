@@ -32,6 +32,25 @@ object Inkles extends Controller with Guard {
     )
 	)
 
+	val groupInkleForm = Form(
+    tuple(
+      "inkle" -> text.verifying(
+        "Please write something",
+        inkle => {
+          inkle.trim.nonEmpty
+        }
+      ).verifying(
+        "That's just too long",
+        inkle => {
+          inkle.trim.length <= 70
+        }
+      ),
+      "group" -> {
+        text.verifying("The group doesn't exist", group => Group.exists(group))
+      }
+    )
+	)
+
 	val editForm = Form(
 		"inkle" -> nonEmptyText(maxLength = 70)
 	)
@@ -44,7 +63,7 @@ object Inkles extends Controller with Guard {
 	)
 
 	def create(returnAs: String = "rendered") = Action { implicit r =>
-		log("create")
+		log("create", Map("returnAs" -> returnAs))
 
     currentUserOpt.map { user =>
       inkleForm.bindFromRequest.fold(
@@ -56,7 +75,41 @@ object Inkles extends Controller with Guard {
 
           if (returnAs == "rendered") {
 
-            Ok(renderers.inkles.inkle(currentUser, newInkle))
+            Ok(templates.inkles.inkle(currentUser, newInkle))
+          } else {
+
+            val json_inkle = obj(
+              "uuid" -> newInkle._1.uuid,
+              "inkle" -> newInkle._1.inkle,
+              "createdTime" -> newInkle._1.created,
+              "userUuid" -> newInkle._2.uuid,
+              "userUsername" -> newInkle._2.username,
+              "childrenCount" -> Inkle.childrenCount(newInkle._1.uuid)
+            )
+
+            Ok(json_inkle)
+          }
+      }
+      )
+    }.getOrElse {
+      Redirect(routes.Users.signin())
+    }
+	}
+
+	def createInGroup(returnAs: String = "rendered") = Action { implicit r =>
+		log("createInGroup", Map("returnAs" -> returnAs))
+
+    currentUserOpt.map { user =>
+      groupInkleForm.bindFromRequest.fold(
+      formWithErrors => BadRequest,
+      {
+        case (inkle) =>
+          val uuid = Inkle.create(user.uuid, inkle._1.trim, groupUuid = Some(inkle._2))
+          val newInkle = Inkle.find(uuid)
+
+          if (returnAs == "rendered") {
+
+            Ok(templates.inkles.inkle(currentUser, newInkle))
           } else {
 
             val json_inkle = obj(
@@ -99,7 +152,7 @@ object Inkles extends Controller with Guard {
 
         if (returnAs == "rendered") {
 
-          Ok(renderers.inkles.child(currentUser, newInkle, pageUuid, UUID.randomUUID().toString, true))
+          Ok(templates.inkles.child(currentUser, newInkle, pageUuid, UUID.randomUUID().toString, true))
         } else {
           val json_inkle = obj(
             "uuid" -> newInkle._1.uuid,
@@ -124,7 +177,7 @@ object Inkles extends Controller with Guard {
 			inkle => {
 				val editedInkle = Inkle.edit(inkleUuid, inkle)
 
-        Ok(renderers.inkles.central(currentUser, pageUuid, editedInkle))
+        Ok(templates.inkles.central(currentUser, pageUuid, editedInkle))
 			}
 		)
 	}
@@ -139,7 +192,7 @@ object Inkles extends Controller with Guard {
           if (Inkle.deleteWithChildren(inkle._1)) Ok("deleted")
           else InternalServerError("something went wrong")
         } else {
-          if (Inkle.delete(inkle._1)) Ok(renderers.inkles.inkle(currentUser, Inkle.find(inkle._1)))
+          if (Inkle.delete(inkle._1)) Ok(templates.inkles.inkle(currentUser, Inkle.find(inkle._1)))
           else InternalServerError("something went wrong")
         }
 
@@ -173,7 +226,7 @@ object Inkles extends Controller with Guard {
 
     val inkles = Inkle.findPageOfChildren(uuid, page)
 
-    Ok(renderers.inkles.children(currentUser, Inkle.find(uuid), inkles, pageUuid, page))
+    Ok(templates.inkles.children(currentUser, Inkle.find(uuid), inkles, pageUuid, page))
   }
 
 	def origin(uuid: String) = IsAuthenticated { username => implicit r =>
@@ -290,7 +343,7 @@ object Inkles extends Controller with Guard {
     val inkle = Inkle.find(uuid)
 
 
-    Ok(renderers.inkles.inkle(currentUser, inkle))
+    Ok(templates.inkles.inkle(currentUser, inkle))
 
   }
 

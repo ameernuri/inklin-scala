@@ -20,7 +20,9 @@
 <div style="display: table; table-layout: fixed; float: left;" class="col-sm-4 inkle-center-wrapper">
   <div style="font-size: 30px; padding: 0 30px; display: table-cell; vertical-align: middle; word-break: break-word;" class="full-height">
     <span style="color: #eee;">
-    @if(inkle._1.parentUuid.isDefined) { •••<br> } else {
+    @if(inkle._1.parentUuid.isDefined) {
+      <span class="glyphicon glyphicon-option-horizontal"></span><br>
+    } else {
       <span class="glyphicon glyphicon-record"></span><br>
     }
     </span>

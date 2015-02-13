@@ -2,7 +2,7 @@
 
 @container() {
 	<div>
-		<button id="create-group-button" class="btn btn-default pull-right">
+		<button id="create-group-button" class="btn btn-default btn-hover-green pull-right">
 			<span class="glyphicon glyphicon-plus"></span>
 			Create a Group
 		</button>
@@ -10,10 +10,17 @@
 
 	<h3>Your Groups</h3>
 	@groups.map { group =>
-		<div>
-			<a href="@routes.Groups.view(group.uuid)">
-				@group.name
-			</a>
+		<div style="display: table; table-layout: fixed;" class="col-xs-12 col-sm-6 col-lg-4">
+			<div style="display: table-cell; vertical-align: middle;border: 1px solid #ddd; border-radius: 10px; text-align: center; height: 200px; margin-bottom: 25px;">
+				<a href="@routes.Groups.view(group.uuid)">
+					<h3 style="font-weight: 200;">
+							@group.name
+					</h3>
+					<div style="font-size: 15px;">
+						@group.description
+					</div>
+				</a>
+			</div>
 		</div>
 	}
 }

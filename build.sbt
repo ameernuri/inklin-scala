@@ -27,7 +27,7 @@ libraryDependencies ++= Seq(
 	"com.typesafe.akka" %% "akka-contrib" % "2.3.4",
 	"com.typesafe.play.extras" %% "play-geojson" % "1.1.0",
 	"org.webjars" %% "webjars-play" % "2.3.0-2",
-	"org.webjars" % "bootstrap" % "3.0.2",
+	"org.webjars" % "bootstrap" % "3.3.2",
 	"org.webjars" % "knockout" % "2.3.0",
 	"org.webjars" % "requirejs" % "2.1.11-1",
 	"org.webjars" % "leaflet" % "0.7.2",

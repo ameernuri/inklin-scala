@@ -7,6 +7,7 @@ GET         /origins                                    controllers.Apps.origins
 GET         /template-test                              controllers.Apps.templateTest
 
 POST        /inkles/create                              controllers.Inkles.create(returnAs: String ?= "rendered")
+POST        /groups/inkles/create                       controllers.Inkles.createInGroup(returnAs: String ?= "rendered")
 POST        /inkles/extend/:parentUuid                  controllers.Inkles.extend(parentUuid: String, pageUuid: String, returnAs: String ?= "rendered")
 GET         /origins/:uuid                              controllers.Inkles.origin(uuid: String)
 GET         /origins/:origin/inkles/:inkle              controllers.Inkles.view(origin: String, inkle: String)

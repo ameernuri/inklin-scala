@@ -2,7 +2,8 @@
 
 
 @container() {
+	@templates.components.groupInkleForm(user, group)
 
-	<h2>@group.name</h2>
+	@templates.components.inkles(user, Inkle.fetchPageByGroup(group.uuid))
 }
 
