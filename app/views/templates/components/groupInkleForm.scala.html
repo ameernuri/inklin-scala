@@ -7,14 +7,34 @@
 			<div style="text-align: center; max-width: 50%; margin: auto;">
 				@defining(Group.isAdmin(user.uuid, group.uuid)) { isAdmin =>
 					@defining(Group.isMember(user.uuid, group.uuid)) { isMember =>
-						<div class="text-center col-xs-12">
+						<div class="text-center col-xs-12 pointer" id="group-@group.uuid-name">
 							<h2 style="font-weight: 200;">
 								@group.name
 							</h2>
 							<p style="font-size: 18px; font-weight: 200;">
-							@group.description
+								@group.description
 							</p>
 						</div>
+
+						<div id="group-@group.uuid-form" style="display: none;">
+							<input
+							style="font-size: 30px; font-weight: 200; text-align: center; width: 100%;"
+							type="text"
+							name="name"
+							value="@group.name"
+							placeholder="Group Name">
+							<textarea
+							style="font-size: 18px; font-weight: 200; text-align: center; width: 100%;"
+							name="description"
+							placeholder="What's this group about?">@group.description</textarea>
+						</div>
+
+						<script>
+							$("#group-@group.uuid-name").click(function() {
+								$(this).hide();
+								$('#group-@group.uuid-form').fadeIn();
+							})
+						</script>
 
 						@if(isAdmin || isMember) {
 							<button class="btn btn-default btn-hover-green disabled">
