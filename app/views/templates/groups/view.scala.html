@@ -3,7 +3,6 @@
 @container() {
 	@templates.components.groupInkleForm(user, group)
 
-
 	@defining(Group.isAdmin(user.uuid, group.uuid)) { isAdmin =>
 		@defining(Group.isMember(user.uuid, group.uuid)) { isMember =>
 			@if(isAdmin || isMember) {
@@ -11,6 +10,5 @@
 			}
 		}
 	}
-
 }
 

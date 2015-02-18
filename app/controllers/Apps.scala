@@ -68,6 +68,7 @@ object Apps extends Controller with Guard {
 	      routes.javascript.Inkles.fetchSuggestions,
 	      routes.javascript.Users.templateView,
 		    routes.javascript.Groups.create,
+		    routes.javascript.Groups.update,
 		    routes.javascript.Groups.templateList,
 		    routes.javascript.Groups.templateView
 	  )

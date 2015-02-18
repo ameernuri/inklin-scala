@@ -25,6 +25,13 @@ object Groups extends Controller with Guard {
 		)
 	)
 
+	val editForm = Form(
+		tuple(
+			"name" -> nonEmptyText(maxLength = 35),
+			"description" -> nonEmptyText(maxLength = 70)
+		)
+	)
+
 	def list = Action { implicit r =>
 		log("list")
 
@@ -55,6 +62,37 @@ object Groups extends Controller with Guard {
 				}
 			}
 		)
+	}
+
+	def update(uuid: String) = Action { implicit r =>
+		log("update", Map("uuid" -> uuid))
+
+		val group = Group.find(uuid)
+
+		group.map { group =>
+			editForm.bindFromRequest.fold(
+				error => BadRequest("i think this is an error!"),
+				form => {
+
+					val editGroup = Group.update(group.uuid, form._1, form._2)
+
+					editGroup.map { edited =>
+						val jsonGroup = obj(
+							"uuid" -> edited.uuid,
+							"name" -> edited.name,
+							"description" -> edited.description,
+							"admin" -> edited.admin
+						)
+
+						Ok(jsonGroup)
+					}.getOrElse {
+						NotFound("group not found")
+					}
+				}
+			)
+		}.getOrElse {
+			NotFound("group not found")
+		}
 	}
 
 	def view(uuid: String) = Action { implicit r =>

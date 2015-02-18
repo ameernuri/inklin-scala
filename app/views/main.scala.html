@@ -115,20 +115,42 @@
 	    </button>
 		}
 
+		<!-- link inkle modal -->
+		@commons.modal("Link Inkle", "link-inkle") {
+			<div>
+				<h4>Select an inkle to link to:</h4>
+				<div id="link-inkle-modal-content">
+
+				</div>
+			</div>
+
+			<input type="hidden" name="uuid" id="link-inkle-uuid">
+		} {
+			<button type="button" class="btn btn-default" data-dismiss="modal">
+		    <span class="glyphicon glyphicon-remove"></span>
+		    Cancel
+	    </button>
+	    <button type="submit" class="btn btn-primary">
+		    <span class="glyphicon glyphicon-link"></span>
+		    Create Link
+	    </button>
+		}
+
 		<!-- create group modal -->
 		@helper.form(routes.Groups.create(), 'id -> "modal-group-form") {
 			@commons.modal("Create a Group", "create-group-modal") {
 				<div>
 					<div id="create-group-modal-content">
 						<input
-						style="width: 100%; padding: 10px 20px; font-size: 20px;"
+						style="width: 100%; padding: 10px 20px; font-size: 20px; margin-bottom: 0; border-bottom: none;"
 						id="create-group-text-name"
 						type="text"
 						placeholder="Group Name"
 						name="name"
+						autocomplete="off"
 						>
 						<textarea
-						style="width: 100%; padding: 10px 20px; font-size: 20px;"
+						style="width: 100%; padding: 10px 20px; font-size: 18px; resize: none; margin-top:0; border-top:none;;"
 						id="create-group-text-description"
 						placeholder="What is this group about?"
 						name="description"

@@ -1,0 +1,7 @@
+@(elementId: String = "", elementClass: String = "", elementStyle: String = "")(content: Html)
+
+<div style="display: table; table-layout: fixed; width: 100%; @elementStyle" id="@elementId" class="@elementClass">
+  <div style="display: table-cell; vertical-align: middle;" class="full-height">
+	  @content
+  </div>
+</div>

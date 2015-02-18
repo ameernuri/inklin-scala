@@ -1,95 +1,101 @@
 @(user: User, group: Group)
 
 <div class="full-height one-page-scroll" id="home-inkle-form-page">
-	<div style="display: table; table-layout: fixed; width: 100%;">
+	@templates.components.page() {
+		<div style="text-align: center;max-width: 50%; margin: auto;">
+			@defining(Group.isAdmin(user.uuid, group.uuid)) { isAdmin =>
+				@defining(Group.isMember(user.uuid, group.uuid)) { isMember =>
+					<div data-toggle="tooltip" data-placement="top" title="Edit" class="text-center col-xs-12 pointer" id="group-@group.uuid-info">
+						<h2 style="font-weight: 200;" class="group-name">
+							@group.name
+						</h2>
+						<p style="font-size: 18px; font-weight: 200;" class="group-description">
+							@group.description
+						</p>
+					</div>
 
-		<div style="display: table-cell; vertical-align: middle;" class="full-height">
-			<div style="text-align: center; max-width: 50%; margin: auto;">
-				@defining(Group.isAdmin(user.uuid, group.uuid)) { isAdmin =>
-					@defining(Group.isMember(user.uuid, group.uuid)) { isMember =>
-						<div class="text-center col-xs-12 pointer" id="group-@group.uuid-name">
-							<h2 style="font-weight: 200;">
-								@group.name
-							</h2>
-							<p style="font-size: 18px; font-weight: 200;">
-								@group.description
-							</p>
-						</div>
+					@helper.form(routes.Groups.update(group.uuid), 'id -> s"group-${group.uuid}-form", 'style -> "display: none;") {
+						<input
+						style="font-size: 30px; font-weight: 200; text-align: center; width: 100%;margin-bottom: 0; border-bottom: 0;"
+						type="text"
+						name="name"
+						value="@group.name"
+						autocomplete="off"
+						placeholder="Group Name">
 
-						<div id="group-@group.uuid-form" style="display: none;">
-							<input
-							style="font-size: 30px; font-weight: 200; text-align: center; width: 100%;"
-							type="text"
-							name="name"
-							value="@group.name"
-							placeholder="Group Name">
-							<textarea
-							style="font-size: 18px; font-weight: 200; text-align: center; width: 100%;"
-							name="description"
-							placeholder="What's this group about?">@group.description</textarea>
-						</div>
+						<textarea
+						style="font-size: 18px; font-weight: 200; text-align: center; width: 100%;margin-top: 0; border-top: 0; resize: none;padding: 0 15px 15px;"
+						name="description"
+						placeholder="What is this group about?">@group.description</textarea>
+					}
 
-						<script>
-							$("#group-@group.uuid-name").click(function() {
-								$(this).hide();
-								$('#group-@group.uuid-form').fadeIn();
-							})
-						</script>
+					<script>
+						editGroupActions("@group.uuid");
+					</script>
 
-						@if(isAdmin || isMember) {
-							<button class="btn btn-default btn-hover-green disabled">
-								@if(isAdmin) {
-									Admin
-								} else {
-									@if(isMember) {
-										Member
-									}
+					@if(isAdmin || isMember) {
+						<button class="btn btn-default btn-hover-green disabled">
+							@if(isAdmin) {
+								Admin
+							} else {
+								@if(isMember) {
+									Member
 								}
-							</button>
-
-							<div class="col-xs-12" style="margin-top: 20px;">
-								<h3 style="font-weight: 100;">
-									Something in your mind?
-								</h3>
-							</div>
-
-							@helper.form(routes.Inkles.createInGroup(), 'id -> "group-inkle-form") {
-								<textarea
-								id="inkle-textarea"
-								class="inkle-textarea"
-								name="inkle"
-								placeholder="how about..."
-								style="width: 100%; border: 1px solid #ddd;height: 90px; font-size: 25px;padding: 25px; text-align: center; box-sizing: border-box;"
-								autofocus="autofocus"
-								maxlength="70"
-								></textarea>
-
-								<input type="hidden" name="group" value="@group.uuid">
-
-								<div style="float: right;">
-									<input type="submit" value="•••" style="color: #97C111; padding: 0; font-size: 40px; border:none;background:none; line-height: 30px; margin: 0;">
-								</div>
-
-								<script>
-									groupInkleAddActions();
-								</script>
 							}
+						</button>
 
-						} else {
-							<div style="margin: 20px 0;">
-								** Members ** Origins ** Inkles
+						<div class="col-xs-12" style="margin-top: 20px;">
+							<h3 style="font-weight: 100;">
+								Something in your mind?
+							</h3>
+						</div>
+
+						@helper.form(routes.Inkles.createInGroup(), 'id -> "group-inkle-form") {
+							<textarea
+							id="inkle-textarea"
+							class="inkle-textarea"
+							name="inkle"
+							placeholder="how about..."
+							style="width: 100%; border: 1px solid #ddd;height: 90px; font-size: 25px;padding: 25px; text-align: center; box-sizing: border-box;"
+							autofocus="autofocus"
+							maxlength="70"
+							></textarea>
+
+							<input type="hidden" name="group" value="@group.uuid">
+
+							<div style="float: right;">
+								<input type="submit" value="•••" style="color: #97C111; padding: 0; font-size: 40px; border:none;background:none; line-height: 30px; margin: 0;">
 							</div>
 
-							<div>
-								<button id="create-group-button" class="btn btn-default btn-hover-green">
-									<span class="glyphicon glyphicon-ok"></span>
-									Join Group
-								</button>
-							</div>
+							<script>
+								groupInkleAddActions();
+							</script>
 						}
+
+					} else {
+						<div style="margin: 20px 0;" class="text-muted">
+							@defining(Group.memberCount(group.uuid)) { count =>
+								@count @if(count == 1) {Member} else {Members}
+							}
+							&bull;
+							@defining(Group.originCount(group.uuid)) { count =>
+								@count @if(count == 1) {Origin} else {Origins}
+							}
+							&bull;
+							@defining(Group.inkleCount(group.uuid)) { count =>
+								@count @if(count == 1) {Inkle} else {Inkles}
+							}
+						</div>
+
+						<div>
+							<button id="join-group-button" class="btn btn-default btn-hover-green">
+								<span class="glyphicon glyphicon-ok"></span>
+								Join Group
+							</button>
+						</div>
 					}
 				}
 			</div>
-		</div>
-	</div>
+		}
+	}
 </div>

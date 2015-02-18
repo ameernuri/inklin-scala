@@ -23,7 +23,7 @@ function mainActions() {
 		$(this).fadeOut();
 	});
 
-	submitOnReturn('#modal-inkle-form', '#modal-inkle-textarea');
+	submitOnReturn('#modal-inkle-form');
 
 	$('#modal-inkle-form').submit(function() {
 		log('add');
@@ -44,7 +44,7 @@ function mainActions() {
 			error: function(e) {
 				loader(false);
 
-				alert("oops.");
+				alert(e.error);
 			}
 		});
 
@@ -106,7 +106,7 @@ function mainActions() {
 	  $('#create-group-text-name').focus();
 	});
 
-	submitOnReturn("#modal-group-form", "#create-group-text-description")
+	submitOnReturn("#modal-group-form")
 
 	groupActions();
 }
@@ -130,6 +130,10 @@ function modifyActions() {
 
 		return false;
 	});
+
+	$('#join-group-button').click(function() {
+		alert('something');
+	})
 }
 
 function groupActions() {
@@ -151,7 +155,7 @@ function groupActions() {
 			error: function(e) {
 				loader(false);
 
-				alert("oops.");
+				alert(e.error);
 			}
 		});
 
@@ -159,9 +163,67 @@ function groupActions() {
 	});
 }
 
+function editGroupActions(uuid) {
+
+	var editForm = $('#group-'+ uuid +'-form');
+	var info = $('#group-'+ uuid +'-info');
+
+	submitOnReturn(editForm);
+
+	info.click(function() {
+		$(this).hide();
+		editForm.fadeIn();
+		editForm.find('input[type=text]').focus();
+		editForm.find('textarea').trigger('autosize.resize');
+
+		editForm.submit(function () {
+			loader();
+			jsRoutes.controllers.Groups.update(uuid).ajax({
+				data: editForm.serialize(),
+				success: function (e) {
+					info.fadeIn();
+					editForm.hide();
+
+					info.find('.group-name').html(e.name);
+					info.find('.group-description').html(e.description);
+
+					loader(false);
+				},
+				error: function (e) {
+					alert("ERROR: "+ e);
+
+					loader(false);
+				}
+			});
+
+			return false;
+		});
+	});
+
+	editForm.find('textarea, input').keydown(function (e) {
+		if (e.keyCode === 27) {
+			editForm.hide();
+			info.fadeIn();
+			return false;
+		}
+	});
+
+	$(document).click(function(e) {
+		var target = e.target;
+
+		if (
+			!$(target).is(editForm) && !$(target).parents().is(editForm) &&
+			!$(target).is(info) && !$(target).parents().is(info)
+		) {
+			editForm.hide();
+			info.fadeIn();
+		}
+	});
+}
+
 function homeInkleAddActions() {
 
-	submitOnReturn('#home-inkle-form', '#inkle-textarea');
+	submitOnReturn('#home-inkle-form');
 
 	$('#home-inkle-form').submit(function() {
 		log('add');
@@ -180,7 +242,7 @@ function homeInkleAddActions() {
 			error: function(e) {
 				loader(false);
 
-				alert("oops.");
+				alert(e.error);
 			}
 		});
 
@@ -190,7 +252,7 @@ function homeInkleAddActions() {
 
 function groupInkleAddActions() {
 
-	submitOnReturn('#group-inkle-form', '#inkle-textarea');
+	submitOnReturn('#group-inkle-form');
 
 	$('#group-inkle-form').submit(function() {
 		log('add');
@@ -209,7 +271,7 @@ function groupInkleAddActions() {
 			error: function(e) {
 				loader(false);
 
-				alert("oops.");
+				alert(JSON.parse(e).b);
 			}
 		});
 
@@ -257,10 +319,12 @@ $(document).ready(function() {
 	fullHeight();
 });
 
-function submitOnReturn(form, textarea) {
-	$(textarea).keydown(function(e) {
+function submitOnReturn(form) {
+	var formSelector = $(form);
+
+	$(formSelector).find('textarea').keydown(function(e) {
 		if (e.keyCode === 13) {
-			$(form).submit();
+			formSelector.submit();
 			return false;
 		}
 	})
@@ -394,6 +458,12 @@ function inkleActions(pageUuid, uuid) {
 		return false;
 	});
 
+	inkle.find('.link-inkle-button').click(function() {
+		$('#link-inkle').modal('show');
+		$("#link-inkle-uuid").val('#page-'+ pageUuid +'-'+ uuid +'-inkle');
+		return false;
+	});
+
 	inkle.find('.inkle-text').click(function() {
 		$(this).hide();
 		inkle.find('.edit-form-wrapper').fadeIn();
@@ -443,8 +513,8 @@ function inkleActions(pageUuid, uuid) {
 		}
 	});
 
-	submitOnReturn(inkle.find('.extend-form'), inkle.find('.inkle-textarea'));
-	submitOnReturn(inkle.find('.edit-form'), inkle.find('.edit-textarea'));
+	submitOnReturn(inkle.find('.extend-form'));
+	submitOnReturn(inkle.find('.edit-form'));
 
 	inkle.find('.edit-form').submit(function() {
 		loader();

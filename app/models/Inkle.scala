@@ -294,7 +294,7 @@ object Inkle {
 		Page(inkles, page, offset, total)
 	}
 
-	def originsPage(user: String, page: Int = 0, pageSize: Int = 10): Page[(Inkle, User)] = {
+	def originsPage(user: String, page: Int = 0, pageSize: Int = 100): Page[(Inkle, User)] = {
 		log("originsPage", Map("user" -> user, "page" -> page, "pageSize" -> pageSize))
 
 		val offset = page * pageSize

@@ -39,6 +39,7 @@ GET         /users/:uuid                                controllers.Users.view(u
 # Groups
 GET         /groups                                     controllers.Groups.list
 GET         /groups/:uuid                               controllers.Groups.view(uuid: String)
+POST        /groups/update/:uuid                        controllers.Groups.update(uuid: String)
 POST        /groups/create                              controllers.Groups.create
 
 
