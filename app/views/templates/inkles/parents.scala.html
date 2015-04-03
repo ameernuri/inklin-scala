@@ -1,4 +1,4 @@
-@(inkle: (Inkle, User), pageUuid: String)
+@(inkle: (FullInkle, User), pageUuid: String)
 
 @import java.util.UUID
 
@@ -17,7 +17,7 @@
             </span>
 
             <script>
-              inkleClickActions('#@rand-@origin.get._1.uuid', '@pageUuid', '@origin.get._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle');
+              inkleClickActions('#@rand-@origin.get._1.uuid', '@origin.get._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle');
             </script>
           </div>
         }
@@ -33,14 +33,14 @@
           </div>
 
           <script>
-            inkleClickActions('#@rand-@origin.get._1.uuid-more', '@pageUuid', '@origin.get._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle');
+            inkleClickActions('#@rand-@origin.get._1.uuid-more', '@origin.get._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle');
           </script>
         }
       }
 
       @parents.map { parent =>
         @defining(inkle._1.parentUuid.getOrElse("") == parent._1.uuid) { isParent =>
-          <div data-toggle="tooltip" data-placement="right" title="@Inkle.childrenCount(parent._1.uuid)"  class="parents-chain-element @if(isParent) { parents-chain-parent } else { parents-chain-non-parent}" id="@rand-@parent._1.uuid">
+          <div data-toggle="tooltip" data-placement="right" title="@parent._1.childrenCount"  class="parents-chain-element @if(isParent) { parents-chain-parent } else { parents-chain-non-parent}" id="@rand-@parent._1.uuid">
             <span style="color : #bbb ;">
             @if(!parent._1.parentUuid.isDefined) {
               <span class="glyphicon glyphicon-record"></span>
@@ -55,7 +55,31 @@
             }
 
             @if(!parent._1.deleted) {
-              @parent._1.inkle
+              @if(parent._1.kind == "link") {
+
+                @Inkle.findLink(parent._1.uuid).map { link =>
+
+                  <span class="center-block pointer" style="display: inline-block" id="page-@{pageUuid}-inkle-@{inkle._1.uuid}-link">
+                    @if(isParent) {
+                      <span style="font-size: 19px;color: #bbb;height: 24px;width: 24px;text-align: center;border-radius: 50%;padding: 0 0 10px;line-height: 1;margin: auto;border: 3px solid #ddd;display: inline-block;">#</span>
+
+                    } else {
+                      <span style="font-size: 13px;color: #ccc;height: 17px;width: 17px;text-align: center;border-radius: 50%;padding: 0 0 10px;line-height: 1;margin: auto;border: 2px solid #ddd;display: inline-block;">#</span>
+
+                    }
+                  </span>
+
+                  @Inkle.findLink(inkle._1.uuid).map { link =>
+                    <script>
+                    inkleLinkClickActions('#page-@{pageUuid}-inkle-@{inkle._1.uuid}-link', '@link._1.uuid', '#page-@{pageUuid}-@{inkle._1.parentUuid}-inkle');
+                    </script>
+                  }
+                  @link._1.inkle
+                }
+              } else {
+
+                @parent._1.inkle
+              }
             } else {
               <samp class="text-muted">[DELETED INKLE]</samp>
             }
@@ -70,7 +94,7 @@
 
         <script>
 
-        inkleClickActions('#@rand-@parent._1.uuid', '@pageUuid', '@parent._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle');
+        inkleClickActions('#@rand-@parent._1.uuid', '@parent._1.uuid', '#page-@pageUuid-@{inkle._1.uuid}-inkle');
         </script>
       }
     }

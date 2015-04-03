@@ -1,12 +1,15 @@
 $(document).ready(function() {
-	$('#main-add-btn').click(function() {
+	$('.add-modal-switch').click(function() {
 		$("#add-modal").modal('show');
-
-		return false;
 	});
 
-	$('#main-origin-btn').click(function() {
+	$('#main-menu-btn').click(function() {
+		$("#menu-modal").modal('show');
+	});
+
+	$('.go-to-origins').click(function() {
 		renderRoute(jsRoutes.controllers.Apps.templateOrigins(), '/origins', "Inklin • Origins");
+		$('#menu-modal').modal('hide');
 
 		return false;
 	});
@@ -22,8 +25,31 @@ $(document).ready(function() {
 		renderRoute(jsRoutes.controllers.Groups.templateList(), '/groups', "Inklin • Groups");
 
 		$('#main-dropdown-menu' ).dropdown('hide');
+		$('#menu-modal').modal('hide');
 
 		return false;
+	});
+
+	$("#menu-modal").click(function(e) {
+		var target = e.target;
+		var searchForm = $("#menu-search-form");
+
+		if (
+			!$(target).is(searchForm) && !$(target).parents().is(searchForm)
+		) {
+			$('#menu-modal').modal('hide');
+		}
+	});
+
+	$("#add-modal").click(function(e) {
+		var target = e.target;
+		var inkleForm = $("#modal-inkle-form");
+
+		if (
+			!$(target).is(inkleForm) && !$(target).parents().is(inkleForm)
+		) {
+			$('#add-modal').modal('hide');
+		}
 	});
 });
 

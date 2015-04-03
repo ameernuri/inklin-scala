@@ -11,6 +11,7 @@ POST        /groups/inkles/create                       controllers.Inkles.creat
 POST        /inkles/extend/:parentUuid                  controllers.Inkles.extend(parentUuid: String, pageUuid: String, returnAs: String ?= "rendered")
 GET         /origins/:uuid                              controllers.Inkles.origin(uuid: String)
 GET         /origins/:origin/inkles/:inkle              controllers.Inkles.view(origin: String, inkle: String)
+GET         /inkles/:inkle                              controllers.Inkles.viewInkle(inkle: String)
 POST        /inkles/get_inkle/:uuid                     controllers.Inkles.getInkle(uuid: String)
 
 POST        /inkles/edit/:uuid                          controllers.Inkles.edit(uuid: String, pageUuid: String)
@@ -18,11 +19,17 @@ POST        /inkles/edit/:uuid                          controllers.Inkles.edit(
 POST        /inkles/fetch/:page                         controllers.Inkles.fetchPage(page: Int)
 POST        /inkles/fetch_oops/:page                    controllers.Inkles.fetchOopsPage(page: Int)
 POST        /inkles/get_parent/:inkle                   controllers.Inkles.getParent(inkle: String)
+POST        /inkles/get_path/:inkle                     controllers.Inkles.getPath(inkle: String)
 POST        /inkles/get_children/:uuid                  controllers.Inkles.getChildren(uuid: String)
 POST        /inkles/get_children/:pageUuid/:uuid        controllers.Inkles.getPageOfChildren(uuid: String, pageUuid: String, page: Int ?= 1)
 POST        /inkles/fetch_suggestions                   controllers.Inkles.fetchSuggestions(q:String ?= "")
 
 POST        /inkles/delete                              controllers.Inkles.delete
+
+GET         /search                                     controllers.Inkles.search(q:String ?= "")
+GET         /search/linkable                            controllers.Inkles.searchLinkable(uuid: String, q:String ?= "")
+
+POST        /inkles/link/:from/:to/:pageUuid            controllers.Inkles.link(from: String, to: String, pageUuid: String)
 
 # Users
 GET         /signup                                     controllers.Users.signup
@@ -41,6 +48,7 @@ GET         /groups                                     controllers.Groups.list
 GET         /groups/:uuid                               controllers.Groups.view(uuid: String)
 POST        /groups/update/:uuid                        controllers.Groups.update(uuid: String)
 POST        /groups/create                              controllers.Groups.create
+POST        /groups/join/:uuid                          controllers.Groups.join(uuid: String)
 
 
 
@@ -52,6 +60,7 @@ GET         /js-routes.js                               controllers.Apps.javascr
 GET         /templates/home                             controllers.Apps.templateHome
 GET         /templates/origins                          controllers.Apps.templateOrigins
 GET         /templates/origins/:uuid                    controllers.Inkles.templateOrigin(uuid: String)
+GET         /templates/inkle/:uuid                      controllers.Inkles.templateView(uuid: String)
 GET         /templates/users/:username                  controllers.Users.templateView(username: String)
 
 GET         /templates/groups                           controllers.Groups.templateList

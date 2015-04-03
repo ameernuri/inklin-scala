@@ -1,14 +1,18 @@
-@(title: String, id: String = "")(body: Html)(footer: Html)
+@(title: String, id: String = "", modalClass: String = "fade", header: Boolean = true)(body: Html)(footer: Html)
 
-<div class="modal fade" @if(id != "") { id="@id" } tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal @modalClass" @if(id != "") { id="@id" } tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" style="overflow: auto">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	        <span aria-hidden="true">&times;</span>
-        </button>
-        <h4 class="modal-title" id="myModalLabel">@title</h4>
-      </div>
+      @if(header) {
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          @if(title != "") {
+            <h4 class="modal-title" id="myModalLabel">@title</h4>
+          }
+        </div>
+      }
 		    <div class="modal-body">
 			    @body
 		    </div>

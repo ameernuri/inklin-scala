@@ -127,4 +127,14 @@ object Groups extends Controller with Guard {
 			NotFound("Not found")
 		}
 	}
+
+	def join(uuid: String) = Action { implicit r =>
+		log("join", Map("uuid" -> uuid))
+
+		if (Group.join(currentUser.uuid, uuid)) {
+			Ok("joined")
+		} else {
+			InternalServerError("Something's up!")
+		}
+	}
 }

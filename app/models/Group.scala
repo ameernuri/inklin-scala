@@ -43,7 +43,8 @@ object Group {
 			  | name: {name},
 			  | description: {description},
 			  | created: timestamp()
-			  |})
+			  |}),
+				|(admin)-[:is_group_member]->(group)
 			  |RETURN ${simpleReturn()}
 			""".stripMargin
 		).on(
@@ -69,6 +70,20 @@ object Group {
 			"name" -> name,
 			"description" -> description
 		).as(simple.singleOpt)
+	}
+
+	def join(user: String, uuid: String): Boolean = {
+		log("user", Map("uuid" -> uuid, "uuid" -> uuid))
+
+		Cypher(
+			s"""
+			  |MATCH (user:User {uuid: {user}}), (group:Group {uuid: {uuid}})
+				|CREATE (user)-[:is_group_member {created: timestamp()}]->(group)
+			""".stripMargin
+		).on(
+			"uuid" -> uuid,
+			"user" -> user
+		).execute()
 	}
 
 	def find(uuid: String): Option[Group] = {
@@ -104,9 +119,12 @@ object Group {
 
 		Cypher(
 			s"""
-			  |MATCH (member:User {uuid: {user}})-[:is_group_member]->(group:Group),
+			  |MATCH (user:User {uuid: {user}})-[:is_group_member]->(group:Group),
 			  |(admin:User)-[:is_group_admin]->(group)
-			  |RETURN ${simpleReturn()}
+				|WITH user, admin, group
+				|OPTIONAL MATCH (member:User)-[members:is_group_member]->(group:Group)
+			  |RETURN ${simpleReturn()}, count(members) as memberCount
+        |ORDER BY memberCount DESC
 				|LIMIT {limit}
 			""".stripMargin
 		).on(

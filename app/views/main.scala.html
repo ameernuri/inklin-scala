@@ -11,8 +11,8 @@
 		<link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
 
 		<link href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))' rel='stylesheet'>
+		<link href='@routes.WebJarAssets.at(WebJarAssets.locate("css/font-awesome.min.css"))' rel='stylesheet'>
 		<link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.min.css")">
-		<!--link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'-->
 
 		<script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
 		<script src="@routes.Assets.versioned("js/autosize.jquery.min.js")"></script>
@@ -69,13 +69,13 @@
 					<div>
 						<input id="inkle-delete-radio-keep" type="radio" name="children" value="keep" checked>
 
-						<label for="inkle-delete-radio-keep">Soft Delete</label>
+						<label for="inkle-delete-radio-keep">Only Erase Content</label>
 						<p class="text-muted">only the content of this inkle will be erased, the child ideas will not be affected</p>
 					</div>
 					<div>
 						<input id="inkle-delete-radio-delete" type="radio" name="children" value="delete">
 
-						<label for="inkle-delete-radio-delete">Hard Delete</label>
+						<label for="inkle-delete-radio-delete">Delete Everything</label>
 						<p class="text-muted">this inkle will be deleted with every descendant it has</p>
 					</div>
 				</div>
@@ -95,45 +95,65 @@
 		}
 
 		<!-- change parent modal -->
-		@commons.modal("Change Inkle Parent", "change-parent") {
-			<div>
-				<h4>Select a new parent:</h4>
-				<div id="change-parent-modal-content">
-
-				</div>
+		@commons.modal("", "change-parent", "fade full-modal") {
+			<div style="font-size: 25px; font-weight: 200;" class="text-center">
+				Change Parent of
+					<span style="font-weight: bold;" id="change-parent-value"></span>
 			</div>
+
+			<div class="row">
+			  <div class="col-sm-8 col-sm-offset-2">
+				  @commons.apps.popover("", "bottom", "change-parent-popover") {
+					  <div class="input-group" style="border: 1px solid #ddd; padding: 0 15px;border-radius: 40px; overflow: hidden;">
+				      <span class="input-group-btn">
+					      <button class="glyphicon glyphicon-random" style="border: none; background: none; font-size: 25px;padding: 20px;"></button>
+				      </span>
+				      <input id="change-parent-input" type="text" class="form-control" placeholder="Find new parent..." style="padding: 20px 0; margin: 0; font-size: 20px; height: auto; border: none; box-shadow: none;">
+				    </div>
+
+					  <input type="hidden" name="uuid" id="change-parent-uuid">
+					  <input type="hidden" id="change-parent-page-uuid">
+					  <div id="change-parent-suggestions-wrap" class="search-results"></div>
+				  }
+			  </div>
+		  </div>
 
 			<input type="hidden" name="uuid" id="change-parent-inkle-uuid">
 		} {
-			<button type="button" class="btn btn-default" data-dismiss="modal">
-		    <span class="glyphicon glyphicon-remove"></span>
-		    Cancel
-	    </button>
-	    <button type="submit" class="btn btn-primary">
-		    <span class="glyphicon glyphicon-random"></span>
-		    Change Parent
-	    </button>
 		}
 
 		<!-- link inkle modal -->
-		@commons.modal("Link Inkle", "link-inkle") {
-			<div>
-				<h4>Select an inkle to link to:</h4>
-				<div id="link-inkle-modal-content">
-
-				</div>
+		@commons.modal("", "link-inkle", "fade full-modal") {
+			<div style="font-size: 25px; font-weight: 200;" class="text-center">
+				Link
+				<span style="font-weight: bold;" id="link-inkle-value"></span>
+				to:
 			</div>
+			<div class="row">
+			  <div class="col-sm-8 col-sm-offset-2">
+				  @commons.apps.popover("", "bottom", "link-inkle-popover") {
+					  <div class="input-group" style="border: 1px solid #ddd; padding: 0 30px;border-radius: 40px; overflow: hidden;">
+				      <span class="input-group-btn">
+				        <span style="font-size: 30px; font-weight: 700; color: #888;">#</span>
+				      </span>
+				      <input id="link-inkle-input" type="text" class="form-control" placeholder="Find an Inkle to link to..." style="padding: 20px; margin: 0; font-size: 20px; height: auto; border: none; box-shadow: none;">
+				    </div>
 
-			<input type="hidden" name="uuid" id="link-inkle-uuid">
+					  <input type="hidden" name="uuid" id="link-inkle-uuid">
+					  <input type="hidden" id="link-inkle-page-uuid">
+					  <div id="link-inkle-suggestions-wrap" class="search-results"></div>
+				  }
+			  </div>
+		  </div>
 		} {
-			<button type="button" class="btn btn-default" data-dismiss="modal">
-		    <span class="glyphicon glyphicon-remove"></span>
-		    Cancel
-	    </button>
-	    <button type="submit" class="btn btn-primary">
-		    <span class="glyphicon glyphicon-link"></span>
-		    Create Link
-	    </button>
+		}
+
+
+		<!-- view inkle modal -->
+		@commons.modal("", "view-inkle-modal", "fade full-modal") {
+			<div id="view-inkle-modal-content">
+		  </div>
+		} {
 		}
 
 		<!-- create group modal -->
@@ -150,11 +170,11 @@
 						autocomplete="off"
 						>
 						<textarea
-						style="width: 100%; padding: 10px 20px; font-size: 18px; resize: none; margin-top:0; border-top:none;;"
+						style="width: 100%; padding: 10px 20px; font-size: 18px; resize: none; margin-top:0; border-top:none;"
 						id="create-group-text-description"
 						placeholder="What is this group about?"
 						name="description"
-						maxlength="70"
+						maxlength="60"
 						></textarea>
 					</div>
 				</div>
@@ -171,13 +191,119 @@
 		}
 
 		<!-- add inkle modal -->
-		@commons.modal("Something in your mind?", "add-modal") {
-			@helper.form(routes.Inkles.create(), 'id -> "modal-inkle-form") {
-		    <p class="text-center">Big ideas start with an inkling. Write it down:</p>
-		    <textarea id="modal-inkle-textarea" class="inkle-textarea" name="inkle" placeholder="how about..." style="width: 100%; border: 1px solid #ddd;height: 90px; font-size: 25px;padding: 25px; text-align: center;box-sizing: border-box;" autofocus="autofocus" maxlength="70"></textarea>
+		@commons.modal("", "add-modal", "fade full-modal") {
+			@templates.components.page("", "") {
+				<h1 class="text-center" style="margin-bottom: 40px; font-weight: 100;">
+					Something in your mind?
+				</h1>
+				<p class="text-center" style="font-size: 15px; font-weight: 200;">
+					Big ideas start with an inkling. Write it down:
+				</p>
 
-		    <button type="button" class="btn btn-primary pull-right" style="color: #97C111; padding: 0; font-size: 40px; border:none; margin-top: 5px;background:none; line-height: 18px; margin: 10px 0;">•••</button>
+				<div class="col-sm-offset-3 col-sm-6">
+					@helper.form(routes.Inkles.create(), 'id -> "modal-inkle-form", 'style -> "overflow: auto;") {
+						<textarea id="modal-inkle-textarea" class="inkle-textarea" name="inkle" placeholder="how about..." style="width: 100%; border: none; border-bottom: 2px solid #eee; height: 90px; font-size: 25px;padding: 25px; text-align: center;box-sizing: border-box;" autofocus="autofocus" maxlength="60"></textarea>
+
+						<div style="float: right;">
+							<button style="color: #97C111; padding: 0; font-size: 30px; border:none;background:none; margin: 0;" class="glyphicon glyphicon-chevron-right"></button>
+						</div>
+					}
+				</div>
 		   }
+		} {
+
+		}
+
+		@commons.modal("", "search-modal", "full-modal") {
+			<div>
+				@helper.form(routes.Inkles.edit("", ""), 'id -> "modal-search-form", 'class -> "col-xs-12 col-sm-offset-2 col-sm-8") {
+					<h3 style="font-weight: 200;" class="text-center">Find an Inkle</h3>
+					@commons.apps.popover("", "bottom", "link-inkle-popover") {
+						<div class="input-group" style="border: 1px solid #ddd;border-radius: 40px; overflow: hidden;">
+							<span class="input-group-addon" id="basic-addon1" style="background: none; border: none; border-radius: 0; padding: 0;">
+								<button class="glyphicon glyphicon-search" style="border: none; background: none; font-size: 25px;padding: 20px;"></button>
+							</span>
+							<input type="text" class="form-control"  aria-describedby="basic-addon1" id="modal-search-input" style="border: none;background: none; font-size: 25px; padding: 28px 0; box-shadow: none; border-radius: 0;" autocomplete="off" placeholder="Search for something...">
+						</div>
+
+						<div id="modal-search-suggestions-wrap" class="search-results"></div>
+					}
+				}
+			</div>
+		} {
+
+		}
+
+		<!-- menu modal -->
+		@commons.modal("", "menu-modal", "fade full-modal", header = false) {
+			<div class="col-xs-12" style="position: fixed; top: 0; left: 0; width: 100%; background-color: #f8f8f8; padding: 11px 50px; margin: 0;">
+				<div style="margin-right: 16px;" class="pull-right">
+					<div class="profile pull-right">
+						<button id="main-profile-btn" style="background: none; border: none; margin-top: 4px;">
+							<span style="background-color: #eee; width: 40px; height: 40px; border-radius: 30%; border: #ddd 1px solid; margin-right: 10px;" class="pull-right">
+								<img style="width: 100%" src="@routes.Assets.versioned("images/inklin_no_bg.svg")" onerror="this.onerror = null; this.src='@routes.Assets.versioned("images/inklin_no_bg.png")'" >
+							</span>
+							<span class="name pull-right" style="margin: 6px 10px; font-size: 20px;">@currentUser.name</span>
+						</button>
+						<script>
+						$('#main-profile-btn').click(function() {
+						renderRoute(jsRoutes.controllers.Users.templateView('@currentUser.username'), '/@currentUser.username', "Inklin • @currentUser.name");
+						$('#menu-modal').modal('hide');
+
+						return false;
+						});
+						</script>
+					</div>
+				</div>
+
+				<div class="pull-left" style="margin-top: 15px;">
+					<a href="@routes.Users.signout()">
+						<span class="fa fa-power-off" style="font-size: 24px; vertical-align: middle;">
+						</span>
+						<span>
+
+						</span>
+						Sign Out
+					</a>
+				</div>
+			</div>
+
+			<div class="text-center menu-buttons" style="margin-top: 60px; width: 100%;left: 0;padding: 0 60px 12px;border-bottom: 1px solid #eee;">
+				<div>
+					<button class="go-to-groups pull-right">
+						<span class="item-label">Groups</span>
+						<span class="fa fa-asterisk"></span>
+					</button>
+				</div>
+				<div>
+					<button class="go-to-origins pull-right">
+						<span class="item-label">Origins</span>
+						<span class="glyphicon glyphicon-record"></span>
+					</button>
+				</div>
+				<div>
+					<button id="main-add-btn" class="add-modal-switch pull-right">
+						<span class="item-label">New Inkle</span>
+						<span class="glyphicon glyphicon-plus"></span>
+					</button>
+				</div>
+			</div>
+
+			@templates.components.page() {
+				<div>
+					@helper.form(routes.Inkles.edit("", ""), 'id -> "menu-search-form", 'class -> "col-xs-12 col-sm-offset-2 col-sm-8") {
+						<h3 style="font-weight: 200;" class="text-center">Find an Inkle</h3>
+						@commons.apps.popover("", "bottom", "link-inkle-popover") {
+							<div class="input-group" style="border: 1px solid #ddd;border-radius: 40px; overflow: hidden;">
+								<span class="input-group-addon" id="basic-addon1" style="background: none; border: none; border-radius: 0; padding: 0;">
+									<button class="glyphicon glyphicon-search" style="border: none; background: none; font-size: 25px;padding: 20px;"></button>
+								</span>
+								<input type="text" class="form-control"  aria-describedby="basic-addon1" id="modal-menu-inkle-search" style="border: none;background: none; font-size: 25px; padding: 26px 0; box-shadow: none; border-radius: 0;" autocomplete="off" placeholder="Search for something...">
+							</div>
+						}
+					}
+				</div>
+			}
 		} {
 
 		}
@@ -190,50 +316,14 @@
 
 				<div style="margin-right: 70px;font-size: 25px;position: fixed; right: 0;top: 10px;padding: 1px" class="pull-right top-menu">
 					<div class="dropdown">
-						<button data-target="#add-modal" data-toggle="tooltip" data-placement="bottom" title="New Inkle" id="main-add-btn" class="glyphicon glyphicon-plus">
+						<button data-target="#add-modal" data-toggle="tooltip" data-placement="bottom" title="New Inkle" id="main-add-btn" class="glyphicon glyphicon-plus add-modal-switch">
 						</button>
 
-						<button data-target="@routes.Apps.origins()" data-toggle="tooltip" data-placement="bottom" title="Origins" id="main-origin-btn" class="glyphicon glyphicon-record">
+						<button data-target="@routes.Apps.origins()" data-toggle="tooltip" data-placement="bottom" title="Origins" id="main-origin-btn" class="glyphicon glyphicon-record go-to-origins">
 						</button>
 
-						<button id="main-menu-btn" data-toggle="dropdown" class="glyphicon glyphicon-chevron-down" style="color: #97C111;border:none;background:none;">
+						<button id="main-menu-btn" class="glyphicon glyphicon-chevron-down" style="color: #97C111;border:none;background:none;">
 						</button>
-
-						<ul id="main-dropdown-menu" class="dropdown-menu dropdown-menu-left" role="menu" aria-labelledby="main-menu-btn" style="right: 0;left: auto;">
-							<li class="profile">
-								<button id="main-profile-btn">
-									<div style="background-color: #eee; width: 40px; height: 40px; border-radius: 30%; border: #ddd 1px solid; margin-right: 10px;" class="pull-left">
-										<img style="width: 100%" src="@routes.Assets.versioned("images/inklin_no_bg.svg")" onerror="this.onerror = null; this.src='@routes.Assets.versioned("images/inklin_no_bg.png")'" >
-									</div>
-									<div class="name">@currentUser.name</div>
-								</button>
-								<script>
-									$('#main-profile-btn').click(function() {
-										renderRoute(jsRoutes.controllers.Users.templateView('@currentUser.username'), '/@currentUser.username', "Inklin • @currentUser.name");
-
-										$('#main-dropdown-menu' ).dropdown('hide');
-
-										return false;
-									});
-								</script>
-							</li>
-
-							<li role="presentation" class="divider"></li>
-
-							<li role="presentation">
-								<a role="menuitem" href="@routes.Groups.list()" class="go-to-groups">Groups</a>
-							</li>
-
-							<li role="presentation" class="divider"></li>
-
-							<li role="presentation">
-								<a role="menuitem" href="#">Account Settings</a>
-							</li>
-
-							<li role="presentation">
-								<a role="menuitem" href="@routes.Users.signout()">Sign Out</a>
-							</li>
-					  </ul>
 					</div>
 				</div>
 			</div>
@@ -251,6 +341,7 @@
 						<h2 style="font-weight: 200;">
 							Inklin needs more space to fly!
 						</h2>
+
 						Sorry, the screen size is too small. We're working on a mobile version and it should be available soon.
 						<br>
 						<br>

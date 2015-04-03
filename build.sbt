@@ -39,6 +39,7 @@ libraryDependencies ++= Seq(
 	"org.webjars" % "handlebars" % "1.3.0",
 	"org.webjars" % "jquery" % "2.1.3",
 	"org.webjars" % "momentjs" % "2.8.3",
+	"org.webjars" % "font-awesome" % "4.3.0-1",
 	cache
 )
 

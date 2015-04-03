@@ -27,7 +27,7 @@ object Inkles extends Controller with Guard {
     ).verifying(
       "That's just too long",
       inkle => {
-        inkle.trim.length <= 70
+        inkle.trim.length <= 60
       }
     )
 	)
@@ -42,7 +42,7 @@ object Inkles extends Controller with Guard {
       ).verifying(
         "That's just too long",
         inkle => {
-          inkle.trim.length <= 70
+          inkle.trim.length <= 60
         }
       ),
       "group" -> {
@@ -52,7 +52,7 @@ object Inkles extends Controller with Guard {
 	)
 
 	val editForm = Form(
-		"inkle" -> nonEmptyText(maxLength = 70)
+		"inkle" -> nonEmptyText(maxLength = 60)
 	)
 
 	val deleteForm = Form(
@@ -71,7 +71,7 @@ object Inkles extends Controller with Guard {
       {
         case (inkle) =>
           val uuid = Inkle.create(user.uuid, inkle.trim)
-          val newInkle = Inkle.find(uuid)
+          val newInkle = Inkle.findFull(uuid)
 
           if (returnAs == "rendered") {
 
@@ -84,7 +84,7 @@ object Inkles extends Controller with Guard {
               "createdTime" -> newInkle._1.created,
               "userUuid" -> newInkle._2.uuid,
               "userUsername" -> newInkle._2.username,
-              "childrenCount" -> Inkle.childrenCount(newInkle._1.uuid)
+              "childrenCount" -> newInkle._1.childrenCount
             )
 
             Ok(json_inkle)
@@ -105,7 +105,7 @@ object Inkles extends Controller with Guard {
       {
         case (inkle) =>
           val uuid = Inkle.create(user.uuid, inkle._1.trim, groupUuid = Some(inkle._2))
-          val newInkle = Inkle.find(uuid)
+          val newInkle = Inkle.findFull(uuid)
 
           if (returnAs == "rendered") {
 
@@ -118,7 +118,7 @@ object Inkles extends Controller with Guard {
               "createdTime" -> newInkle._1.created,
               "userUuid" -> newInkle._2.uuid,
               "userUsername" -> newInkle._2.username,
-              "childrenCount" -> Inkle.childrenCount(newInkle._1.uuid)
+              "childrenCount" -> newInkle._1.childrenCount
             )
 
             Ok(json_inkle)
@@ -142,7 +142,7 @@ object Inkles extends Controller with Guard {
 
         val origin = Inkle.getOriginUuid(parentUuid)
 				val uuid = Inkle.create(userUuid, inkle, Some(parentUuid), origin)
-				val newInkle = Inkle.find(uuid)
+				val newInkle = Inkle.findFull(uuid)
         val tourStep = User.getTourStep(currentUser.uuid)
         val pathLength = Inkle.getPathLength(uuid)
 
@@ -159,7 +159,7 @@ object Inkles extends Controller with Guard {
             "inkle" -> newInkle._1.inkle,
             "createdTime" -> newInkle._1.created,
             "userUuid" -> newInkle._2.uuid,
-            "childrenCount" -> Inkle.childrenCount(newInkle._1.uuid),
+            "childrenCount" -> newInkle._1.childrenCount,
             "userUsername" -> newInkle._2.username
           )
 
@@ -168,6 +168,22 @@ object Inkles extends Controller with Guard {
 			}
 		)
 	}
+
+  def link(from: String, to: String, pageUuid: String) = Action { implicit r =>
+    log("link", Map("from" -> from, "to" -> to, "pageUuid" -> pageUuid))
+
+
+    val link = Inkle.linkShortcut(from, to, currentUser.uuid)
+
+    if (link != "") {
+      val newInkle = Inkle.findFull(link)
+
+      Ok(templates.inkles.child(currentUser, newInkle, pageUuid, UUID.randomUUID().toString, isNew = true))
+    } else {
+      BadRequest("something is up!")
+    }
+
+  }
 
 	def edit(inkleUuid: String, pageUuid: String) = IsAuthenticated { username => implicit r =>
 		log("edit", Map("inkleUuid" -> inkleUuid))
@@ -192,7 +208,7 @@ object Inkles extends Controller with Guard {
           if (Inkle.deleteWithChildren(inkle._1)) Ok("deleted")
           else InternalServerError("something went wrong")
         } else {
-          if (Inkle.delete(inkle._1)) Ok(templates.inkles.inkle(currentUser, Inkle.find(inkle._1)))
+          if (Inkle.delete(inkle._1)) Ok(templates.inkles.inkle(currentUser, Inkle.findFull(inkle._1)))
           else InternalServerError("something went wrong")
         }
 
@@ -212,7 +228,7 @@ object Inkles extends Controller with Guard {
           "inkle" -> inkle._1.inkle,
           "createdTime" -> inkle._1.created,
           "userUuid" -> inkle._2.uuid,
-          "childrenCount" -> Inkle.childrenCount(inkle._1.uuid),
+          "childrenCount" -> inkle._1.childrenCount,
           "userUsername" -> inkle._2.username
         )
       }
@@ -226,7 +242,7 @@ object Inkles extends Controller with Guard {
 
     val inkles = Inkle.findPageOfChildren(uuid, page)
 
-    Ok(templates.inkles.children(currentUser, Inkle.find(uuid), inkles, pageUuid, page))
+    Ok(templates.inkles.children(currentUser, Inkle.findFull(uuid), inkles, pageUuid, page))
   }
 
 	def origin(uuid: String) = IsAuthenticated { username => implicit r =>
@@ -239,6 +255,18 @@ object Inkles extends Controller with Guard {
 		log("templateOrigin", Map("uuid" -> uuid))
 
 		Ok(templates.origin(currentUser, uuid))
+	}
+
+	def templateView(uuid: String) = IsAuthenticated { username => implicit r =>
+		log("templateView", Map("uuid" -> uuid))
+
+		Ok(templates.inkles.view(currentUser, uuid))
+	}
+
+	def viewInkle(uuid: String) = IsAuthenticated { username => implicit r =>
+		log("viewInkle", Map("uuid" -> uuid))
+
+    Redirect(routes.Inkles.view(Inkle.getOrigin(uuid).get._1.uuid, uuid))
 	}
 
 	def view(origin: String, uuid: String) = IsAuthenticated { username => implicit r =>
@@ -264,7 +292,7 @@ object Inkles extends Controller with Guard {
           "parentUuid" -> inkle._1.parentUuid,
           "createdTime" -> inkle._1.created,
           "userUuid" -> inkle._2.uuid,
-          "childrenCount" -> Inkle.childrenCount(inkle._1.uuid),
+          "childrenCount" -> inkle._1.childrenCount,
           "userUsername" -> inkle._2.username,
           "children" -> arr(
             Inkle.findChildren(inkle._1.uuid).map { child =>
@@ -273,7 +301,7 @@ object Inkles extends Controller with Guard {
                 "inkle" -> child._1.inkle,
                 "createdTime" -> child._1.created,
                 "userUuid" -> child._2.uuid,
-                "childrenCount" -> Inkle.childrenCount(child._1.uuid),
+                "childrenCount" -> child._1.childrenCount,
                 "userUsername" -> child._2.username
               )
             }
@@ -297,7 +325,7 @@ object Inkles extends Controller with Guard {
           "inkle" -> inkle._1.inkle,
           "createdTime" -> inkle._1.created,
           "userUuid" -> inkle._2.uuid,
-          "childrenCount" -> Inkle.childrenCount(inkle._1.uuid),
+          "childrenCount" -> inkle._1.childrenCount,
           "userUsername" -> inkle._2.username,
           "children" -> arr(
             Inkle.findChildren(inkle._1.uuid).map { child =>
@@ -306,7 +334,7 @@ object Inkles extends Controller with Guard {
                 "inkle" -> child._1.inkle,
                 "createdTime" -> child._1.created,
                 "userUuid" -> child._2.uuid,
-                "childrenCount" -> Inkle.childrenCount(child._1.uuid),
+                "childrenCount" -> child._1.childrenCount,
                 "userUsername" -> child._2.username
               )
             }
@@ -321,7 +349,7 @@ object Inkles extends Controller with Guard {
   def getParent(uuid: String) = Action {
 	  log("getParent", Map("uuid" -> uuid))
 
-    val inkle = Inkle.find(uuid)
+    val inkle = Inkle.findFull(uuid)
 
     val fetchedInkles: JsObject = obj(
       "uuid" -> inkle._1.uuid,
@@ -329,7 +357,7 @@ object Inkles extends Controller with Guard {
       "parentUuid" -> inkle._1.parentUuid,
       "createdTime" -> inkle._1.created,
       "userUuid" -> inkle._2.uuid,
-      "childrenCount" -> Inkle.childrenCount(inkle._1.uuid),
+      "childrenCount" -> inkle._1.childrenCount,
       "userUsername" -> inkle._2.username
     )
 
@@ -337,14 +365,21 @@ object Inkles extends Controller with Guard {
 
   }
 
+  def getPath(uuid: String) = Action {
+    log("getPath", Map("uuid" -> uuid))
+
+    val path = Inkle.getParents(uuid)
+
+    Ok(templates.inkles.path(path))
+  }
+
   def getInkle(uuid: String) = Action { implicit r =>
 	  log("getInkle", Map("uuid" -> uuid))
 
-    val inkle = Inkle.find(uuid)
+    val inkle = Inkle.findFull(uuid)
 
 
     Ok(templates.inkles.inkle(currentUser, inkle))
-
   }
 
   def fetchSuggestions(q: String) = Action { implicit r =>
@@ -353,14 +388,14 @@ object Inkles extends Controller with Guard {
     val results = Inkle.suggest(currentUser.uuid, q)
 
     val jsonResults: JsArray = arr(
-  			results.items.map { result =>
+      results.items.map { result =>
 
-  				obj(
-  					"uuid"  -> result._1.uuid,
-  					"inkle" -> result._1.inkle
-  				)
-  			}
-  		)
+        obj(
+          "uuid"  -> result._1.uuid,
+          "inkle" -> result._1.inkle
+        )
+      }
+    )
 
     Ok(jsonResults)
   }
@@ -375,5 +410,53 @@ object Inkles extends Controller with Guard {
     } else {
       InternalServerError("something terrible happened")
     }
+  }
+
+  def search(q: String) = Action { implicit r =>
+    log("search", Map("q" -> q))
+
+    val results = Inkle.search(q, currentUser.uuid)
+
+    val jsonResults: JsArray = arr(
+      results.map { result =>
+
+        val origin = Inkle.getOrigin(result.uuid).get._1
+
+        obj(
+          "uuid" -> result.uuid,
+          "inkle" -> result.inkle,
+          "originUuid" -> origin.uuid,
+          "origin" -> origin.inkle
+        )
+      }
+    )
+
+    Ok(jsonResults)
+  }
+
+  def searchLinkable(link: String, q: String) = Action { implicit r =>
+    log("searchLinkable", Map("link" -> link, "q" -> q))
+
+    val results = if (q.trim != "") {
+      Inkle.searchLinkable(q, currentUser.uuid, link)
+    } else {
+      Inkle.findOrigins(currentUser.uuid, link)
+    }
+
+    val jsonResults: JsArray = arr(
+      results.map { result =>
+
+        val origin = Inkle.getOrigin(result._1.uuid).get._1
+
+        obj(
+          "uuid" -> result._1.uuid,
+          "inkle" -> result._1.inkle,
+          "originUuid" -> origin.uuid,
+          "origin" -> origin.inkle
+        )
+      }
+    )
+
+    Ok(jsonResults)
   }
 }

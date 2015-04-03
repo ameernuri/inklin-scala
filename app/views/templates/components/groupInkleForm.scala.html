@@ -58,7 +58,7 @@
 							placeholder="how about..."
 							style="width: 100%; border: 1px solid #ddd;height: 90px; font-size: 25px;padding: 25px; text-align: center; box-sizing: border-box;"
 							autofocus="autofocus"
-							maxlength="70"
+							maxlength="60"
 							></textarea>
 
 							<input type="hidden" name="group" value="@group.uuid">
@@ -93,6 +93,19 @@
 								Join Group
 							</button>
 						</div>
+
+						<script>
+							$('#join-group-button').click(function() {
+								jsRoutes.controllers.Groups.join("@group.uuid").ajax({
+									success: function(e) {
+									renderRoute(jsRoutes.controllers.Groups.templateView("@group.uuid"), "/origins/@group.uuid", "Inklin • @group.name");
+									},
+									error: function(e) {
+										alert("error")
+									}
+								});
+							});
+						</script>
 					}
 				}
 			</div>

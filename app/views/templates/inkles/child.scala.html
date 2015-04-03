@@ -1,47 +1,66 @@
-@(user: User, inkle: (Inkle, User), pageUuid: String, rand: String, isNew: Boolean = false)
+@(user: User, inkle: (FullInkle, User), pageUuid: String, rand: String, isNew: Boolean = false)
 
-<div id="page-@pageUuid-@rand-child-@inkle._1.uuid">
-	<div class="child">
-		<span class="child-ellipsis" style="font-size: 15px; color: #eee;">•••</span>
+@defining(inkle._1.kind == "link") { isLink =>
+	<div data-toggle="tooltip" data-placement="top" title="@@@inkle._2.username" id="page-@pageUuid-@rand-child-@inkle._1.uuid">
+		<div class="child">
+			@if(isLink) {
+				<span style="font-size: 16px;color: #ccc;float: left;height: 20px;width: 20px;background: none;text-align: center;border-radius: 50%;padding: 0 0 10px;line-height: 1.1;border: 2px solid #ddd;margin-top: 1px;" id="page-@pageUuid-@rand-child-@inkle._1.uuid-link">#</span>
+			}
 
-		@if(!inkle._1.deleted) {
-	    @inkle._1.inkle
-	  } else {
-	    <samp class="text-muted small">[DELETED INKLE]</samp>
-	  }
-		<span id="page-@pageUuid-@rand-child-@inkle._1.uuid-counter" style="display: none; float: right; color: #ccc; font-size: 12px;"> • @Inkle.childrenCount(inkle._1.uuid) <span style="font-size: 18px;">&therefore;</span> @Inkle.descendantCount(inkle._1.uuid)</span>
-	</div>
+			<span class="child-ellipsis glyphicon glyphicon-chevron-right" style="font-size: 15px; color: #ddd;"></span>
 
-	<div class="tour">
-
-		@if(isNew) {
-			@defining(User.getTourStep(user.uuid)) { tourStep =>
-
-				@if(tourStep < 3) {
-
-					@if(tourStep == 1) {
-						@commons.apps.popover("Click on it", "bottom") {
-							<p>
-								You can also extend this child. Just click on it and see what happens
-							</p>
-						}
+			@if(!inkle._1.deleted) {
+				@if(isLink) {
+					@Inkle.findLink(inkle._1.uuid).map { link =>
+						@link._1.inkle
 					}
+				} else {
 
-					@if(tourStep == 2) {
-						@commons.apps.popover("Don't stop here!", "bottom") {
-							<p>
-								You can extend this too. It goes on and on and on... infinitely.
-							</p>
+					@inkle._1.inkle
+				}
+		  } else {
+		    <samp class="text-muted small">[DELETED INKLE]</samp>
+		  }
+			<span id="page-@pageUuid-@rand-child-@inkle._1.uuid-counter" style="display: none; float: right; color: #ccc; font-size: 12px;"> • @inkle._1.childrenCount <span style="font-size: 18px;">&therefore;</span> @inkle._1.descendantCount</span>
+		</div>
+
+		<div class="tour">
+
+			@if(isNew) {
+				@defining(User.getTourStep(user.uuid)) { tourStep =>
+
+					@if(tourStep < 3) {
+
+						@if(tourStep == 1) {
+							@commons.apps.popover("Click on it", "bottom") {
+								<p>
+									You can also extend this child. Just click on it and see what happens
+								</p>
+							}
 						}
-					}
 
+						@if(tourStep == 2) {
+							@commons.apps.popover("Don't stop here!", "bottom") {
+								<p>
+									You can extend this too. It goes on and on and on... infinitely.
+								</p>
+							}
+						}
+
+					}
 				}
 			}
-		}
+		</div>
 	</div>
-</div>
 
-<script>
+	<script>
 
-  inkleClickActions('#page-@{pageUuid}-@{rand}-child-@{inkle._1.uuid}', '@{pageUuid}', '@inkle._1.uuid', '#page-@{pageUuid}-@{inkle._1.parentUuid}-inkle');
-</script>
+		@if(isLink) {
+			@Inkle.findLink(inkle._1.uuid).map { link =>
+				inkleLinkClickActions('#page-@{pageUuid}-@{rand}-child-@{inkle._1.uuid}-link', '@link._1.uuid', '#page-@{pageUuid}-@{inkle._1.parentUuid}-inkle');
+			}
+		}
+
+		inkleClickActions('#page-@{pageUuid}-@{rand}-child-@{inkle._1.uuid}', '@inkle._1.uuid', '#page-@{pageUuid}-@{inkle._1.parentUuid}-inkle');
+	</script>
+}

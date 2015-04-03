@@ -16,7 +16,6 @@ object Apps extends Controller with Guard {
 		controllerLogger("Apps", log, params)
 	}
 
-
 	def home = Action { implicit r =>
 		log("home")
 
@@ -58,17 +57,23 @@ object Apps extends Controller with Guard {
 	      routes.javascript.Apps.templateHome,
 	      routes.javascript.Apps.templateOrigins,
 	      routes.javascript.Inkles.templateOrigin,
+	      routes.javascript.Inkles.templateView,
 	      routes.javascript.Inkles.create,
 	      routes.javascript.Inkles.createInGroup,
 	      routes.javascript.Inkles.edit,
 	      routes.javascript.Inkles.delete,
 	      routes.javascript.Inkles.extend,
 	      routes.javascript.Inkles.getInkle,
-	      routes.javascript.Inkles.getPageOfChildren,
-	      routes.javascript.Inkles.fetchSuggestions,
+		    routes.javascript.Inkles.getPath,
+		    routes.javascript.Inkles.getPageOfChildren,
+		    routes.javascript.Inkles.fetchSuggestions,
+		    routes.javascript.Inkles.search,
+		    routes.javascript.Inkles.searchLinkable,
+		    routes.javascript.Inkles.link,
 	      routes.javascript.Users.templateView,
 		    routes.javascript.Groups.create,
 		    routes.javascript.Groups.update,
+		    routes.javascript.Groups.join,
 		    routes.javascript.Groups.templateList,
 		    routes.javascript.Groups.templateView
 	  )

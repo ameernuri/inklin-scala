@@ -1,0 +1,5 @@
+@(currentUser: User, originUuid: String)
+
+<div class="one-page-scroll" id="inkles-wrapper" style="margin-top: 55px; ">
+	@templates.inkles.inkle(currentUser, Inkle.findFull(originUuid))
+</div>

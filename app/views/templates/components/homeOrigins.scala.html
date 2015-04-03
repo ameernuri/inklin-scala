@@ -4,7 +4,7 @@
 	<div class="full-height one-page-scroll">
 		<div style="display: table; table-layout: fixed; width: 100%;">
 			<div style="display: table-cell; vertical-align: middle;" class="full-height text-center">
-				<h3 style="font-weight: 200;">Your Groups</h3>
+				<h3 style="font-weight: 200; position: fixed; wieth: 100%; left: 0;">Your Groups</h3>
 
 				<div class="col-xs-12" style="margin-top: 40px;">
 					@Group.findOwned(user.uuid, 3).map { group =>

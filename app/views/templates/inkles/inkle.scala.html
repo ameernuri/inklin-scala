@@ -1,4 +1,4 @@
-@(user: User, inkle: (Inkle, User))
+@(user: User, inkle: (FullInkle, User))
 
 @import java.util.UUID
 
@@ -29,7 +29,7 @@
       </script>
     }.getOrElse {
       @Inkle.findGroup(inkle._1.uuid).map { group =>
-        <span class="glyphicon glyphicon-certificate"></span>
+        <span class="fa fa-asterisk"></span>
         @group.name
       }
 

@@ -1,4 +1,4 @@
-@(user: User, pageUuid: String, inkle: (Inkle, User))
+@(user: User, pageUuid: String, inkle: (FullInkle, User))
 
 @extendForm()(message: Html) = {
   <div class="extend-form-wrapper">
@@ -7,7 +7,7 @@
     </div>
     <div style="display:none;" class="red extend-form-div">
     @helper.form(routes.Inkles.extend(inkle._1.uuid, pageUuid.toString), 'class -> "extend-form") {
-      <textarea name="inkle" style="width: 100%; border: solid #fafafa; border-width: 0 1px 1px;border-radius: 0 0 8px 8px; font-size: 17px;padding: 15px 15px 3px; text-align: center;box-sizing: border-box;height: 60px;margin: 0; background-color: #fdfdfd;" maxlength="70" class="inkle-textarea" placeholder="how about..."></textarea>
+      <textarea name="inkle" style="width: 100%; border: solid #fafafa; border-width: 0 1px 1px;border-radius: 0 0 8px 8px; font-size: 17px;padding: 15px 15px 3px; text-align: center;box-sizing: border-box;height: 60px;margin: 0; background-color: #fdfdfd;" maxlength="60" class="inkle-textarea" placeholder="how about..."></textarea>
 
       <div style="float: right; display: none;">
         <input type="submit" value="•••" style="font-size: 16px;color: #fff; border: none;padding: 6px 10px;margin-right: 8px;">
@@ -19,17 +19,42 @@
 
 <div style="display: table; table-layout: fixed; float: left;" class="col-sm-4 inkle-center-wrapper">
   <div style="font-size: 30px; padding: 0 30px; display: table-cell; vertical-align: middle; word-break: break-word;" class="full-height">
-    <span style="color: #eee;">
+    <span  data-toggle="popover" data-trigger="hover" style="color: #eee;">
+      <div class="popover">
+        something awesome
+      </div>
     @if(inkle._1.parentUuid.isDefined) {
-      <span class="glyphicon glyphicon-option-horizontal"></span><br>
+      @if(inkle._1.kind == "link") {
+
+        <div class="center-block pointer" style="margin-bottom: 10px;" id="page-@{pageUuid}-inkle-@{inkle._1.uuid}-link">
+          <div style="font-size: 24px;color: #bbb;height: 30px;width: 30px;text-align: center;border-radius: 50%;padding: 0 0 10px;line-height: 1;margin: auto;border: 3px solid #ddd;">#</div>
+        </div>
+
+        @Inkle.findLink(inkle._1.uuid).map { link =>
+          <script>
+          inkleLinkClickActions('#page-@{pageUuid}-inkle-@{inkle._1.uuid}-link', '@link._1.uuid', '#page-@{pageUuid}-@{inkle._1.parentUuid}-inkle');
+          </script>
+     		}
+      } else {
+
+        <span class="glyphicon glyphicon-option-horizontal"></span><br>
+      }
     } else {
       <span class="glyphicon glyphicon-record"></span><br>
     }
     </span>
 
-    <span data-toggle="tooltip" data-placement="top" title="Edit" style="overflow: auto;" class="pointer inkle-text">
+    <span data-toggle="tooltip" data-placement="bottom" title="Edit" style="overflow: auto;" class="pointer inkle-text">
       @if(!inkle._1.deleted) {
-        @inkle._1.inkle
+        @if(inkle._1.kind == "link") {
+
+          @Inkle.findLink(inkle._1.uuid).map { link =>
+            @link._1.inkle
+          }
+        } else {
+
+          @inkle._1.inkle
+        }
       } else {
         <br>
         <samp class="text-muted" style="font-size: 15px">[DELETED INKLE]</samp>
@@ -38,11 +63,15 @@
 
     <span class="edit-form-wrapper">
       @helper.form(routes.Inkles.edit(inkle._1.uuid, pageUuid), 'class -> "edit-form") {
-	      <textarea name="inkle" class="edit-textarea" maxlength="70" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
+        @if(inkle._1.kind == "link") {
+          <pre style="background: none;border: none;font-size: 20px;">[LINKED INKLE]</pre>
+        } else {
+          <textarea name="inkle" class="edit-textarea" maxlength="60" style="font-size: 30px; width: 100%; text-align: center; margin: 0;box-sizing: border-box; resize: none;">@inkle._1.inkle</textarea>
+        }
 	      <input type="submit" value="•••" style="display: none;">
       }
 
-      <div class="text-right inkle-action-buttons">
+      <div class="text-center inkle-action-buttons">
         <button class="link-inkle-button">
           <span class="glyphicon glyphicon-link"></span> Link
         </button>
@@ -51,6 +80,9 @@
         </button>
         <button class="text-danger delete-inkle-button">
           <span class="glyphicon glyphicon-trash"></span> Delete
+        </button>
+        <button class="more-button">
+          <span class="glyphicon glyphicon-chevron-down btn-hover-green"></span>
         </button>
       </div>
     </span>

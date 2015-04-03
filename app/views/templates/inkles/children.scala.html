@@ -1,12 +1,14 @@
-@(user: User, inkle: (Inkle, User), children: Page[(Inkle, User)], pageUuid: String, page: Int = 0)
+@(user: User, inkle: (FullInkle, User), children: Page[(FullInkle, User)], pageUuid: String, page: Int = 0)
 
 @import java.util.UUID
 
 @defining(UUID.randomUUID()) { rand =>
   <div id="page-@pageUuid-@{inkle._1.uuid}-children-wrapper" class="children-wrapper">
+
     @children.items.map { child =>
       @templates.inkles.child(user, child, pageUuid.toString, rand.toString)
     }
+
 
     @if(children.total > 5) {
       <div style="margin: 5px 0">

@@ -1,0 +1,5 @@
+@(path: Page[(FullInkle, User)])
+
+@path.items.reverse.map { element =>
+	<div>@element._1.inkle</div>
+}
